@@ -1,0 +1,158 @@
+{
+  "schema": "flare.im.examples.multidevice.conformance.v1",
+  "version": "2026-06-19",
+  "clients": [
+    "web",
+    "flutter"
+  ],
+  "scenarios": [
+    {
+      "id": "message_fanout",
+      "title": "New messages reach every active client view",
+      "requires": [
+        "two_logged_in_devices",
+        "ready_connection",
+        "same_conversation"
+      ],
+      "steps": [
+        "web sends text through Core SDK",
+        "flutter observes ReceivedBatch and updates conversation preview",
+        "flutter observes the same message in the active timeline",
+        "web and flutter converge on the same conversationSeq"
+      ],
+      "webEntrypoints": [
+        "sendText",
+        "onMessageReceivedBatch",
+        "conversation.list",
+        "message.list"
+      ],
+      "flutterEntrypoints": [
+        "sendTextMessage",
+        "onMessageReceivedBatch",
+        "bootstrapHomeTimeline",
+        "openTimeline"
+      ],
+      "observables": [
+        "received_batch",
+        "conversation.latest_message",
+        "timeline.message",
+        "conversation_seq"
+      ]
+    },
+    {
+      "id": "read_state_roaming",
+      "title": "Read positions roam by user and device",
+      "requires": [
+        "two_logged_in_devices",
+        "same_conversation",
+        "messages_with_conversation_seq"
+      ],
+      "steps": [
+        "flutter marks the conversation read with readSeq",
+        "core sends conversation.markRead as ReadAck with the effective device id",
+        "web syncs the read state and clears unread for the same conversation",
+        "both clients expose the same lastReadSeq"
+      ],
+      "webEntrypoints": [
+        "conversation.markRead",
+        "conversation.list",
+        "conversation.view"
+      ],
+      "flutterEntrypoints": [
+        "markConversationRead",
+        "bootstrapHomeTimeline",
+        "conversationView"
+      ],
+      "observables": [
+        "last_read_seq",
+        "unread_count",
+        "read_ack_device_id",
+        "conversation_seq"
+      ]
+    },
+    {
+      "id": "draft_roaming",
+      "title": "Draft text roams through ConversationUserSettingsSync",
+      "requires": [
+        "two_logged_in_devices",
+        "same_conversation"
+      ],
+      "steps": [
+        "web updates the draft through conversation.updateDraft",
+        "core persists the draft and pushes ConversationUserSettingsSync.draft",
+        "flutter reloads the conversation settings",
+        "both clients show the same draft text for the conversation"
+      ],
+      "webEntrypoints": [
+        "conversation.updateDraft",
+        "composerDraft"
+      ],
+      "flutterEntrypoints": [
+        "updateConversationDraft",
+        "composerDraft"
+      ],
+      "observables": [
+        "ConversationUserSettingsSync.draft",
+        "draft",
+        "settings_version"
+      ]
+    },
+    {
+      "id": "device_kick",
+      "title": "Device management targets the exact device id",
+      "requires": [
+        "two_logged_in_devices",
+        "current_user_device_list"
+      ],
+      "steps": [
+        "web lists current user devices",
+        "web kicks the selected flutter device id",
+        "flutter receives the session shutdown for that device",
+        "web remains connected because the active device id differs"
+      ],
+      "webEntrypoints": [
+        "presence.listCurrentUserDevices",
+        "presence.kickDevice",
+        "runtimeHealth"
+      ],
+      "flutterEntrypoints": [
+        "presence.getCurrentDevice",
+        "connectionState"
+      ],
+      "observables": [
+        "device_id",
+        "connection_id",
+        "connection_state",
+        "runtime_health"
+      ]
+    },
+    {
+      "id": "typing_device_attribution",
+      "title": "Typing indicators are attributed to the sending device",
+      "requires": [
+        "two_logged_in_devices",
+        "same_conversation",
+        "ready_connection"
+      ],
+      "steps": [
+        "flutter sends message.typing from its current device id",
+        "web receives RealtimeControlPacket.typing",
+        "web displays typing state for that device only",
+        "stale typing state is cleared without changing durable draft text"
+      ],
+      "webEntrypoints": [
+        "message.typing",
+        "onRealtimeControl"
+      ],
+      "flutterEntrypoints": [
+        "message.typing",
+        "onRealtimeControl"
+      ],
+      "observables": [
+        "TypingStatePacket.device_id",
+        "typing_state",
+        "draft"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,298 @@
+{
+  "listeners": [
+    {
+      "name": "onInitializing",
+      "kind": "lifecycle",
+      "eventName": "initializing",
+      "payload": "LifecycleEvent",
+      "description": "SDK initialization has started."
+    },
+    {
+      "name": "onInitialized",
+      "kind": "lifecycle",
+      "eventName": "initialized",
+      "payload": "LifecycleEvent",
+      "description": "SDK initialization completed successfully."
+    },
+    {
+      "name": "onInitFailed",
+      "kind": "lifecycle",
+      "eventName": "init_failed",
+      "payload": "LifecycleEvent",
+      "description": "SDK initialization failed."
+    },
+    {
+      "name": "onLoginSucceeded",
+      "kind": "lifecycle",
+      "eventName": "login_succeeded",
+      "payload": "LifecycleEvent",
+      "description": "SDK login completed successfully."
+    },
+    {
+      "name": "onLoginFailed",
+      "kind": "lifecycle",
+      "eventName": "login_failed",
+      "payload": "LifecycleEvent",
+      "description": "SDK login failed."
+    },
+    {
+      "name": "onLoggedOut",
+      "kind": "lifecycle",
+      "eventName": "logged_out",
+      "payload": "LifecycleEvent",
+      "description": "The current SDK session logged out."
+    },
+    {
+      "name": "onDisposed",
+      "kind": "lifecycle",
+      "eventName": "disposed",
+      "payload": "LifecycleEvent",
+      "description": "The SDK client has been disposed."
+    },
+    {
+      "name": "onConnecting",
+      "kind": "connection",
+      "eventName": "connecting",
+      "payload": "ConnectionEvent",
+      "description": "SDK is connecting to the IM server."
+    },
+    {
+      "name": "onConnectSuccess",
+      "kind": "connection",
+      "eventName": "connected",
+      "payload": "ConnectionEvent",
+      "description": "SDK connected to the IM server successfully."
+    },
+    {
+      "name": "onConnectReady",
+      "kind": "connection",
+      "eventName": "ready",
+      "payload": "ConnectionEvent",
+      "description": "SDK connection is authenticated and ready for message traffic."
+    },
+    {
+      "name": "onConnectFailed",
+      "kind": "connection",
+      "eventName": "server_error",
+      "payload": "ConnectionEvent",
+      "description": "SDK failed to connect to the IM server."
+    },
+    {
+      "name": "onDisconnected",
+      "kind": "connection",
+      "eventName": "disconnected",
+      "payload": "ConnectionEvent",
+      "description": "SDK disconnected from the IM server."
+    },
+    {
+      "name": "onReconnecting",
+      "kind": "connection",
+      "eventName": "reconnecting",
+      "payload": "ConnectionEvent",
+      "description": "SDK is attempting to reconnect to the IM server."
+    },
+    {
+      "name": "onReconnectFailed",
+      "kind": "connection",
+      "eventName": "reconnect_failed",
+      "payload": "ConnectionEvent",
+      "description": "SDK reconnect attempt failed."
+    },
+    {
+      "name": "onKickedOffline",
+      "kind": "connection",
+      "eventName": "kicked_off",
+      "payload": "ConnectionEvent",
+      "description": "The account logged in elsewhere and this device was kicked offline."
+    },
+    {
+      "name": "onUserTokenExpired",
+      "kind": "connection",
+      "eventName": "token_expired",
+      "payload": "ConnectionEvent",
+      "description": "The login token expired and the app should renew credentials."
+    },
+    {
+      "name": "onMessageReceived",
+      "kind": "message",
+      "eventName": "received",
+      "payload": "MessageReceivedEvent",
+      "description": "A single message was received."
+    },
+    {
+      "name": "onMessageReceivedBatch",
+      "kind": "message",
+      "eventName": "received_batch",
+      "payload": "MessageReceivedBatchEvent",
+      "description": "A batch of messages was received."
+    },
+    {
+      "name": "onMessageSendAck",
+      "kind": "message",
+      "eventName": "send_ack",
+      "payload": "MessageSendAckEvent",
+      "description": "A message send operation was acknowledged."
+    },
+    {
+      "name": "onMessageSendFailed",
+      "kind": "message",
+      "eventName": "send_failed",
+      "payload": "MessageSendFailedEvent",
+      "description": "A message send operation failed."
+    },
+    {
+      "name": "onMessageRecalled",
+      "kind": "message",
+      "eventName": "recalled",
+      "payload": "MessageMutationEvent",
+      "description": "A message was recalled."
+    },
+    {
+      "name": "onMessageEdited",
+      "kind": "message",
+      "eventName": "edited",
+      "payload": "MessageMutationEvent",
+      "description": "A message was edited."
+    },
+    {
+      "name": "onMessageDeleted",
+      "kind": "message",
+      "eventName": "deleted",
+      "payload": "MessageMutationEvent",
+      "description": "A message was deleted."
+    },
+    {
+      "name": "onMessageReadReceipt",
+      "kind": "message",
+      "eventName": "read_receipt",
+      "payload": "ReadReceiptEvent",
+      "description": "A message read receipt changed."
+    },
+    {
+      "name": "onMessageReactionChanged",
+      "kind": "message",
+      "eventName": "reaction_changed",
+      "payload": "ReactionChangedEvent",
+      "description": "A message reaction changed."
+    },
+    {
+      "name": "onInputStatusChanged",
+      "kind": "message",
+      "eventName": "typing",
+      "payload": "TypingEvent",
+      "description": "A conversation input or typing status changed."
+    },
+    {
+      "name": "onTypingAggregateChanged",
+      "kind": "message",
+      "eventName": "typing_aggregate",
+      "payload": "TypingAggregateEvent",
+      "description": "Aggregated typing status changed for a large conversation."
+    },
+    {
+      "name": "onMessageBurned",
+      "kind": "message",
+      "eventName": "burned",
+      "payload": "MessageMutationEvent",
+      "description": "A burn-after-read message was burned."
+    },
+    {
+      "name": "onMessagePinned",
+      "kind": "message",
+      "eventName": "pinned",
+      "payload": "MessageMutationEvent",
+      "description": "A message was pinned."
+    },
+    {
+      "name": "onMessageUnpinned",
+      "kind": "message",
+      "eventName": "unpinned",
+      "payload": "MessageMutationEvent",
+      "description": "A message was unpinned."
+    },
+    {
+      "name": "onViewUpdated",
+      "kind": "view",
+      "eventName": "updated",
+      "payload": "ViewUpdate",
+      "description": "A core observable view snapshot changed."
+    },
+    {
+      "name": "onNewConversation",
+      "kind": "conversation",
+      "eventName": "created",
+      "payload": "ConversationEvent",
+      "description": "A new conversation was created or discovered."
+    },
+    {
+      "name": "onConversationChanged",
+      "kind": "conversation",
+      "eventName": "updated",
+      "payload": "ConversationEvent",
+      "description": "Important conversation fields changed."
+    },
+    {
+      "name": "onTotalUnreadMessageCountChanged",
+      "kind": "conversation",
+      "eventName": "unread_count_changed",
+      "payload": "ConversationEvent",
+      "description": "The total unread message count changed."
+    },
+    {
+      "name": "onConversationDeleted",
+      "kind": "conversation",
+      "eventName": "deleted",
+      "payload": "ConversationEvent",
+      "description": "A conversation was deleted."
+    },
+    {
+      "name": "onSyncServerStart",
+      "kind": "sync",
+      "eventName": "started",
+      "payload": "SyncEvent",
+      "description": "Server conversation or message sync started."
+    },
+    {
+      "name": "onSyncServerFinish",
+      "kind": "sync",
+      "eventName": "finished",
+      "payload": "SyncEvent",
+      "description": "Server conversation or message sync finished."
+    },
+    {
+      "name": "onSyncServerFailed",
+      "kind": "sync",
+      "eventName": "failed",
+      "payload": "SyncEvent",
+      "description": "Server conversation or message sync failed."
+    },
+    {
+      "name": "onSyncProgress",
+      "kind": "sync",
+      "eventName": "progress",
+      "payload": "ProgressEvent",
+      "description": "Server sync progress changed."
+    },
+    {
+      "name": "onUploadProgress",
+      "kind": "media",
+      "eventName": "upload_progress",
+      "payload": "ProgressEvent",
+      "description": "Media upload progress changed."
+    },
+    {
+      "name": "onDownloadProgress",
+      "kind": "media",
+      "eventName": "download_progress",
+      "payload": "ProgressEvent",
+      "description": "Media download progress changed."
+    },
+    {
+      "name": "onCapabilityChanged",
+      "kind": "capability",
+      "eventName": "changed",
+      "payload": "CapabilityEvent",
+      "description": "A runtime capability or plugin availability changed."
+    }
+  ]
+}

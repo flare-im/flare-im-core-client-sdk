@@ -1,0 +1,81 @@
+{
+  "viewId": "conversation-list-main",
+  "kind": "snapshot",
+  "snapshot": {
+    "viewType": "conversationList",
+    "data": {
+      "conversations": [
+        {
+          "conversationId": "group-100",
+          "conversationType": "group",
+          "businessType": "chat",
+          "channelId": "group-100",
+          "membersCount": 100,
+          "displayName": "Scale Test Group",
+          "avatarUrl": "https://example.com/group-100.png",
+          "lastMessageId": "server-msg-101",
+          "lastSenderId": "user-b",
+          "lastMessageAt": 1782795601000,
+          "lastMessagePreview": "batch hello 2",
+          "lastMessage": {
+            "messageId": "server-msg-101",
+            "senderId": "user-b",
+            "type": 0,
+            "text": "batch hello 2",
+            "time": 1782795601000
+          },
+          "lastSenderNickname": "User B",
+          "lastSenderAvatarUrl": "https://example.com/user-b.png",
+          "unreadCount": 2,
+          "lastReadSeq": 99,
+          "peerReadSeq": 101,
+          "maxSeq": 101,
+          "visibleAfterSeq": 0,
+          "isPinned": false,
+          "isMuted": false,
+          "isArchived": false,
+          "updatedAt": 1782795601000,
+          "createdAt": 1782795500000,
+          "ext": {
+            "tenant": "test"
+          },
+          "participantVersion": 7,
+          "memberPreview": [
+            {
+              "userId": "user-a",
+              "roles": [
+                "owner"
+              ],
+              "muted": false,
+              "pinned": false,
+              "attributes": {
+                "displayName": "User A"
+              },
+              "joinedAt": 1782795500000,
+              "nickname": "User A"
+            },
+            {
+              "userId": "user-b",
+              "roles": [
+                "member"
+              ],
+              "muted": false,
+              "pinned": false,
+              "attributes": {
+                "displayName": "User B"
+              },
+              "joinedAt": 1782795501000,
+              "nickname": "User B"
+            }
+          ],
+          "participants": [],
+          "mentionCount": 0,
+          "mentionMe": false,
+          "version": 3
+        }
+      ],
+      "totalUnread": 2,
+      "syncState": "synced"
+    }
+  }
+}

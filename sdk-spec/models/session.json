@@ -1,0 +1,130 @@
+{
+  "group": "session",
+  "description": "Session utility request and response models.",
+  "enums": [
+    {
+      "name": "HeartbeatAppState",
+      "description": "Application visibility state used by adaptive heartbeat scheduling.",
+      "values": [
+        "foreground",
+        "background"
+      ]
+    }
+  ],
+  "models": [
+    {
+      "name": "SetHeartbeatAppStateRequest",
+      "description": "Runtime app visibility update for adaptive heartbeat scheduling.",
+      "fields": [
+        {
+          "name": "appState",
+          "wireName": "appState",
+          "type": "HeartbeatAppState",
+          "required": true,
+          "description": "Current application visibility state."
+        }
+      ]
+    },
+    {
+      "name": "SetHeartbeatNatTimeoutRequest",
+      "description": "Runtime NAT timeout hint for adaptive heartbeat scheduling. Omit or pass null to clear the hint.",
+      "fields": [
+        {
+          "name": "natTimeoutSecs",
+          "wireName": "natTimeoutSecs",
+          "type": "UInt32",
+          "required": false,
+          "description": "Observed NAT idle timeout in seconds."
+        }
+      ]
+    },
+    {
+      "name": "HeartbeatEffectiveIntervalResponse",
+      "description": "Currently effective heartbeat interval for diagnostics and platform observability.",
+      "fields": [
+        {
+          "name": "connected",
+          "wireName": "connected",
+          "type": "Boolean",
+          "required": true,
+          "description": "Whether a live transport is available."
+        },
+        {
+          "name": "intervalMs",
+          "wireName": "intervalMs",
+          "type": "UInt64",
+          "required": false,
+          "description": "Effective heartbeat interval in milliseconds when connected."
+        },
+        {
+          "name": "intervalSecs",
+          "wireName": "intervalSecs",
+          "type": "UInt64",
+          "required": false,
+          "description": "Effective heartbeat interval in seconds when connected."
+        }
+      ]
+    },
+    {
+      "name": "CoreTokenRequest",
+      "description": "Explicit configuration for generating a Flare IM Core gateway-compatible HS256 access token.",
+      "fields": [
+        {
+          "name": "userId",
+          "wireName": "userId",
+          "type": "String",
+          "required": true,
+          "description": "Subject user id stored in the JWT sub claim."
+        },
+        {
+          "name": "secret",
+          "wireName": "secret",
+          "type": "String",
+          "required": true,
+          "description": "HS256 signing secret configured on the gateway verifier."
+        },
+        {
+          "name": "issuer",
+          "wireName": "issuer",
+          "type": "String",
+          "required": true,
+          "description": "JWT issuer expected by the gateway verifier."
+        },
+        {
+          "name": "ttlSecs",
+          "wireName": "ttlSecs",
+          "type": "UInt64",
+          "required": true,
+          "description": "Token lifetime in seconds."
+        },
+        {
+          "name": "deviceId",
+          "wireName": "deviceId",
+          "type": "String",
+          "required": false,
+          "description": "Optional device id claim."
+        },
+        {
+          "name": "tenantId",
+          "wireName": "tenantId",
+          "type": "String",
+          "required": false,
+          "description": "Optional tenant id claim."
+        }
+      ]
+    },
+    {
+      "name": "CoreTokenResponse",
+      "description": "Generated core access token payload.",
+      "fields": [
+        {
+          "name": "token",
+          "wireName": "token",
+          "type": "String",
+          "required": true,
+          "description": "Signed JWT access token."
+        }
+      ]
+    }
+  ]
+}

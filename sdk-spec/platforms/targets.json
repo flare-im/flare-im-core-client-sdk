@@ -1,0 +1,74 @@
+{
+  "platforms": [
+    {
+      "key": "dart",
+      "name": "Flutter / Dart",
+      "packagePath": "packages/flare-core-flutter-sdk",
+      "asyncModel": "Future + Stream",
+      "status": "contract-synced"
+    },
+    {
+      "key": "android",
+      "name": "Android",
+      "packagePath": "packages/flare-core-android-sdk",
+      "asyncModel": "suspend + Flow",
+      "status": "contract-synced"
+    },
+    {
+      "key": "ios",
+      "name": "iOS / macOS",
+      "packagePath": "packages/flare-core-apple-sdk",
+      "asyncModel": "async/await + AsyncStream",
+      "status": "contract-synced"
+    },
+    {
+      "key": "arkts",
+      "name": "HarmonyOS ArkTS",
+      "packagePath": "packages/flare-core-harmony-arkts-sdk",
+      "asyncModel": "Promise + typed event emitter",
+      "status": "contract-synced"
+    },
+    {
+      "key": "cangjie",
+      "name": "HarmonyOS Cangjie",
+      "packagePath": "packages/flare-core-harmony-cangjie-sdk",
+      "asyncModel": "native async result",
+      "status": "contract-synced"
+    },
+    {
+      "key": "typescript",
+      "name": "TypeScript Client",
+      "packagePath": "packages/flare-core-typescript-sdk",
+      "asyncModel": "Promise + event subscription",
+      "status": "contract-synced"
+    },
+    {
+      "key": "web",
+      "name": "Web target",
+      "packagePath": "packages/flare-core-typescript-sdk",
+      "asyncModel": "Promise + event subscription",
+      "status": "contract-synced"
+    },
+    {
+      "key": "react-native",
+      "name": "React Native target",
+      "packagePath": "packages/flare-core-typescript-sdk",
+      "asyncModel": "Promise + native event emitter",
+      "status": "contract-synced"
+    },
+    {
+      "key": "uni-app",
+      "name": "uni-app target",
+      "packagePath": "packages/flare-core-typescript-sdk",
+      "asyncModel": "Promise + event subscription",
+      "status": "contract-synced"
+    },
+    {
+      "key": "tauri",
+      "name": "Tauri desktop",
+      "packagePath": "packages/flare-core-typescript-sdk",
+      "asyncModel": "Promise + event subscription",
+      "status": "contract-synced"
+    }
+  ]
+}

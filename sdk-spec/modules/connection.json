@@ -1,0 +1,34 @@
+{
+  "key": "connection",
+  "facade": "client.connection",
+  "description": "Connection state and manual network lifecycle.",
+  "methods": [
+    {
+      "name": "getConnectionState",
+      "operation": "connection.get_state",
+      "transport": "ffi-symbol",
+      "cApi": "flare_sdk_state",
+      "request": "Unit",
+      "response": "ConnectionStateResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "disconnect",
+      "operation": "connection.disconnect",
+      "transport": "ffi-symbol",
+      "cApi": "flare_sdk_disconnect",
+      "request": "Unit",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "notifyNetworkChange",
+      "operation": "connection.notify_network_change",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "NetworkChangeRequest",
+      "response": "NetworkChangeResponse",
+      "stability": "stable"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "name": "@flare/flare-core-harmony-arkts-sdk",
+  "version": "0.2.0",
+  "description": "HarmonyOS ArkTS client adapter for Flare IM Core SDK",
+  "main": "src/main/ets/Index.ets",
+  "types": "src/main/ets/Index.ets",
+  "author": "Flare IM",
+  "license": "Apache-2.0",
+  "dependencies": {}
+}

@@ -1,0 +1,9 @@
+{
+  "type": "message",
+  "name": "received",
+  "conversationId": "single_user_001_user_002",
+  "messageId": "server_msg_001",
+  "payload": {
+    "messageId": "server_msg_001"
+  }
+}

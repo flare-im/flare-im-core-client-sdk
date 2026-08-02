@@ -1,0 +1,1094 @@
+{
+  "group": "message_builder",
+  "description": "Typed requests for messageBuilder quick-build APIs and catalog metadata.",
+  "enums": [
+    {
+      "name": "MessageBuildOp",
+      "description": "Dispatch op passed to flare_message_build_json.",
+      "values": [
+        "create_text",
+        "create_quote",
+        "create_thread_reply",
+        "create_forward",
+        "create_image",
+        "create_image_group",
+        "create_video",
+        "create_audio",
+        "create_file",
+        "create_emoji",
+        "create_location",
+        "create_sticker",
+        "create_link_card",
+        "create_card",
+        "create_mini_program",
+        "create_rich_doc",
+        "create_system",
+        "create_notification",
+        "create_vote",
+        "create_task",
+        "create_schedule",
+        "create_announcement",
+        "create_custom",
+        "create_placeholder",
+        "create_with_content"
+      ]
+    }
+  ],
+  "models": [
+    {
+      "name": "MessageBuildCatalogEntry",
+      "description": "One supported quick-build operation exposed on MessageBuilderApi.",
+      "fields": [
+        {
+          "name": "op",
+          "wireName": "op",
+          "type": "MessageBuildOp",
+          "required": true,
+          "description": "Build dispatch op."
+        },
+        {
+          "name": "method",
+          "wireName": "method",
+          "type": "String",
+          "required": true,
+          "description": "Facade method name, e.g. buildText."
+        },
+        {
+          "name": "requestType",
+          "wireName": "requestType",
+          "type": "String",
+          "required": true,
+          "description": "Typed request model name."
+        },
+        {
+          "name": "contentType",
+          "wireName": "contentType",
+          "type": "MessageContentType",
+          "required": true,
+          "description": "Decoded content discriminator."
+        },
+        {
+          "name": "messageType",
+          "wireName": "messageType",
+          "type": "Int32",
+          "required": true,
+          "description": "Core message type integer."
+        },
+        {
+          "name": "summary",
+          "wireName": "summary",
+          "type": "String",
+          "required": true,
+          "description": "Human-readable summary for UI/docs."
+        },
+        {
+          "name": "stability",
+          "wireName": "stability",
+          "type": "String",
+          "required": true,
+          "description": "stable | beta | experimental"
+        }
+      ]
+    },
+    {
+      "name": "ListMessageBuildCatalogResponse",
+      "description": "Catalog of all supported message build operations.",
+      "fields": [
+        {
+          "name": "entries",
+          "wireName": "entries",
+          "type": "MessageBuildCatalogEntryList",
+          "required": true,
+          "description": "Supported build operations."
+        }
+      ]
+    },
+    {
+      "name": "BuildTypedMessageRequest",
+      "description": "Generic typed build request used by composer helpers.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Target conversation id."
+        },
+        {
+          "name": "op",
+          "wireName": "op",
+          "type": "MessageBuildOp",
+          "required": true,
+          "description": "Build operation."
+        },
+        {
+          "name": "data",
+          "wireName": "data",
+          "type": "JsonObject",
+          "required": false,
+          "description": "Operation-specific payload; prefer typed buildXxx requests."
+        }
+      ]
+    },
+    {
+      "name": "BuildTextMessageRequest",
+      "description": "Build a text message.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Target conversation id."
+        },
+        {
+          "name": "text",
+          "wireName": "text",
+          "type": "String",
+          "required": true,
+          "description": "Text body."
+        },
+        {
+          "name": "mentionUsers",
+          "wireName": "mentionUsers",
+          "type": "StringList",
+          "required": false,
+          "default": [],
+          "description": "User ids mentioned in the text body. The core builder resolves @userId spans into typed mentions."
+        },
+        {
+          "name": "mentionAll",
+          "wireName": "mentionAll",
+          "type": "Boolean",
+          "required": false,
+          "default": false,
+          "description": "Whether the message mentions every member in the target conversation."
+        }
+      ]
+    },
+    {
+      "name": "BuildQuoteMessageRequest",
+      "description": "Build a quote/reply message.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Target conversation id."
+        },
+        {
+          "name": "quotedMessageId",
+          "wireName": "quotedMessageId",
+          "type": "String",
+          "required": true,
+          "description": "Quoted message id."
+        },
+        {
+          "name": "text",
+          "wireName": "text",
+          "type": "String",
+          "required": true,
+          "description": "Reply text."
+        },
+        {
+          "name": "quotedSenderId",
+          "wireName": "quotedSenderId",
+          "type": "String",
+          "required": false,
+          "description": "Quoted sender id."
+        },
+        {
+          "name": "quotedTextPreview",
+          "wireName": "quotedTextPreview",
+          "type": "String",
+          "required": false,
+          "description": "Quoted preview text."
+        },
+        {
+          "name": "quotedContent",
+          "wireName": "quotedContent",
+          "type": "MessageContent",
+          "required": true,
+          "description": "Quoted message content element."
+        }
+      ]
+    },
+    {
+      "name": "BuildThreadReplyMessageRequest",
+      "description": "Build a thread reply message.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Target conversation id."
+        },
+        {
+          "name": "threadId",
+          "wireName": "threadId",
+          "type": "String",
+          "required": true,
+          "description": "Thread root message id."
+        },
+        {
+          "name": "text",
+          "wireName": "text",
+          "type": "String",
+          "required": true,
+          "description": "Reply text."
+        }
+      ]
+    },
+    {
+      "name": "BuildForwardMessageRequest",
+      "description": "Build a forward message.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Target conversation id."
+        },
+        {
+          "name": "merge",
+          "wireName": "merge",
+          "type": "Boolean",
+          "required": false,
+          "description": "Merge into one card."
+        },
+        {
+          "name": "title",
+          "wireName": "title",
+          "type": "String",
+          "required": true,
+          "description": "Forward title."
+        },
+        {
+          "name": "sourceMessages",
+          "wireName": "sourceMessages",
+          "type": "ForwardSourceMessageList",
+          "required": true,
+          "description": "Messages to forward."
+        }
+      ]
+    },
+    {
+      "name": "BuildImageMessageRequest",
+      "description": "Build an image message.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Target conversation id."
+        },
+        {
+          "name": "imageId",
+          "wireName": "imageId",
+          "type": "String",
+          "required": true,
+          "description": "Uploaded image id."
+        },
+        {
+          "name": "payload",
+          "wireName": "payload",
+          "type": "ImageContentPayload",
+          "required": false,
+          "description": "Optional rich image payload for UI preview."
+        }
+      ]
+    },
+    {
+      "name": "BuildImageGroupMessageRequest",
+      "description": "Build an image group message.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Target conversation id."
+        },
+        {
+          "name": "payload",
+          "wireName": "payload",
+          "type": "ImageGroupContentPayload",
+          "required": true,
+          "description": "Image group payload."
+        }
+      ]
+    },
+    {
+      "name": "BuildVideoMessageRequest",
+      "description": "Build a video message.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Target conversation id."
+        },
+        {
+          "name": "videoId",
+          "wireName": "videoId",
+          "type": "String",
+          "required": true,
+          "description": "Uploaded video id."
+        },
+        {
+          "name": "payload",
+          "wireName": "payload",
+          "type": "VideoContentPayload",
+          "required": false,
+          "description": "Optional video payload."
+        }
+      ]
+    },
+    {
+      "name": "BuildAudioMessageRequest",
+      "description": "Build an audio message.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Target conversation id."
+        },
+        {
+          "name": "audioId",
+          "wireName": "audioId",
+          "type": "String",
+          "required": true,
+          "description": "Uploaded audio id."
+        },
+        {
+          "name": "payload",
+          "wireName": "payload",
+          "type": "AudioContentPayload",
+          "required": false,
+          "description": "Optional audio payload."
+        }
+      ]
+    },
+    {
+      "name": "BuildFileMessageRequest",
+      "description": "Build a file message.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Target conversation id."
+        },
+        {
+          "name": "fileId",
+          "wireName": "fileId",
+          "type": "String",
+          "required": true,
+          "description": "Uploaded file id."
+        },
+        {
+          "name": "payload",
+          "wireName": "payload",
+          "type": "FileContentPayload",
+          "required": false,
+          "description": "Optional file payload."
+        }
+      ]
+    },
+    {
+      "name": "BuildEmojiMessageRequest",
+      "description": "Build an emoji message.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Target conversation id."
+        },
+        {
+          "name": "emoji",
+          "wireName": "emoji",
+          "type": "String",
+          "required": true,
+          "description": "Emoji key."
+        }
+      ]
+    },
+    {
+      "name": "BuildLocationMessageRequest",
+      "description": "Build a location message.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Target conversation id."
+        },
+        {
+          "name": "latitude",
+          "wireName": "latitude",
+          "type": "Double",
+          "required": true,
+          "description": "Latitude."
+        },
+        {
+          "name": "longitude",
+          "wireName": "longitude",
+          "type": "Double",
+          "required": true,
+          "description": "Longitude."
+        },
+        {
+          "name": "title",
+          "wireName": "title",
+          "type": "String",
+          "required": false,
+          "description": "Place title."
+        },
+        {
+          "name": "address",
+          "wireName": "address",
+          "type": "String",
+          "required": false,
+          "description": "Address."
+        }
+      ]
+    },
+    {
+      "name": "BuildStickerMessageRequest",
+      "description": "Build a sticker message.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Target conversation id."
+        },
+        {
+          "name": "stickerId",
+          "wireName": "stickerId",
+          "type": "String",
+          "required": true,
+          "description": "Sticker id."
+        },
+        {
+          "name": "packageId",
+          "wireName": "packageId",
+          "type": "String",
+          "required": false,
+          "description": "Sticker package id."
+        },
+        {
+          "name": "payload",
+          "wireName": "payload",
+          "type": "StickerContentPayload",
+          "required": false,
+          "description": "Optional sticker payload."
+        }
+      ]
+    },
+    {
+      "name": "BuildLinkCardMessageRequest",
+      "description": "Build a link card message.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Target conversation id."
+        },
+        {
+          "name": "url",
+          "wireName": "url",
+          "type": "String",
+          "required": true,
+          "description": "Link URL."
+        },
+        {
+          "name": "title",
+          "wireName": "title",
+          "type": "String",
+          "required": false,
+          "description": "Card title."
+        },
+        {
+          "name": "description",
+          "wireName": "description",
+          "type": "String",
+          "required": false,
+          "description": "Card description."
+        },
+        {
+          "name": "thumbnailUrl",
+          "wireName": "thumbnailUrl",
+          "type": "String",
+          "required": false,
+          "description": "Thumbnail URL."
+        },
+        {
+          "name": "siteName",
+          "wireName": "siteName",
+          "type": "String",
+          "required": false,
+          "description": "Site name."
+        }
+      ]
+    },
+    {
+      "name": "BuildCardMessageRequest",
+      "description": "Build a structured card message.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Target conversation id."
+        },
+        {
+          "name": "id",
+          "wireName": "id",
+          "type": "String",
+          "required": true,
+          "description": "Card target id."
+        },
+        {
+          "name": "cardType",
+          "wireName": "cardType",
+          "type": "String",
+          "required": false,
+          "description": "Card type key."
+        },
+        {
+          "name": "title",
+          "wireName": "title",
+          "type": "String",
+          "required": false,
+          "description": "Display title."
+        },
+        {
+          "name": "subtitle",
+          "wireName": "subtitle",
+          "type": "String",
+          "required": false,
+          "description": "Display subtitle."
+        },
+        {
+          "name": "avatar",
+          "wireName": "avatar",
+          "type": "String",
+          "required": false,
+          "description": "Avatar URL or media id."
+        }
+      ]
+    },
+    {
+      "name": "BuildMiniProgramMessageRequest",
+      "description": "Build a mini program message.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Target conversation id."
+        },
+        {
+          "name": "appId",
+          "wireName": "appId",
+          "type": "String",
+          "required": true,
+          "description": "Mini program app id."
+        },
+        {
+          "name": "pagePath",
+          "wireName": "pagePath",
+          "type": "String",
+          "required": false,
+          "description": "Entry path."
+        },
+        {
+          "name": "title",
+          "wireName": "title",
+          "type": "String",
+          "required": false,
+          "description": "Display title."
+        },
+        {
+          "name": "thumbnailUrl",
+          "wireName": "thumbnailUrl",
+          "type": "String",
+          "required": false,
+          "description": "Thumbnail URL."
+        },
+        {
+          "name": "extra",
+          "wireName": "extra",
+          "type": "StringMap",
+          "required": false,
+          "description": "Mini program extension fields."
+        }
+      ]
+    },
+    {
+      "name": "BuildRichDocMessageRequest",
+      "description": "Build a rich document message.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Target conversation id."
+        },
+        {
+          "name": "docJson",
+          "wireName": "docJson",
+          "type": "String",
+          "required": true,
+          "description": "RichDoc JSON document."
+        },
+        {
+          "name": "contentSchema",
+          "wireName": "contentSchema",
+          "type": "String",
+          "required": true,
+          "description": "Content schema, normally rich_doc."
+        },
+        {
+          "name": "plainText",
+          "wireName": "plainText",
+          "type": "String",
+          "required": true,
+          "description": "Human-readable plain text."
+        },
+        {
+          "name": "inputFormat",
+          "wireName": "inputFormat",
+          "type": "String",
+          "required": false,
+          "description": "Original source format when known."
+        },
+        {
+          "name": "inputFormatVersion",
+          "wireName": "inputFormatVersion",
+          "type": "Int32",
+          "required": false,
+          "description": "Original source format version."
+        },
+        {
+          "name": "sourcePayload",
+          "wireName": "sourcePayload",
+          "type": "StringMap",
+          "required": false,
+          "description": "Original source payload snapshot keyed by format."
+        },
+        {
+          "name": "title",
+          "wireName": "title",
+          "type": "String",
+          "required": false,
+          "description": "Rich document title."
+        },
+        {
+          "name": "searchText",
+          "wireName": "searchText",
+          "type": "String",
+          "required": false,
+          "description": "Search-indexable text."
+        },
+        {
+          "name": "renderHintsJson",
+          "wireName": "renderHintsJson",
+          "type": "String",
+          "required": false,
+          "description": "Renderer hints JSON."
+        }
+      ]
+    },
+    {
+      "name": "NormalizeRichDocFromMarkdownRequest",
+      "description": "Normalize Markdown into RichDoc v2 JSON and derived fields.",
+      "fields": [
+        {
+          "name": "markdown",
+          "wireName": "markdown",
+          "type": "String",
+          "required": true,
+          "description": "Markdown source."
+        }
+      ]
+    },
+    {
+      "name": "NormalizeRichDocFromHtmlRequest",
+      "description": "Normalize an HTML fragment into RichDoc v2 JSON and derived fields.",
+      "fields": [
+        {
+          "name": "html",
+          "wireName": "html",
+          "type": "String",
+          "required": true,
+          "description": "HTML fragment source."
+        }
+      ]
+    },
+    {
+      "name": "NormalizeRichDocFromDocJsonRequest",
+      "description": "Validate editor-produced RichDoc v2 JSON and derive searchable/render fields.",
+      "fields": [
+        {
+          "name": "docJson",
+          "wireName": "docJson",
+          "type": "String",
+          "required": true,
+          "description": "RichDoc v2 document JSON."
+        }
+      ]
+    },
+    {
+      "name": "RichDocV2Normalized",
+      "description": "Normalized RichDoc v2 payload aligned with core NormalizeOutput.",
+      "fields": [
+        {
+          "name": "docJson",
+          "wireName": "docJson",
+          "type": "String",
+          "required": true,
+          "description": "Canonical RichDoc v2 JSON document."
+        },
+        {
+          "name": "contentSchema",
+          "wireName": "contentSchema",
+          "type": "String",
+          "required": true,
+          "description": "Content schema, normally rich_doc."
+        },
+        {
+          "name": "version",
+          "wireName": "version",
+          "type": "UInt32",
+          "required": true,
+          "description": "RichDoc schema version."
+        },
+        {
+          "name": "plainText",
+          "wireName": "plainText",
+          "type": "String",
+          "required": true,
+          "description": "Human-readable plain text extracted from the document."
+        },
+        {
+          "name": "searchText",
+          "wireName": "searchText",
+          "type": "String",
+          "required": true,
+          "description": "Search-indexable text extracted from the document."
+        },
+        {
+          "name": "renderHints",
+          "wireName": "renderHints",
+          "type": "JsonObject",
+          "required": true,
+          "description": "Renderer hint object derived by core."
+        },
+        {
+          "name": "inputFormat",
+          "wireName": "inputFormat",
+          "type": "String",
+          "required": false,
+          "description": "Original source format when known."
+        },
+        {
+          "name": "sourcePayload",
+          "wireName": "sourcePayload",
+          "type": "JsonObject",
+          "required": false,
+          "description": "Original source payload snapshot keyed by format."
+        }
+      ]
+    },
+    {
+      "name": "BuildSystemMessageRequest",
+      "description": "Build a system message.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Target conversation id."
+        },
+        {
+          "name": "eventKind",
+          "wireName": "eventKind",
+          "type": "String",
+          "required": true,
+          "description": "System event kind."
+        },
+        {
+          "name": "body",
+          "wireName": "body",
+          "type": "String",
+          "required": true,
+          "description": "System event body."
+        }
+      ]
+    },
+    {
+      "name": "BuildNotificationMessageRequest",
+      "description": "Build a notification message.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Target conversation id."
+        },
+        {
+          "name": "title",
+          "wireName": "title",
+          "type": "String",
+          "required": true,
+          "description": "Notification title."
+        },
+        {
+          "name": "body",
+          "wireName": "body",
+          "type": "String",
+          "required": true,
+          "description": "Notification body."
+        }
+      ]
+    },
+    {
+      "name": "BuildVoteMessageRequest",
+      "description": "Build a vote message.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Target conversation id."
+        },
+        {
+          "name": "voteId",
+          "wireName": "voteId",
+          "type": "String",
+          "required": true,
+          "description": "Vote id."
+        },
+        {
+          "name": "title",
+          "wireName": "title",
+          "type": "String",
+          "required": true,
+          "description": "Vote title."
+        },
+        {
+          "name": "options",
+          "wireName": "options",
+          "type": "StringList",
+          "required": true,
+          "description": "Vote options."
+        },
+        {
+          "name": "participantUserIds",
+          "wireName": "participantUserIds",
+          "type": "StringList",
+          "required": true,
+          "description": "Participants allowed to vote."
+        }
+      ]
+    },
+    {
+      "name": "BuildTaskMessageRequest",
+      "description": "Build a task message.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Target conversation id."
+        },
+        {
+          "name": "taskId",
+          "wireName": "taskId",
+          "type": "String",
+          "required": true,
+          "description": "Task id."
+        },
+        {
+          "name": "title",
+          "wireName": "title",
+          "type": "String",
+          "required": true,
+          "description": "Task title."
+        },
+        {
+          "name": "status",
+          "wireName": "status",
+          "type": "String",
+          "required": false,
+          "description": "Task status."
+        },
+        {
+          "name": "participantUserIds",
+          "wireName": "participantUserIds",
+          "type": "StringList",
+          "required": true,
+          "description": "Task participants."
+        }
+      ]
+    },
+    {
+      "name": "BuildScheduleMessageRequest",
+      "description": "Build a schedule message.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Target conversation id."
+        },
+        {
+          "name": "scheduleId",
+          "wireName": "scheduleId",
+          "type": "String",
+          "required": true,
+          "description": "Schedule id."
+        },
+        {
+          "name": "title",
+          "wireName": "title",
+          "type": "String",
+          "required": true,
+          "description": "Schedule title."
+        },
+        {
+          "name": "startTimeMs",
+          "wireName": "startTimeMs",
+          "type": "Int64",
+          "required": true,
+          "description": "Start time in milliseconds since epoch."
+        },
+        {
+          "name": "endTimeMs",
+          "wireName": "endTimeMs",
+          "type": "Int64",
+          "required": true,
+          "description": "End time in milliseconds since epoch."
+        },
+        {
+          "name": "participantUserIds",
+          "wireName": "participantUserIds",
+          "type": "StringList",
+          "required": true,
+          "description": "Schedule participants."
+        }
+      ]
+    },
+    {
+      "name": "BuildAnnouncementMessageRequest",
+      "description": "Build an announcement message.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Target conversation id."
+        },
+        {
+          "name": "title",
+          "wireName": "title",
+          "type": "String",
+          "required": true,
+          "description": "Announcement title."
+        },
+        {
+          "name": "body",
+          "wireName": "body",
+          "type": "String",
+          "required": true,
+          "description": "Announcement body."
+        }
+      ]
+    },
+    {
+      "name": "BuildCustomMessageRequest",
+      "description": "Build a custom extension message.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Target conversation id."
+        },
+        {
+          "name": "type",
+          "wireName": "type",
+          "type": "String",
+          "required": true,
+          "description": "Extension type key."
+        }
+      ]
+    },
+    {
+      "name": "BuildPlaceholderMessageRequest",
+      "description": "Build a placeholder message.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Target conversation id."
+        },
+        {
+          "name": "reason",
+          "wireName": "reason",
+          "type": "String",
+          "required": true,
+          "description": "Placeholder reason."
+        }
+      ]
+    },
+    {
+      "name": "BuildWithContentMessageRequest",
+      "description": "Build from an existing MessageContent envelope.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Target conversation id."
+        },
+        {
+          "name": "content",
+          "wireName": "content",
+          "type": "MessageContent",
+          "required": true,
+          "description": "Decoded content envelope."
+        }
+      ]
+    }
+  ]
+}

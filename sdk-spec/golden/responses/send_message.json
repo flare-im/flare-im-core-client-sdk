@@ -1,0 +1,11 @@
+{
+  "ackId": "ack_001",
+  "clientMsgId": "client_msg_001",
+  "serverId": "server_msg_001",
+  "conversationId": "single_user_001_user_002",
+  "seq": 1,
+  "timestamp": 1710000000000,
+  "success": true,
+  "errorCode": 0,
+  "errorMessage": ""
+}

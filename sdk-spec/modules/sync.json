@@ -1,0 +1,64 @@
+{
+  "key": "sync",
+  "facade": "client.sync",
+  "description": "Explicit sync operations.",
+  "methods": [
+    {
+      "name": "syncConversationSummaries",
+      "operation": "sync.conversation_summaries",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "Unit",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "syncConversationSummariesWithVersions",
+      "operation": "sync.conversation_summaries_with_versions",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "SyncConversationSummariesRequest",
+      "response": "SyncConversationSummariesResponse",
+      "stability": "stable",
+      "description": "Sync conversation summaries and return conversations missing or newer than the caller's known versions."
+    },
+    {
+      "name": "bootstrapStartupHome",
+      "operation": "sync.bootstrap_startup_home",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "StartupHomeSyncRequest",
+      "response": "StartupHomeSyncResponse",
+      "stability": "stable",
+      "description": "Return the first usable home snapshot quickly and let the core SDK continue startup convergence and history backfill in the background."
+    },
+    {
+      "name": "backfillConversationHistory",
+      "operation": "sync.conversation_history_backfill",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "ConversationHistoryBackfillRequest",
+      "response": "ConversationHistoryBackfillResponse",
+      "stability": "stable",
+      "description": "Backfill one conversation's historical messages into the local store without expanding the active timeline view."
+    },
+    {
+      "name": "syncConversation",
+      "operation": "sync.conversation",
+      "transport": "ffi-symbol",
+      "cApi": "flare_sdk_sync_conversation",
+      "request": "SyncConversationRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "syncMessages",
+      "operation": "sync.messages",
+      "transport": "ffi-symbol",
+      "cApi": "flare_sdk_sync_messages",
+      "request": "SyncMessagesRequest",
+      "response": "Unit",
+      "stability": "stable"
+    }
+  ]
+}

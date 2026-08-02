@@ -1,0 +1,9 @@
+{
+  "connectionStates": [
+    "disconnected",
+    "connecting",
+    "connected",
+    "ready",
+    "reconnecting"
+  ]
+}

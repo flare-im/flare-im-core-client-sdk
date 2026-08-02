@@ -1,0 +1,256 @@
+{
+  "description": "Canonical message build operations aligned with flare-im-core-sdk MessageBuildApi and flare_message_build_json.",
+  "entries": [
+    {
+      "contentType": "announcement",
+      "messageType": 83,
+      "method": "buildAnnouncement",
+      "op": "create_announcement",
+      "request": "BuildAnnouncementMessageRequest",
+      "sourceOperation": "message_builder.create_announcement",
+      "stability": "stable",
+      "summary": "Build announcement message"
+    },
+    {
+      "contentType": "audio",
+      "messageType": 4,
+      "method": "buildAudio",
+      "op": "create_audio",
+      "request": "BuildAudioMessageRequest",
+      "sourceOperation": "message_builder.create_audio",
+      "stability": "stable",
+      "summary": "Build audio message"
+    },
+    {
+      "contentType": "card",
+      "messageType": 7,
+      "method": "buildCard",
+      "op": "create_card",
+      "request": "BuildCardMessageRequest",
+      "sourceOperation": "message_builder.create_card",
+      "stability": "stable",
+      "summary": "Build card message"
+    },
+    {
+      "contentType": "custom",
+      "messageType": 100,
+      "method": "buildCustom",
+      "op": "create_custom",
+      "request": "BuildCustomMessageRequest",
+      "sourceOperation": "message_builder.create_custom",
+      "stability": "stable",
+      "summary": "Build custom message"
+    },
+    {
+      "contentType": "emoji",
+      "messageType": 9,
+      "method": "buildEmoji",
+      "op": "create_emoji",
+      "request": "BuildEmojiMessageRequest",
+      "sourceOperation": "message_builder.create_emoji",
+      "stability": "stable",
+      "summary": "Build emoji message"
+    },
+    {
+      "contentType": "file",
+      "messageType": 5,
+      "method": "buildFile",
+      "op": "create_file",
+      "request": "BuildFileMessageRequest",
+      "sourceOperation": "message_builder.create_file",
+      "stability": "stable",
+      "summary": "Build file message"
+    },
+    {
+      "contentType": "forward",
+      "messageType": 12,
+      "method": "buildForward",
+      "op": "create_forward",
+      "request": "BuildForwardMessageRequest",
+      "sourceOperation": "message_builder.create_forward",
+      "stability": "stable",
+      "summary": "Build forward message"
+    },
+    {
+      "contentType": "image",
+      "messageType": 2,
+      "method": "buildImage",
+      "op": "create_image",
+      "request": "BuildImageMessageRequest",
+      "sourceOperation": "message_builder.create_image",
+      "stability": "stable",
+      "summary": "Build image message"
+    },
+    {
+      "contentType": "image_group",
+      "messageType": 32,
+      "method": "buildImageGroup",
+      "op": "create_image_group",
+      "request": "BuildImageGroupMessageRequest",
+      "sourceOperation": "message_builder.create_image_group",
+      "stability": "beta",
+      "summary": "Multi-image group"
+    },
+    {
+      "contentType": "link_card",
+      "messageType": 11,
+      "method": "buildLinkCard",
+      "op": "create_link_card",
+      "request": "BuildLinkCardMessageRequest",
+      "sourceOperation": "message_builder.create_link_card",
+      "stability": "stable",
+      "summary": "Build link card message"
+    },
+    {
+      "contentType": "location",
+      "messageType": 6,
+      "method": "buildLocation",
+      "op": "create_location",
+      "request": "BuildLocationMessageRequest",
+      "sourceOperation": "message_builder.create_location",
+      "stability": "stable",
+      "summary": "Build location message"
+    },
+    {
+      "contentType": "mini_program",
+      "messageType": 13,
+      "method": "buildMiniProgram",
+      "op": "create_mini_program",
+      "request": "BuildMiniProgramMessageRequest",
+      "sourceOperation": "message_builder.create_mini_program",
+      "stability": "stable",
+      "summary": "Build mini program message"
+    },
+    {
+      "contentType": "notification",
+      "messageType": 61,
+      "method": "buildNotification",
+      "op": "create_notification",
+      "request": "BuildNotificationMessageRequest",
+      "sourceOperation": "message_builder.create_notification",
+      "stability": "stable",
+      "summary": "Build notification message"
+    },
+    {
+      "contentType": "placeholder",
+      "messageType": 111,
+      "method": "buildPlaceholder",
+      "op": "create_placeholder",
+      "request": "BuildPlaceholderMessageRequest",
+      "sourceOperation": "message_builder.create_placeholder",
+      "stability": "stable",
+      "summary": "Build placeholder message"
+    },
+    {
+      "contentType": "quote",
+      "messageType": 15,
+      "method": "buildQuote",
+      "op": "create_quote",
+      "request": "BuildQuoteMessageRequest",
+      "sourceOperation": "message_builder.create_quote",
+      "stability": "stable",
+      "summary": "Build quote message"
+    },
+    {
+      "contentType": "rich_text",
+      "messageType": 30,
+      "method": "buildRichDoc",
+      "op": "create_rich_doc",
+      "request": "BuildRichDocMessageRequest",
+      "sourceOperation": "message_builder.create_rich_doc",
+      "stability": "stable",
+      "summary": "Build rich doc message"
+    },
+    {
+      "contentType": "schedule",
+      "messageType": 82,
+      "method": "buildSchedule",
+      "op": "create_schedule",
+      "request": "BuildScheduleMessageRequest",
+      "sourceOperation": "message_builder.create_schedule",
+      "stability": "stable",
+      "summary": "Build schedule message"
+    },
+    {
+      "contentType": "sticker",
+      "messageType": 8,
+      "method": "buildSticker",
+      "op": "create_sticker",
+      "request": "BuildStickerMessageRequest",
+      "sourceOperation": "message_builder.create_sticker",
+      "stability": "stable",
+      "summary": "Build sticker message"
+    },
+    {
+      "contentType": "system",
+      "messageType": 60,
+      "method": "buildSystem",
+      "op": "create_system",
+      "request": "BuildSystemMessageRequest",
+      "sourceOperation": "message_builder.create_system",
+      "stability": "stable",
+      "summary": "Build system message"
+    },
+    {
+      "contentType": "task",
+      "messageType": 81,
+      "method": "buildTask",
+      "op": "create_task",
+      "request": "BuildTaskMessageRequest",
+      "sourceOperation": "message_builder.create_task",
+      "stability": "stable",
+      "summary": "Build task message"
+    },
+    {
+      "contentType": "text",
+      "messageType": 1,
+      "method": "buildText",
+      "op": "create_text",
+      "request": "BuildTextMessageRequest",
+      "sourceOperation": "message_builder.create_text",
+      "stability": "stable",
+      "summary": "Build text message"
+    },
+    {
+      "contentType": "text",
+      "messageType": 1,
+      "method": "buildThreadReply",
+      "op": "create_thread_reply",
+      "request": "BuildThreadReplyMessageRequest",
+      "sourceOperation": "message_builder.create_thread_reply",
+      "stability": "stable",
+      "summary": "Build thread reply message"
+    },
+    {
+      "contentType": "video",
+      "messageType": 3,
+      "method": "buildVideo",
+      "op": "create_video",
+      "request": "BuildVideoMessageRequest",
+      "sourceOperation": "message_builder.create_video",
+      "stability": "stable",
+      "summary": "Build video message"
+    },
+    {
+      "contentType": "vote",
+      "messageType": 80,
+      "method": "buildVote",
+      "op": "create_vote",
+      "request": "BuildVoteMessageRequest",
+      "sourceOperation": "message_builder.create_vote",
+      "stability": "stable",
+      "summary": "Build vote message"
+    },
+    {
+      "contentType": "custom",
+      "messageType": 100,
+      "method": "buildWithContent",
+      "op": "create_with_content",
+      "request": "BuildWithContentMessageRequest",
+      "sourceOperation": "message_builder.create_with_content",
+      "stability": "stable",
+      "summary": "Build with content message"
+    }
+  ],
+  "source": "../flare-im-core-sdk/bindings/contract/apis.json#message_builder"
+}

@@ -1,0 +1,28 @@
+// GENERATED. Do not edit by hand.
+/** Decoded message content discriminator. */
+export enum MessageContentType {
+  Text = "text",
+  Image = "image",
+  Video = "video",
+  Audio = "audio",
+  File = "file",
+  Location = "location",
+  Card = "card",
+  Sticker = "sticker",
+  Emoji = "emoji",
+  Quote = "quote",
+  LinkCard = "link_card",
+  Forward = "forward",
+  Thread = "thread",
+  MiniProgram = "mini_program",
+  RichText = "rich_text",
+  ImageGroup = "image_group",
+  System = "system",
+  Notification = "notification",
+  Vote = "vote",
+  Task = "task",
+  Schedule = "schedule",
+  Announcement = "announcement",
+  Custom = "custom",
+  Placeholder = "placeholder",
+}

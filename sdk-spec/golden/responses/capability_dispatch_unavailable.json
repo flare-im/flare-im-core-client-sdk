@@ -1,0 +1,14 @@
+{
+  "ok": false,
+  "capability": "sfu.call",
+  "error": {
+    "code": "capabilityUnavailable",
+    "message": "Capability sfu.call is not enabled for this tenant.",
+    "operation": "capability.dispatch",
+    "retryable": false,
+    "details": {
+      "capability": "sfu.call",
+      "reason": "plugin_disabled"
+    }
+  }
+}

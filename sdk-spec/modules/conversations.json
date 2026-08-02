@@ -1,0 +1,178 @@
+{
+  "key": "conversations",
+  "facade": "client.conversations",
+  "description": "Conversation query and local conversation state.",
+  "methods": [
+    {
+      "name": "listConversations",
+      "operation": "conversation.list",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "Unit",
+      "response": "ListConversationsResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "listConversationsByQuery",
+      "operation": "conversation.list_by_query",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "ConversationListQuery",
+      "response": "ListConversationsResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "listConversationsIncludingArchived",
+      "operation": "conversation.list_including_archived",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "Unit",
+      "response": "ListConversationsResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "getConversation",
+      "operation": "conversation.get",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "GetConversationRequest",
+      "response": "Conversation",
+      "stability": "stable"
+    },
+    {
+      "name": "getOneConversation",
+      "operation": "conversation.get_one",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "GetOneConversationRequest",
+      "response": "Conversation",
+      "stability": "stable"
+    },
+    {
+      "name": "getGroupConversationByUserIds",
+      "operation": "conversation.get_group_by_user_ids",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "GetGroupConversationByUserIdsRequest",
+      "response": "Conversation",
+      "stability": "stable"
+    },
+    {
+      "name": "getMultipleConversations",
+      "operation": "conversation.get_multiple",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "GetMultipleConversationsRequest",
+      "response": "ListConversationsResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "listConversationsPaginated",
+      "operation": "conversation.list_paginated",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "ListConversationsPaginatedRequest",
+      "response": "ListConversationsResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "listRawConversations",
+      "operation": "conversation.list_raw",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "Unit",
+      "response": "ListConversationsResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "bootstrapHomeTimeline",
+      "operation": "conversation.bootstrap_home",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "BootstrapHomeTimelineRequest",
+      "response": "HomeTimelineSnapshot",
+      "stability": "stable"
+    },
+    {
+      "name": "openConversationTimeline",
+      "operation": "conversation.open_timeline",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "OpenConversationTimelineRequest",
+      "response": "ConversationTimelineSnapshot",
+      "stability": "stable"
+    },
+    {
+      "name": "markConversationRead",
+      "operation": "conversation.mark_read",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "MarkConversationReadRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "setConversationPinned",
+      "operation": "conversation.set_pinned",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "SetConversationPinnedRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "setConversationMuted",
+      "operation": "conversation.set_muted",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "SetConversationMutedRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "setConversationArchived",
+      "operation": "conversation.set_archived",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "SetConversationArchivedRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "markConversationUnread",
+      "operation": "conversation.mark_unread",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "MarkConversationUnreadRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "deleteConversation",
+      "operation": "conversation.delete",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "DeleteConversationRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "updateConversationDraft",
+      "operation": "conversation.update_draft",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "UpdateConversationDraftRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "clearLocalChatHistory",
+      "operation": "conversation.clear_local_chat_history",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "ClearLocalChatHistoryRequest",
+      "response": "Unit",
+      "stability": "stable"
+    }
+  ]
+}

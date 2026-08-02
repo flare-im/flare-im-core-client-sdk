@@ -1,0 +1,323 @@
+{
+  "key": "messages",
+  "facade": "client.messages",
+  "description": "Message build, send, query and mutation.",
+  "dispatch": {
+    "cApi": "flare_message_dispatch_json",
+    "ops": [
+      "get",
+      "get_raw",
+      "search",
+      "search_by_query",
+      "send",
+      "send_no_oss",
+      "recall",
+      "delete",
+      "delete_for_self",
+      "delete_for_everyone",
+      "edit_text_by_message_id",
+      "mark_read_and_burn",
+      "typing",
+      "add_reaction",
+      "remove_reaction",
+      "pin",
+      "unpin",
+      "pin_by_message_id",
+      "unpin_by_message_id",
+      "mark",
+      "mark_with_color",
+      "unmark",
+      "mark_by_message_id",
+      "unmark_by_message_id",
+      "search_in_conversation",
+      "edit_rich_doc_by_message_id"
+    ]
+  },
+  "methods": [
+    {
+      "name": "createTextMessage",
+      "operation": "message.create_text",
+      "transport": "ffi-symbol",
+      "cApi": "flare_message_create_text",
+      "request": "CreateTextMessageRequest",
+      "response": "Message",
+      "stability": "stable"
+    },
+    {
+      "name": "dispatchMessage",
+      "operation": "message.dispatch",
+      "transport": "dispatch-json",
+      "cApi": "flare_message_dispatch_json",
+      "request": "MessageDispatchRequest",
+      "response": "JsonValue",
+      "stability": "stable"
+    },
+    {
+      "name": "sendMessageNoOss",
+      "operation": "message.send_no_oss",
+      "transport": "message-dispatch-json",
+      "cApi": "flare_message_dispatch_json",
+      "dispatchOp": "send_no_oss",
+      "request": "SendMessageRequest",
+      "response": "SendMessageResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "sendMessage",
+      "operation": "message.send",
+      "transport": "message-dispatch-json",
+      "cApi": "flare_message_dispatch_json",
+      "dispatchOp": "send",
+      "request": "SendMessageRequest",
+      "response": "SendMessageResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "listMessages",
+      "operation": "message.list",
+      "transport": "ffi-symbol",
+      "cApi": "flare_message_list",
+      "request": "ListMessagesRequest",
+      "response": "ListMessagesResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "recallMessage",
+      "operation": "message.recall",
+      "transport": "ffi-symbol",
+      "cApi": "flare_message_recall",
+      "request": "RecallMessageRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "editTextByMessageId",
+      "operation": "message.edit_text_by_message_id",
+      "transport": "message-dispatch-json",
+      "cApi": "flare_message_dispatch_json",
+      "dispatchOp": "edit_text_by_message_id",
+      "request": "EditTextByMessageIdRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "deleteMessage",
+      "operation": "message.delete",
+      "transport": "ffi-symbol",
+      "cApi": "flare_message_delete",
+      "request": "DeleteMessageRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "deleteMessageForSelf",
+      "operation": "message.delete_for_self",
+      "transport": "message-dispatch-json",
+      "cApi": "flare_message_dispatch_json",
+      "dispatchOp": "delete_for_self",
+      "request": "DeleteMessageRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "deleteMessageForEveryone",
+      "operation": "message.delete_for_everyone",
+      "transport": "message-dispatch-json",
+      "cApi": "flare_message_dispatch_json",
+      "dispatchOp": "delete_for_everyone",
+      "request": "DeleteMessageRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "markMessageReadAndBurn",
+      "operation": "message.mark_read_and_burn",
+      "transport": "message-dispatch-json",
+      "cApi": "flare_message_dispatch_json",
+      "dispatchOp": "mark_read_and_burn",
+      "request": "MarkMessageReadAndBurnRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "addReaction",
+      "operation": "message.add_reaction",
+      "transport": "message-dispatch-json",
+      "cApi": "flare_message_dispatch_json",
+      "dispatchOp": "add_reaction",
+      "request": "ReactionMutationRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "removeReaction",
+      "operation": "message.remove_reaction",
+      "transport": "message-dispatch-json",
+      "cApi": "flare_message_dispatch_json",
+      "dispatchOp": "remove_reaction",
+      "request": "ReactionMutationRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "pinMessage",
+      "operation": "message.pin",
+      "transport": "message-dispatch-json",
+      "cApi": "flare_message_dispatch_json",
+      "dispatchOp": "pin",
+      "request": "MessageMutationRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "unpinMessage",
+      "operation": "message.unpin",
+      "transport": "message-dispatch-json",
+      "cApi": "flare_message_dispatch_json",
+      "dispatchOp": "unpin",
+      "request": "MessageMutationRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "pinMessageById",
+      "operation": "message.pin_by_message_id",
+      "transport": "message-dispatch-json",
+      "cApi": "flare_message_dispatch_json",
+      "dispatchOp": "pin_by_message_id",
+      "request": "MessageMutationRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "unpinMessageById",
+      "operation": "message.unpin_by_message_id",
+      "transport": "message-dispatch-json",
+      "cApi": "flare_message_dispatch_json",
+      "dispatchOp": "unpin_by_message_id",
+      "request": "MessageMutationRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "markMessage",
+      "operation": "message.mark",
+      "transport": "message-dispatch-json",
+      "cApi": "flare_message_dispatch_json",
+      "dispatchOp": "mark",
+      "request": "MessageMutationRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "markMessageWithColor",
+      "operation": "message.mark_with_color",
+      "transport": "message-dispatch-json",
+      "cApi": "flare_message_dispatch_json",
+      "dispatchOp": "mark_with_color",
+      "request": "MessageMutationRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "unmarkMessage",
+      "operation": "message.unmark",
+      "transport": "message-dispatch-json",
+      "cApi": "flare_message_dispatch_json",
+      "dispatchOp": "unmark",
+      "request": "MessageMutationRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "markMessageById",
+      "operation": "message.mark_by_message_id",
+      "transport": "message-dispatch-json",
+      "cApi": "flare_message_dispatch_json",
+      "dispatchOp": "mark_by_message_id",
+      "request": "MessageMutationRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "unmarkMessageById",
+      "operation": "message.unmark_by_message_id",
+      "transport": "message-dispatch-json",
+      "cApi": "flare_message_dispatch_json",
+      "dispatchOp": "unmark_by_message_id",
+      "request": "MessageMutationRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "getMessage",
+      "operation": "message.get",
+      "transport": "message-dispatch-json",
+      "cApi": "flare_message_dispatch_json",
+      "dispatchOp": "get",
+      "request": "GetMessageRequest",
+      "response": "Message",
+      "stability": "stable"
+    },
+    {
+      "name": "getRawMessage",
+      "operation": "message.get_raw",
+      "transport": "message-dispatch-json",
+      "cApi": "flare_message_dispatch_json",
+      "dispatchOp": "get_raw",
+      "request": "GetMessageRequest",
+      "response": "JsonValue",
+      "stability": "stable"
+    },
+    {
+      "name": "searchMessages",
+      "operation": "message.search",
+      "transport": "message-dispatch-json",
+      "cApi": "flare_message_dispatch_json",
+      "dispatchOp": "search",
+      "request": "MessageSearchQuery",
+      "response": "ListMessagesResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "searchMessagesByQuery",
+      "operation": "message.search_by_query",
+      "transport": "message-dispatch-json",
+      "cApi": "flare_message_dispatch_json",
+      "dispatchOp": "search_by_query",
+      "request": "MessageSearchQuery",
+      "response": "ListMessagesResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "searchMessagesInConversation",
+      "operation": "message.search_in_conversation",
+      "transport": "message-dispatch-json",
+      "cApi": "flare_message_dispatch_json",
+      "dispatchOp": "search_in_conversation",
+      "request": "MessageSearchQuery",
+      "response": "ListMessagesResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "editRichDocByMessageId",
+      "operation": "message.edit_rich_doc_by_message_id",
+      "transport": "message-dispatch-json",
+      "cApi": "flare_message_dispatch_json",
+      "dispatchOp": "edit_rich_doc_by_message_id",
+      "request": "EditRichDocByMessageIdRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "setTyping",
+      "operation": "message.typing",
+      "transport": "message-dispatch-json",
+      "cApi": "flare_message_dispatch_json",
+      "dispatchOp": "typing",
+      "request": "SetTypingRequest",
+      "response": "Unit",
+      "stability": "stable"
+    }
+  ]
+}

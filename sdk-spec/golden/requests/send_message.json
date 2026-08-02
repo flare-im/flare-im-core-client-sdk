@@ -1,0 +1,39 @@
+{
+  "message": {
+    "serverId": "",
+    "clientMsgId": "client_msg_001",
+    "conversationId": "single_user_001_user_002",
+    "conversationType": 1,
+    "channelId": "user_002",
+    "senderId": "user_001",
+    "source": 0,
+    "conversationSeq": 0,
+    "createdAt": 1710000000000,
+    "clientCreatedAt": 1710000000000,
+    "messageType": 0,
+    "timelineKey": "client:client_msg_001",
+    "timelineSortTs": 1710000000000,
+    "content": {
+      "contentType": "text",
+      "data": {
+        "text": "hello from send golden",
+        "mentions": []
+      }
+    },
+    "senderName": "User One",
+    "senderAvatar": "https://example.com/user-001.png",
+    "senderDisplayName": "User One",
+    "status": 0,
+    "isRead": false,
+    "isRecalled": false,
+    "isEdited": false,
+    "mentionUsers": [],
+    "mentionAll": false,
+    "attributes": {},
+    "extensions": {},
+    "reactions": [],
+    "textPreview": "hello from send golden",
+    "version": 1,
+    "updatedAt": 1710000000000
+  }
+}

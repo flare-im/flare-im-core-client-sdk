@@ -1,0 +1,14 @@
+{
+  "apiType": "stageMode",
+  "buildOption": {
+    "externalNativeOptions": {
+      "path": "./src/main/cpp/CMakeLists.txt",
+      "cppFlags": "-std=c++17 -fexceptions -frtti"
+    }
+  },
+  "targets": [
+    {
+      "name": "default"
+    }
+  ]
+}

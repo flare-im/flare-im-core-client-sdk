@@ -1,0 +1,34 @@
+{
+  "key": "presence",
+  "facade": "client.presence",
+  "description": "Presence and input state.",
+  "methods": [
+    {
+      "name": "getUserPresence",
+      "operation": "presence.get",
+      "transport": "ffi-symbol",
+      "cApi": "flare_sdk_get_user_presence",
+      "request": "GetUserPresenceRequest",
+      "response": "UserPresence",
+      "stability": "stable"
+    },
+    {
+      "name": "batchGetUserPresence",
+      "operation": "presence.batch_get",
+      "transport": "ffi-symbol",
+      "cApi": "flare_sdk_batch_get_user_presence",
+      "request": "BatchGetUserPresenceRequest",
+      "response": "BatchGetUserPresenceResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "subscribeUserPresence",
+      "operation": "presence.subscribe",
+      "transport": "ffi-symbol",
+      "cApi": "flare_sdk_subscribe_user_presence",
+      "request": "SubscribeUserPresenceRequest",
+      "response": "Unit",
+      "stability": "stable"
+    }
+  ]
+}

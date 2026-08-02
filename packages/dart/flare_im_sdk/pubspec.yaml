@@ -1,0 +1,14 @@
+name: flare_im_sdk
+description: >-
+  Flutter dart:ffi binding to the Flare social + IM Rust core via the
+  `flare-sdk-ffi` C ABI (create / init / login_with_password / logout /
+  flare_dispatch_json). Same Rust core the Tauri app uses — only the FFI
+  transport differs.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+
+dependencies:
+  ffi: ^2.1.3

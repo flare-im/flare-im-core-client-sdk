@@ -1,0 +1,16 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+import vue from "@vitejs/plugin-vue";
+import { createFlareCoreWebAppViteConfig } from "flare-core-typescript-sdk/devtools/vite";
+import { defineConfig, loadEnv } from "vite";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+export default createFlareCoreWebAppViteConfig({
+  appDir: __dirname,
+  serverPort: 1433,
+  defineConfig,
+  loadEnv,
+  vuePlugin: vue,
+});

@@ -1,0 +1,73 @@
+{
+  "group": "connection",
+  "description": "Connection lifecycle requests and responses.",
+  "enums": [
+    {
+      "name": "NetworkInterfaceKind",
+      "description": "Standardized platform network interface kind for active reconnect hints.",
+      "values": [
+        "unknown",
+        "wifi",
+        "cellular",
+        "ethernet",
+        "other"
+      ]
+    }
+  ],
+  "models": [
+    {
+      "name": "NetworkChangeRequest",
+      "description": "Platform network-change notification used to trigger active reconnect.",
+      "fields": [
+        {
+          "name": "available",
+          "wireName": "available",
+          "type": "Boolean",
+          "required": false,
+          "description": "Whether a network route is currently available. Omitted means available."
+        },
+        {
+          "name": "interface",
+          "wireName": "interface",
+          "type": "NetworkInterfaceKind",
+          "required": false,
+          "description": "Standardized platform network interface hint."
+        },
+        {
+          "name": "expensive",
+          "wireName": "expensive",
+          "type": "Boolean",
+          "required": false,
+          "description": "Whether the active route is considered expensive by the platform."
+        },
+        {
+          "name": "metered",
+          "wireName": "metered",
+          "type": "Boolean",
+          "required": false,
+          "description": "Whether the active route is metered."
+        },
+        {
+          "name": "reason",
+          "wireName": "reason",
+          "type": "String",
+          "required": false,
+          "description": "Optional platform reason string for diagnostics."
+        }
+      ]
+    },
+    {
+      "name": "NetworkChangeResponse",
+      "description": "Result of handling a platform network-change notification.",
+      "fields": [
+        {
+          "name": "reconnected",
+          "wireName": "reconnected",
+          "type": "Boolean",
+          "required": true,
+          "description": "Whether the SDK had an active session and attempted reconnect."
+        }
+      ]
+    }
+  ]
+}

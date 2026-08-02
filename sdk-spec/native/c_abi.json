@@ -1,0 +1,178 @@
+{
+  "contract": "flare-im-ffi/v1",
+  "source": "../../flare-im-core-sdk/bindings/c",
+  "defaults": {
+    "callback": "FlareResultCallback",
+    "asyncReturn": "i32 immediate_submit_code",
+    "handlePolicy": "client-handle",
+    "requestEncodingByTransport": {
+      "ffi-symbol": "typed-ffi",
+      "dispatch-json": "json",
+      "message-dispatch-json": "json",
+      "contract-invoke-json": "json",
+      "capability-dispatch-json": "json",
+      "catalog-static": "local-static"
+    },
+    "responseEncodingByResponse": {
+      "Unit": "unit",
+      "BooleanResponse": "boolean",
+      "ConnectionStateResponse": "enum",
+      "CreateClientResponse": "handle",
+      "Subscription": "subscription",
+      "JsonValue": "json"
+    }
+  },
+  "transports": {
+    "ffi-symbol": {
+      "kind": "direct-symbol",
+      "description": "Call one exported C ABI symbol. Most async symbols use FlareResultCallback."
+    },
+    "dispatch-json": {
+      "kind": "json-dispatch",
+      "description": "Call a JSON dispatch symbol with the full request JSON payload."
+    },
+    "message-dispatch-json": {
+      "kind": "json-dispatch",
+      "description": "Call flare_message_dispatch_json with a stable operation id and JSON parameters."
+    },
+    "contract-invoke-json": {
+      "kind": "contract-invoke",
+      "description": "Call flare_sdk_invoke_json with the method operation id and full JSON request."
+    },
+    "capability-dispatch-json": {
+      "kind": "json-dispatch",
+      "description": "Call flare_capability_dispatch_json with a stable capability operation id and JSON parameters."
+    },
+    "catalog-static": {
+      "kind": "local",
+      "description": "Return generated SDK catalog data without crossing the native boundary."
+    }
+  },
+  "dispatch": {
+    "message": {
+      "cApi": "flare_message_dispatch_json",
+      "signature": "flare_message_dispatch_json(handle, op, params_json, context, callback)"
+    },
+    "messageBuild": {
+      "cApi": "flare_message_build_json",
+      "signature": "flare_message_build_json(handle, request_json, context, callback)"
+    }
+  },
+  "localOperations": [
+    {
+      "id": "sdk.create",
+      "reason": "Creates the native client handle before a core client instance exists."
+    },
+    {
+      "id": "sdk.dispose",
+      "reason": "Releases the platform-owned native client handle."
+    },
+    {
+      "id": "sdk.hard_reset",
+      "reason": "Runs process-level SDK reset behavior outside a single core client call."
+    },
+    {
+      "id": "event.subscribe",
+      "reason": "Creates a platform event stream subscription over the native callback bridge."
+    },
+    {
+      "id": "event.subscribe_batch",
+      "reason": "Creates a platform event stream subscription that batches queued events into one native callback."
+    },
+    {
+      "id": "event.unsubscribe",
+      "reason": "Releases a platform event stream subscription handle."
+    },
+    {
+      "id": "event.unsubscribe_all",
+      "reason": "Releases platform event stream subscriptions owned by the current process."
+    },
+    {
+      "id": "view.timeline.open",
+      "reason": "Opens a core observable timeline view through flare_sdk_invoke_json."
+    },
+    {
+      "id": "view.timeline.load_older",
+      "reason": "Extends an open core observable timeline view with older messages through flare_sdk_invoke_json."
+    },
+    {
+      "id": "view.conversation_list.open",
+      "reason": "Opens a core observable conversation-list view through flare_sdk_invoke_json."
+    },
+    {
+      "id": "view.close",
+      "reason": "Closes a core observable view through flare_sdk_invoke_json."
+    }
+  ],
+  "operationOverrides": {
+    "sdk.create": {
+      "requestEncoding": "none",
+      "returnMode": "sync",
+      "callback": null,
+      "handlePolicy": "create-handle"
+    },
+    "sdk.dispose": {
+      "requestEncoding": "handle",
+      "returnMode": "sync",
+      "callback": null,
+      "handlePolicy": "release-handle"
+    },
+    "sdk.hard_reset": {
+      "requestEncoding": "none",
+      "returnMode": "sync",
+      "callback": null,
+      "handlePolicy": "reset-process"
+    },
+    "sdk.is_connected": {
+      "returnMode": "sync",
+      "callback": null
+    },
+    "sdk.session_active": {
+      "returnMode": "sync",
+      "callback": null
+    },
+    "connection.get_state": {
+      "returnMode": "sync",
+      "callback": null
+    },
+    "connection.notify_network_change": {
+      "responseEncoding": "json-object"
+    },
+    "diagnostics.sdk_version": {
+      "requestEncoding": "none",
+      "returnMode": "sync-string",
+      "callback": null,
+      "handlePolicy": "process"
+    },
+    "diagnostics.ffi_contract_version": {
+      "requestEncoding": "none",
+      "returnMode": "sync-string",
+      "callback": null,
+      "handlePolicy": "process"
+    },
+    "diagnostics.runtime_health": {
+      "responseEncoding": "json-object"
+    },
+    "event.subscribe": {
+      "returnMode": "event-stream",
+      "callback": "FlareEventCallback",
+      "responseEncoding": "subscription"
+    },
+    "event.subscribe_batch": {
+      "returnMode": "event-stream",
+      "callback": "FlareEventBatchCallback",
+      "responseEncoding": "subscription"
+    },
+    "event.unsubscribe": {
+      "returnMode": "sync",
+      "callback": null,
+      "handlePolicy": "subscription-handle"
+    },
+    "event.unsubscribe_all": {
+      "requestEncoding": "none",
+      "returnMode": "sync",
+      "callback": null,
+      "handlePolicy": "process"
+    }
+  }
+}

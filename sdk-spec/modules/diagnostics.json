@@ -1,0 +1,43 @@
+{
+  "key": "diagnostics",
+  "facade": "client.diagnostics",
+  "description": "SDK version and FFI contract diagnostics.",
+  "methods": [
+    {
+      "name": "getSdkVersion",
+      "operation": "diagnostics.sdk_version",
+      "transport": "ffi-symbol",
+      "cApi": "flare_sdk_version",
+      "request": "Unit",
+      "response": "SdkVersion",
+      "stability": "stable"
+    },
+    {
+      "name": "getFfiContractVersion",
+      "operation": "diagnostics.ffi_contract_version",
+      "transport": "ffi-symbol",
+      "cApi": "flare_sdk_ffi_contract_version",
+      "request": "Unit",
+      "response": "FfiContractVersion",
+      "stability": "stable"
+    },
+    {
+      "name": "getDataRoot",
+      "operation": "diagnostics.data_root",
+      "transport": "ffi-symbol",
+      "cApi": "flare_sdk_data_root",
+      "request": "Unit",
+      "response": "DataRootResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "getRuntimeHealth",
+      "operation": "diagnostics.runtime_health",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "Unit",
+      "response": "RuntimeHealthResponse",
+      "stability": "stable"
+    }
+  ]
+}

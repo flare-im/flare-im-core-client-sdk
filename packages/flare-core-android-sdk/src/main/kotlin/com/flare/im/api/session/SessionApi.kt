@@ -1,0 +1,64 @@
+package com.flare.im.api.session
+
+import com.flare.im.api.ConnectionState
+import com.flare.im.callback.*
+import com.flare.im.listener.*
+import com.flare.im.model.catalog.*
+import com.flare.im.model.command.*
+import com.flare.im.model.command.message.*
+import com.flare.im.model.command.message.build.*
+import com.flare.im.model.common.enums.*
+import com.flare.im.model.common.error.*
+import com.flare.im.model.content.*
+import com.flare.im.model.entity.*
+import com.flare.im.model.event.*
+import com.flare.im.model.event.capability.*
+import com.flare.im.model.event.connection.*
+import com.flare.im.model.event.conversation.*
+import com.flare.im.model.event.lifecycle.*
+import com.flare.im.model.event.message.*
+import com.flare.im.model.event.presence.*
+import com.flare.im.model.event.progress.*
+import com.flare.im.model.event.sync.*
+import com.flare.im.model.media.*
+import com.flare.im.model.query.*
+import com.flare.im.model.response.*
+
+/** GENERATED. Do not edit by hand. */
+/** SDK lifecycle, authenticated session and process-level utilities. */
+interface SessionApi {
+    /** create maps to `flare_sdk_create` via `ffi-symbol`. Operation: `sdk.create`. */
+    suspend fun create(request: Map<String, Any?>): Map<String, Any?>
+    /** init maps to `flare_sdk_init` via `ffi-symbol`. Operation: `sdk.init`. */
+    suspend fun init(request: Map<String, Any?>): Unit
+    /** uninit maps to `flare_sdk_uninit` via `ffi-symbol`. Operation: `sdk.uninit`. */
+    suspend fun uninit(): Unit
+    /** login maps to `flare_sdk_login` via `ffi-symbol`. Operation: `sdk.login`. */
+    suspend fun login(request: Map<String, Any?>): Unit
+    /** prepare maps to `flare_sdk_prepare` via `ffi-symbol`. Operation: `sdk.prepare`. */
+    suspend fun prepare(request: Map<String, Any?>): Unit
+    /** connect maps to `flare_sdk_connect` via `ffi-symbol`. Operation: `sdk.connect`. */
+    suspend fun connect(request: Map<String, Any?>): Unit
+    /** updateAccessToken maps to `flare_sdk_update_access_token` via `ffi-symbol`. Operation: `sdk.update_access_token`. */
+    suspend fun updateAccessToken(request: Map<String, Any?>): Unit
+    /** setHeartbeatAppState maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `sdk.set_heartbeat_app_state`. */
+    suspend fun setHeartbeatAppState(request: SetHeartbeatAppStateRequest): Unit
+    /** setHeartbeatNatTimeout maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `sdk.set_heartbeat_nat_timeout`. */
+    suspend fun setHeartbeatNatTimeout(request: SetHeartbeatNatTimeoutRequest): Unit
+    /** heartbeatEffectiveInterval maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `sdk.heartbeat_effective_interval`. */
+    suspend fun heartbeatEffectiveInterval(): HeartbeatEffectiveIntervalResponse
+    /** logout maps to `flare_sdk_logout` via `ffi-symbol`. Operation: `sdk.logout`. */
+    suspend fun logout(): Unit
+    /** dispose maps to `flare_sdk_release` via `ffi-symbol`. Operation: `sdk.dispose`. */
+    suspend fun dispose(): Unit
+    /** hardReset maps to `flare_sdk_hard_reset` via `ffi-symbol`. Operation: `sdk.hard_reset`. */
+    suspend fun hardReset(): Unit
+    /** currentUserId maps to `flare_sdk_current_user_id` via `ffi-symbol`. Operation: `sdk.current_user_id`. */
+    suspend fun currentUserId(): Map<String, Any?>
+    /** isConnected maps to `flare_sdk_is_connected` via `ffi-symbol`. Operation: `sdk.is_connected`. */
+    suspend fun isConnected(): Boolean
+    /** sessionActive maps to `flare_sdk_session_active` via `ffi-symbol`. Operation: `sdk.session_active`. */
+    suspend fun sessionActive(): Boolean
+    /** generateCoreToken maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `sdk.generate_core_token`. */
+    suspend fun generateCoreToken(request: CoreTokenRequest): CoreTokenResponse
+}

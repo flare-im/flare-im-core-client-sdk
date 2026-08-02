@@ -1,0 +1,10 @@
+[package]
+cjc-version = "1.0.0"
+name = "flare_core_harmony_cangjie_sdk"
+description = "HarmonyOS Cangjie client adapter for Flare IM Core SDK"
+version = "0.2.0"
+compile-option = ""
+override-compile-option = ""
+link-option = ""
+
+[dependencies]

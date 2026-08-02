@@ -1,0 +1,596 @@
+{
+  "group": "conversations",
+  "description": "Conversation models mirrored from flare-im-core-sdk/src/model/conversation.rs.",
+  "enums": [
+    {
+      "name": "ConversationType",
+      "description": "Conversation category aligned with core-sdk ConversationType.",
+      "values": [
+        "unspecified",
+        "single",
+        "group",
+        "ai",
+        "system",
+        "customer",
+        "temp",
+        "channel",
+        "broadcast"
+      ]
+    },
+    {
+      "name": "TimelineSyncState",
+      "description": "Conversation timeline snapshot readiness state owned by core-sdk.",
+      "values": [
+        "local_ready",
+        "synced",
+        "partial"
+      ]
+    }
+  ],
+  "models": [
+    {
+      "name": "ConversationParticipant",
+      "description": "Local participant snapshot for group/channel/customer conversations.",
+      "fields": [
+        {
+          "name": "userId",
+          "wireName": "userId",
+          "type": "String",
+          "required": true,
+          "description": "Participant user id."
+        },
+        {
+          "name": "roles",
+          "wireName": "roles",
+          "type": "StringList",
+          "required": true,
+          "description": "Role identifiers granted to the participant."
+        },
+        {
+          "name": "muted",
+          "wireName": "muted",
+          "type": "Boolean",
+          "required": true,
+          "description": "Whether this participant is muted."
+        },
+        {
+          "name": "pinned",
+          "wireName": "pinned",
+          "type": "Boolean",
+          "required": true,
+          "description": "Whether this participant is pinned in local participant views."
+        },
+        {
+          "name": "attributes",
+          "wireName": "attributes",
+          "type": "StringMap",
+          "required": true,
+          "description": "Opaque participant extension attributes."
+        },
+        {
+          "name": "joinedAt",
+          "wireName": "joinedAt",
+          "type": "UInt64",
+          "required": true,
+          "description": "Join time in milliseconds."
+        },
+        {
+          "name": "nickname",
+          "wireName": "nickname",
+          "type": "String",
+          "required": true,
+          "description": "Conversation-local nickname."
+        }
+      ]
+    },
+    {
+      "name": "MessagePreview",
+      "description": "Conversation-list preview of the latest message.",
+      "fields": [
+        {
+          "name": "messageId",
+          "wireName": "messageId",
+          "type": "String",
+          "required": true,
+          "description": "Preview message id."
+        },
+        {
+          "name": "senderId",
+          "wireName": "senderId",
+          "type": "String",
+          "required": true,
+          "description": "Preview sender id."
+        },
+        {
+          "name": "type",
+          "wireName": "type",
+          "type": "Int32",
+          "required": true,
+          "description": "Core message type integer."
+        },
+        {
+          "name": "text",
+          "wireName": "text",
+          "type": "String",
+          "required": true,
+          "description": "Plain text preview."
+        },
+        {
+          "name": "time",
+          "wireName": "time",
+          "type": "UInt64",
+          "required": true,
+          "description": "Preview message time in milliseconds."
+        }
+      ]
+    },
+    {
+      "name": "Conversation",
+      "description": "SDK conversation summary shown in conversation lists and detail views.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Stable conversation id."
+        },
+        {
+          "name": "conversationType",
+          "wireName": "conversationType",
+          "type": "ConversationType",
+          "required": true,
+          "description": "Conversation category."
+        },
+        {
+          "name": "businessType",
+          "wireName": "businessType",
+          "type": "String",
+          "required": true,
+          "description": "Business-neutral type marker from core."
+        },
+        {
+          "name": "channelId",
+          "wireName": "channelId",
+          "type": "String",
+          "required": true,
+          "description": "Single chat peer id, group id, channel id, or equivalent route id."
+        },
+        {
+          "name": "membersCount",
+          "wireName": "membersCount",
+          "type": "UInt32",
+          "required": true,
+          "description": "Approximate member count."
+        },
+        {
+          "name": "displayName",
+          "wireName": "displayName",
+          "type": "String",
+          "required": true,
+          "description": "Primary list title."
+        },
+        {
+          "name": "avatarUrl",
+          "wireName": "avatarUrl",
+          "type": "String",
+          "required": true,
+          "description": "Conversation avatar URL."
+        },
+        {
+          "name": "remark",
+          "wireName": "remark",
+          "type": "String",
+          "required": false,
+          "description": "Local remark for this conversation."
+        },
+        {
+          "name": "description",
+          "wireName": "description",
+          "type": "String",
+          "required": false,
+          "description": "Conversation description."
+        },
+        {
+          "name": "lastMessageId",
+          "wireName": "lastMessageId",
+          "type": "String",
+          "required": false,
+          "description": "Latest visible message id."
+        },
+        {
+          "name": "lastSenderId",
+          "wireName": "lastSenderId",
+          "type": "String",
+          "required": false,
+          "description": "Latest visible message sender id."
+        },
+        {
+          "name": "lastMessageAt",
+          "wireName": "lastMessageAt",
+          "type": "UInt64",
+          "required": false,
+          "description": "Latest visible message time in milliseconds."
+        },
+        {
+          "name": "lastMessagePreview",
+          "wireName": "lastMessagePreview",
+          "type": "String",
+          "required": false,
+          "description": "Plain text preview for the latest message."
+        },
+        {
+          "name": "lastMessage",
+          "wireName": "lastMessage",
+          "type": "MessagePreview",
+          "required": false,
+          "description": "Structured latest message preview."
+        },
+        {
+          "name": "lastSenderNickname",
+          "wireName": "lastSenderNickname",
+          "type": "String",
+          "required": true,
+          "description": "Latest sender display name."
+        },
+        {
+          "name": "lastSenderAvatarUrl",
+          "wireName": "lastSenderAvatarUrl",
+          "type": "String",
+          "required": true,
+          "description": "Latest sender avatar URL."
+        },
+        {
+          "name": "unreadCount",
+          "wireName": "unreadCount",
+          "type": "UInt32",
+          "required": true,
+          "description": "Unread message count."
+        },
+        {
+          "name": "lastReadSeq",
+          "wireName": "lastReadSeq",
+          "type": "UInt64",
+          "required": true,
+          "description": "Current user read sequence."
+        },
+        {
+          "name": "peerReadSeq",
+          "wireName": "peerReadSeq",
+          "type": "UInt64",
+          "required": true,
+          "description": "Peer/member read sequence snapshot."
+        },
+        {
+          "name": "maxSeq",
+          "wireName": "maxSeq",
+          "type": "UInt64",
+          "required": true,
+          "description": "Maximum known sequence."
+        },
+        {
+          "name": "visibleAfterSeq",
+          "wireName": "visibleAfterSeq",
+          "type": "UInt64",
+          "required": true,
+          "description": "Messages at or below this seq are hidden for this user."
+        },
+        {
+          "name": "isPinned",
+          "wireName": "isPinned",
+          "type": "Boolean",
+          "required": true,
+          "description": "Whether current user pinned the conversation."
+        },
+        {
+          "name": "isMuted",
+          "wireName": "isMuted",
+          "type": "Boolean",
+          "required": true,
+          "description": "Whether current user muted the conversation."
+        },
+        {
+          "name": "isArchived",
+          "wireName": "isArchived",
+          "type": "Boolean",
+          "required": true,
+          "description": "Whether current user archived the conversation."
+        },
+        {
+          "name": "version",
+          "wireName": "version",
+          "type": "UInt64",
+          "required": true,
+          "description": "Server/core version for optimistic refresh."
+        },
+        {
+          "name": "updatedAt",
+          "wireName": "updatedAt",
+          "type": "UInt64",
+          "required": true,
+          "description": "Last update time in milliseconds."
+        },
+        {
+          "name": "createdAt",
+          "wireName": "createdAt",
+          "type": "UInt64",
+          "required": true,
+          "description": "Creation time in milliseconds."
+        },
+        {
+          "name": "updatedAtTs",
+          "wireName": "updatedAtTs",
+          "type": "UInt64",
+          "required": false,
+          "description": "Sort/filter timestamp in milliseconds."
+        },
+        {
+          "name": "ext",
+          "wireName": "ext",
+          "type": "StringMap",
+          "required": true,
+          "description": "Opaque extension map. Stable semantics should use typed fields."
+        },
+        {
+          "name": "participantVersion",
+          "wireName": "participantVersion",
+          "type": "UInt64",
+          "required": true,
+          "description": "Participant snapshot version."
+        },
+        {
+          "name": "memberPreview",
+          "wireName": "memberPreview",
+          "type": "ConversationParticipantList",
+          "required": true,
+          "description": "Small participant preview, not a full member list."
+        },
+        {
+          "name": "draft",
+          "wireName": "draft",
+          "type": "String",
+          "required": false,
+          "description": "Local draft text."
+        },
+        {
+          "name": "mentionCount",
+          "wireName": "mentionCount",
+          "type": "UInt32",
+          "required": true,
+          "description": "Unread mention count."
+        },
+        {
+          "name": "mentionMe",
+          "wireName": "mentionMe",
+          "type": "Boolean",
+          "required": true,
+          "description": "Whether current user is mentioned."
+        },
+        {
+          "name": "badge",
+          "wireName": "badge",
+          "type": "String",
+          "required": false,
+          "description": "Optional conversation badge."
+        },
+        {
+          "name": "role",
+          "wireName": "role",
+          "type": "String",
+          "required": false,
+          "description": "Current user's conversation role."
+        },
+        {
+          "name": "participants",
+          "wireName": "participants",
+          "type": "ConversationParticipantList",
+          "required": true,
+          "description": "Locally synced complete participant snapshot when available."
+        }
+      ]
+    },
+    {
+      "name": "ConversationListQuery",
+      "description": "Client-side conversation list filters passed to core-sdk.",
+      "fields": [
+        {
+          "name": "keyword",
+          "wireName": "keyword",
+          "type": "String",
+          "required": false,
+          "description": "Case-insensitive display search keyword."
+        },
+        {
+          "name": "includeArchived",
+          "wireName": "includeArchived",
+          "type": "Boolean",
+          "required": true,
+          "description": "Whether archived conversations are included."
+        },
+        {
+          "name": "unreadOnly",
+          "wireName": "unreadOnly",
+          "type": "Boolean",
+          "required": true,
+          "description": "Only return conversations with unread messages."
+        },
+        {
+          "name": "mentionMeOnly",
+          "wireName": "mentionMeOnly",
+          "type": "Boolean",
+          "required": true,
+          "description": "Only return conversations mentioning current user."
+        },
+        {
+          "name": "pinnedOnly",
+          "wireName": "pinnedOnly",
+          "type": "Boolean",
+          "required": true,
+          "description": "Only return pinned conversations."
+        },
+        {
+          "name": "mutedOnly",
+          "wireName": "mutedOnly",
+          "type": "Boolean",
+          "required": false,
+          "description": "Filter by mute state when provided."
+        },
+        {
+          "name": "hasDraftOnly",
+          "wireName": "hasDraftOnly",
+          "type": "Boolean",
+          "required": true,
+          "description": "Only return conversations with local drafts."
+        },
+        {
+          "name": "hasMarkedMessages",
+          "wireName": "hasMarkedMessages",
+          "type": "Boolean",
+          "required": true,
+          "description": "Only return conversations containing marked messages."
+        },
+        {
+          "name": "conversationTypes",
+          "wireName": "conversationTypes",
+          "type": "ConversationTypeList",
+          "required": true,
+          "description": "Allowed conversation types."
+        },
+        {
+          "name": "cursor",
+          "wireName": "cursor",
+          "type": "String",
+          "required": false,
+          "description": "Conversation id cursor."
+        },
+        {
+          "name": "limit",
+          "wireName": "limit",
+          "type": "UInt32",
+          "required": false,
+          "description": "Maximum number of conversations."
+        }
+      ]
+    },
+    {
+      "name": "UpdateConversationDraftRequest",
+      "description": "Typed request for updating the current user's synced conversation draft.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Conversation id whose draft is being updated."
+        },
+        {
+          "name": "draft",
+          "wireName": "draft",
+          "type": "String",
+          "required": false,
+          "description": "Draft text. Omit or set null to clear the draft."
+        }
+      ]
+    },
+    {
+      "name": "ListConversationsResponse",
+      "description": "Conversation list response.",
+      "fields": [
+        {
+          "name": "conversations",
+          "wireName": "conversations",
+          "type": "ConversationList",
+          "required": true,
+          "description": "Returned conversations."
+        }
+      ]
+    },
+    {
+      "name": "BootstrapHomeTimelineRequest",
+      "description": "Request for the core-owned home conversation snapshot used after login.",
+      "fields": [
+        {
+          "name": "conversationLimit",
+          "wireName": "conversationLimit",
+          "type": "UInt32",
+          "required": true,
+          "description": "Maximum conversations to return for the initial home snapshot."
+        }
+      ]
+    },
+    {
+      "name": "OpenConversationTimelineRequest",
+      "description": "Request for opening one conversation with a bounded first page of messages.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Conversation id to open."
+        },
+        {
+          "name": "messageLimit",
+          "wireName": "messageLimit",
+          "type": "UInt32",
+          "required": true,
+          "description": "Maximum messages to return for the first timeline page."
+        }
+      ]
+    },
+    {
+      "name": "HomeTimelineSnapshot",
+      "description": "Core-owned home snapshot with repaired conversation previews and unread aggregate.",
+      "fields": [
+        {
+          "name": "conversations",
+          "wireName": "conversations",
+          "type": "ConversationList",
+          "required": true,
+          "description": "Conversation summaries ready for the home list."
+        },
+        {
+          "name": "totalUnread",
+          "wireName": "totalUnread",
+          "type": "UInt64",
+          "required": true,
+          "description": "Total unread count across returned conversations."
+        },
+        {
+          "name": "syncState",
+          "wireName": "syncState",
+          "type": "TimelineSyncState",
+          "required": true,
+          "description": "Snapshot freshness/readiness state."
+        }
+      ]
+    },
+    {
+      "name": "ConversationTimelineSnapshot",
+      "description": "Core-owned snapshot returned when opening one conversation.",
+      "fields": [
+        {
+          "name": "conversation",
+          "wireName": "conversation",
+          "type": "Conversation",
+          "required": false,
+          "description": "Repaired conversation summary when available."
+        },
+        {
+          "name": "messages",
+          "wireName": "messages",
+          "type": "MessageList",
+          "required": true,
+          "description": "Bounded message page in timeline order."
+        },
+        {
+          "name": "hasMore",
+          "wireName": "hasMore",
+          "type": "Boolean",
+          "required": true,
+          "description": "Whether older local messages likely exist beyond this page."
+        }
+      ]
+    }
+  ]
+}

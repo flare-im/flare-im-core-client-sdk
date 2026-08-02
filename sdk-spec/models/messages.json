@@ -1,0 +1,615 @@
+{
+  "group": "messages",
+  "description": "Message models mirrored from flare-im-core-sdk/src/model/message.rs and message_elem.rs.",
+  "enums": [
+    {
+      "name": "MessageContentType",
+      "description": "Decoded message content discriminator.",
+      "values": [
+        "text",
+        "image",
+        "video",
+        "audio",
+        "file",
+        "location",
+        "card",
+        "sticker",
+        "emoji",
+        "quote",
+        "link_card",
+        "forward",
+        "thread",
+        "mini_program",
+        "rich_text",
+        "image_group",
+        "system",
+        "notification",
+        "vote",
+        "task",
+        "schedule",
+        "announcement",
+        "custom",
+        "placeholder"
+      ]
+    },
+    {
+      "name": "MessageSearchKind",
+      "description": "Search category aligned with core-sdk MessageSearchKind.",
+      "values": [
+        "message",
+        "text",
+        "media",
+        "image",
+        "video",
+        "audio",
+        "file"
+      ]
+    }
+  ],
+  "models": [
+    {
+      "name": "ReactionEntry",
+      "description": "Aggregated reaction snapshot on a message.",
+      "fields": [
+        {
+          "name": "emoji",
+          "wireName": "emoji",
+          "type": "String",
+          "required": true,
+          "description": "Emoji key."
+        },
+        {
+          "name": "userIds",
+          "wireName": "userIds",
+          "type": "StringList",
+          "required": true,
+          "description": "Users who reacted with this emoji."
+        },
+        {
+          "name": "count",
+          "wireName": "count",
+          "type": "UInt32",
+          "required": true,
+          "description": "Reaction count."
+        }
+      ]
+    },
+    {
+      "name": "MessageLocalState",
+      "description": "Local-only send state exposed for UI clarity.",
+      "fields": [
+        {
+          "name": "sending",
+          "wireName": "sending",
+          "type": "Boolean",
+          "required": true,
+          "description": "Whether the message is being sent."
+        },
+        {
+          "name": "failed",
+          "wireName": "failed",
+          "type": "Boolean",
+          "required": true,
+          "description": "Whether the send failed."
+        },
+        {
+          "name": "isLocal",
+          "wireName": "isLocal",
+          "type": "Boolean",
+          "required": true,
+          "description": "Whether this message was created locally."
+        },
+        {
+          "name": "uploading",
+          "wireName": "uploading",
+          "type": "Boolean",
+          "required": true,
+          "description": "Whether the message media is still uploading."
+        },
+        {
+          "name": "uploadProgress",
+          "wireName": "uploadProgress",
+          "type": "UInt32",
+          "required": true,
+          "description": "Media upload progress percentage from 0 to 100."
+        },
+        {
+          "name": "sortTs",
+          "wireName": "sortTs",
+          "type": "UInt64",
+          "required": true,
+          "description": "Local sort timestamp in milliseconds."
+        }
+      ]
+    },
+    {
+      "name": "MessageContent",
+      "description": "Decoded content envelope. Type-specific payload lives in `data` until per-content models are generated.",
+      "fields": [
+        {
+          "name": "contentType",
+          "wireName": "contentType",
+          "type": "MessageContentType",
+          "required": true,
+          "description": "Content discriminator."
+        },
+        {
+          "name": "data",
+          "wireName": "data",
+          "type": "JsonObject",
+          "required": true,
+          "description": "Content payload object."
+        }
+      ]
+    },
+    {
+      "name": "Message",
+      "description": "SDK message shown in timeline, search results and event payloads.",
+      "fields": [
+        {
+          "name": "serverId",
+          "wireName": "serverId",
+          "type": "String",
+          "required": true,
+          "description": "Server-assigned message id."
+        },
+        {
+          "name": "clientMsgId",
+          "wireName": "clientMsgId",
+          "type": "String",
+          "required": true,
+          "description": "Client-generated id for idempotency and optimistic UI."
+        },
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Conversation id."
+        },
+        {
+          "name": "conversationType",
+          "wireName": "conversationType",
+          "type": "Int32",
+          "required": true,
+          "description": "Core conversation type integer."
+        },
+        {
+          "name": "channelId",
+          "wireName": "channelId",
+          "type": "String",
+          "required": true,
+          "description": "Conversation route id."
+        },
+        {
+          "name": "senderId",
+          "wireName": "senderId",
+          "type": "String",
+          "required": true,
+          "description": "Sender user id."
+        },
+        {
+          "name": "source",
+          "wireName": "source",
+          "type": "Int32",
+          "required": true,
+          "description": "Message source enum integer."
+        },
+        {
+          "name": "conversationSeq",
+          "wireName": "conversationSeq",
+          "type": "UInt64",
+          "required": true,
+          "description": "Conversation sequence."
+        },
+        {
+          "name": "createdAt",
+          "wireName": "createdAt",
+          "type": "UInt64",
+          "required": true,
+          "description": "Server message time in milliseconds."
+        },
+        {
+          "name": "clientCreatedAt",
+          "wireName": "clientCreatedAt",
+          "type": "UInt64",
+          "required": true,
+          "description": "Client message time in milliseconds."
+        },
+        {
+          "name": "messageType",
+          "wireName": "messageType",
+          "type": "Int32",
+          "required": true,
+          "description": "Core message type integer."
+        },
+        {
+          "name": "content",
+          "wireName": "content",
+          "type": "MessageContent",
+          "required": false,
+          "description": "Decoded content when available."
+        },
+        {
+          "name": "senderName",
+          "wireName": "senderName",
+          "type": "String",
+          "required": true,
+          "description": "Sender profile name snapshot."
+        },
+        {
+          "name": "senderAvatar",
+          "wireName": "senderAvatar",
+          "type": "String",
+          "required": true,
+          "description": "Sender avatar snapshot."
+        },
+        {
+          "name": "senderDisplayName",
+          "wireName": "senderDisplayName",
+          "type": "String",
+          "required": true,
+          "description": "SDK-computed display name."
+        },
+        {
+          "name": "replyTo",
+          "wireName": "replyTo",
+          "type": "String",
+          "required": false,
+          "description": "Quoted/replied message id."
+        },
+        {
+          "name": "quotePreview",
+          "wireName": "quotePreview",
+          "type": "String",
+          "required": false,
+          "description": "Plain preview for quoted content."
+        },
+        {
+          "name": "status",
+          "wireName": "status",
+          "type": "Int32",
+          "required": true,
+          "description": "Core message status integer."
+        },
+        {
+          "name": "isRead",
+          "wireName": "isRead",
+          "type": "Boolean",
+          "required": true,
+          "description": "Whether current user has read the message."
+        },
+        {
+          "name": "isRecalled",
+          "wireName": "isRecalled",
+          "type": "Boolean",
+          "required": true,
+          "description": "Whether the message was recalled."
+        },
+        {
+          "name": "isEdited",
+          "wireName": "isEdited",
+          "type": "Boolean",
+          "required": true,
+          "description": "Whether the message was edited."
+        },
+        {
+          "name": "burnEnabled",
+          "wireName": "burnEnabled",
+          "type": "Boolean",
+          "required": true,
+          "description": "Whether burn-after-read is enabled."
+        },
+        {
+          "name": "burnAfterReadSeconds",
+          "wireName": "burnAfterReadSeconds",
+          "type": "Int64",
+          "required": false,
+          "description": "Burn delay after first read."
+        },
+        {
+          "name": "burnStatus",
+          "wireName": "burnStatus",
+          "type": "Int32",
+          "required": true,
+          "description": "Core burn status integer."
+        },
+        {
+          "name": "firstReadAt",
+          "wireName": "firstReadAt",
+          "type": "Int64",
+          "required": false,
+          "description": "First read Unix seconds."
+        },
+        {
+          "name": "burnAt",
+          "wireName": "burnAt",
+          "type": "Int64",
+          "required": false,
+          "description": "Scheduled burn Unix seconds."
+        },
+        {
+          "name": "burnedAt",
+          "wireName": "burnedAt",
+          "type": "Int64",
+          "required": false,
+          "description": "Actual burn Unix seconds."
+        },
+        {
+          "name": "mentionUsers",
+          "wireName": "mentionUsers",
+          "type": "StringList",
+          "required": true,
+          "description": "Mentioned user ids."
+        },
+        {
+          "name": "mentionAll",
+          "wireName": "mentionAll",
+          "type": "Boolean",
+          "required": true,
+          "description": "Whether this message mentions everyone."
+        },
+        {
+          "name": "attributes",
+          "wireName": "attributes",
+          "type": "StringMap",
+          "required": true,
+          "description": "Opaque extension map. Stable semantics should use typed fields."
+        },
+        {
+          "name": "extensions",
+          "wireName": "extensions",
+          "type": "BinaryMap",
+          "required": true,
+          "description": "Opaque binary extension map."
+        },
+        {
+          "name": "reactions",
+          "wireName": "reactions",
+          "type": "ReactionEntryList",
+          "required": true,
+          "description": "Reaction snapshot."
+        },
+        {
+          "name": "version",
+          "wireName": "version",
+          "type": "UInt64",
+          "required": true,
+          "description": "Core version."
+        },
+        {
+          "name": "updatedAt",
+          "wireName": "updatedAt",
+          "type": "UInt64",
+          "required": true,
+          "description": "Last update time in milliseconds."
+        },
+        {
+          "name": "localState",
+          "wireName": "localState",
+          "type": "MessageLocalState",
+          "required": false,
+          "description": "Local-only timeline state."
+        },
+        {
+          "name": "timelineKey",
+          "wireName": "timelineKey",
+          "type": "String",
+          "required": true,
+          "description": "Core-computed stable row key for timeline rendering."
+        },
+        {
+          "name": "timelineSortTs",
+          "wireName": "timelineSortTs",
+          "type": "UInt64",
+          "required": true,
+          "description": "Core-computed local timeline sort timestamp."
+        }
+      ]
+    },
+    {
+      "name": "CreateTextMessageRequest",
+      "description": "Create a text message draft for a conversation.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Target conversation id."
+        },
+        {
+          "name": "text",
+          "wireName": "text",
+          "type": "String",
+          "required": true,
+          "description": "Text body."
+        }
+      ]
+    },
+    {
+      "name": "SendMessageRequest",
+      "description": "Send a fully built message.",
+      "fields": [
+        {
+          "name": "message",
+          "wireName": "message",
+          "type": "Message",
+          "required": true,
+          "description": "Message to send."
+        }
+      ]
+    },
+    {
+      "name": "SendMessageResponse",
+      "description": "Send acknowledgement returned by core-sdk.",
+      "fields": [
+        {
+          "name": "ackId",
+          "wireName": "ackId",
+          "type": "String",
+          "required": true,
+          "description": "ACK id assigned by the transport layer, if present."
+        },
+        {
+          "name": "serverId",
+          "wireName": "serverId",
+          "type": "String",
+          "required": true,
+          "description": "Server-assigned message id."
+        },
+        {
+          "name": "clientMsgId",
+          "wireName": "clientMsgId",
+          "type": "String",
+          "required": true,
+          "description": "Client message id acknowledged by the server."
+        },
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Conversation id."
+        },
+        {
+          "name": "seq",
+          "wireName": "seq",
+          "type": "UInt64",
+          "required": true,
+          "description": "Assigned conversation sequence."
+        },
+        {
+          "name": "timestamp",
+          "wireName": "timestamp",
+          "type": "UInt64",
+          "required": true,
+          "description": "Server send time in milliseconds."
+        },
+        {
+          "name": "success",
+          "wireName": "success",
+          "type": "Boolean",
+          "required": true,
+          "description": "Whether this response contains a final accepted send ACK."
+        },
+        {
+          "name": "errorCode",
+          "wireName": "errorCode",
+          "type": "Int32",
+          "required": true,
+          "description": "Core ACK error code when success is false."
+        },
+        {
+          "name": "errorMessage",
+          "wireName": "errorMessage",
+          "type": "String",
+          "required": true,
+          "description": "Core ACK error message when success is false."
+        }
+      ]
+    },
+    {
+      "name": "ListMessagesRequest",
+      "description": "Page messages before a sequence in a conversation.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Conversation id."
+        },
+        {
+          "name": "beforeSeq",
+          "wireName": "beforeSeq",
+          "type": "UInt64",
+          "required": true,
+          "description": "Fetch messages before this sequence; 0 means latest page."
+        },
+        {
+          "name": "limit",
+          "wireName": "limit",
+          "type": "UInt32",
+          "required": true,
+          "description": "Page size."
+        }
+      ]
+    },
+    {
+      "name": "ListMessagesResponse",
+      "description": "Message page response.",
+      "fields": [
+        {
+          "name": "messages",
+          "wireName": "messages",
+          "type": "MessageList",
+          "required": true,
+          "description": "Returned messages."
+        }
+      ]
+    },
+    {
+      "name": "MessageSearchQuery",
+      "description": "Message search filters.",
+      "fields": [
+        {
+          "name": "keyword",
+          "wireName": "keyword",
+          "type": "String",
+          "required": false,
+          "description": "Search keyword."
+        },
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": false,
+          "description": "Restrict search to one conversation."
+        },
+        {
+          "name": "senderId",
+          "wireName": "senderId",
+          "type": "String",
+          "required": false,
+          "description": "Restrict search to one sender."
+        },
+        {
+          "name": "fromTime",
+          "wireName": "fromTime",
+          "type": "UInt64",
+          "required": false,
+          "description": "Start time in milliseconds, inclusive."
+        },
+        {
+          "name": "toTime",
+          "wireName": "toTime",
+          "type": "UInt64",
+          "required": false,
+          "description": "End time in milliseconds, inclusive."
+        },
+        {
+          "name": "kinds",
+          "wireName": "kinds",
+          "type": "MessageSearchKindList",
+          "required": true,
+          "description": "Search categories."
+        },
+        {
+          "name": "limit",
+          "wireName": "limit",
+          "type": "UInt32",
+          "required": true,
+          "description": "Maximum result count."
+        },
+        {
+          "name": "includeRecalled",
+          "wireName": "includeRecalled",
+          "type": "Boolean",
+          "required": true,
+          "description": "Whether recalled messages should be included."
+        }
+      ]
+    }
+  ]
+}

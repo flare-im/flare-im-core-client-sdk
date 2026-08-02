@@ -1,0 +1,79 @@
+{
+  "key": "message_builder",
+  "facade": "client.messageBuilder",
+  "description": "Typed quick-build APIs for all supported message content kinds. Prefer these over raw JSON in adapters.",
+  "buildDispatch": {
+    "cApi": "flare_message_build_json",
+    "ops": [
+      "create_text",
+      "create_quote",
+      "create_thread_reply",
+      "create_forward",
+      "create_image",
+      "create_image_group",
+      "create_video",
+      "create_audio",
+      "create_file",
+      "create_emoji",
+      "create_location",
+      "create_sticker",
+      "create_link_card",
+      "create_card",
+      "create_mini_program",
+      "create_rich_doc",
+      "create_system",
+      "create_notification",
+      "create_vote",
+      "create_task",
+      "create_schedule",
+      "create_announcement",
+      "create_custom",
+      "create_placeholder",
+      "create_with_content"
+    ]
+  },
+  "catalog": "shared/message_build_catalog.json",
+  "generateBuildMethodsFromCatalog": true,
+  "methods": [
+    {
+      "name": "listSupportedBuildOperations",
+      "operation": "message_builder.list_catalog",
+      "transport": "catalog-static",
+      "cApi": "flare_message_build_json",
+      "request": "Unit",
+      "response": "ListMessageBuildCatalogResponse",
+      "stability": "stable",
+      "description": "List all supported message build operations and typed request model names."
+    },
+    {
+      "name": "normalizeRichDocFromMarkdown",
+      "operation": "rich_doc_v2.normalize_from_markdown",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "NormalizeRichDocFromMarkdownRequest",
+      "response": "RichDocV2Normalized",
+      "stability": "stable",
+      "description": "Normalize Markdown into RichDoc v2 JSON plus derived searchable/render fields."
+    },
+    {
+      "name": "normalizeRichDocFromHtml",
+      "operation": "rich_doc_v2.normalize_from_html",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "NormalizeRichDocFromHtmlRequest",
+      "response": "RichDocV2Normalized",
+      "stability": "stable",
+      "description": "Normalize an HTML fragment into RichDoc v2 JSON plus derived searchable/render fields."
+    },
+    {
+      "name": "normalizeRichDocFromDocJson",
+      "operation": "rich_doc_v2.normalize_from_doc_json",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "NormalizeRichDocFromDocJsonRequest",
+      "response": "RichDocV2Normalized",
+      "stability": "stable",
+      "description": "Validate editor-produced RichDoc v2 JSON and derive searchable/render fields."
+    }
+  ]
+}

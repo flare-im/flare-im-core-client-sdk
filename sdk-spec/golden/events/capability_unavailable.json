@@ -1,0 +1,5 @@
+{
+  "name": "unavailable",
+  "capability": "sfu.call",
+  "reason": "plugin_disabled"
+}

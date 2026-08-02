@@ -1,0 +1,50 @@
+import Foundation
+
+/// GENERATED. Do not edit by hand.
+public enum EventCode {
+    public static let connectionConnected: Int = 1001
+    public static let connectionDisconnected: Int = 1002
+    public static let connectionReconnecting: Int = 1003
+    public static let connectionStateChanged: Int = 1004
+    public static let connectionSyncStateChanged: Int = 1005
+    public static let connectionServerError: Int = 1006
+    public static let connectionKickedOff: Int = 1007
+    public static let connectionTokenExpired: Int = 1008
+    public static let messageReceived: Int = 2001
+    public static let messageReceivedBatch: Int = 2002
+    public static let messageSendAck: Int = 2003
+    public static let messageSendFailed: Int = 2004
+    public static let messageRecalled: Int = 2005
+    public static let messageTyping: Int = 2006
+    public static let messageCapability: Int = 2007
+    public static let messageEdited: Int = 2008
+    public static let messageReactionChanged: Int = 2009
+    public static let messageDeleted: Int = 2010
+    public static let messageReadReceipt: Int = 2011
+    public static let messageRetentionScheduled: Int = 2012
+    public static let messageRetentionExpired: Int = 2013
+    public static let messageRetentionPurged: Int = 2014
+    public static let messagePinned: Int = 2015
+    public static let messageUnpinned: Int = 2016
+    public static let messageMarked: Int = 2017
+    public static let messageUnmarked: Int = 2018
+    public static let messagePresenceChanged: Int = 2019
+    public static let messageCustom: Int = 2020
+    public static let messageTypingAggregate: Int = 2021
+    public static let conversationSynced: Int = 3001
+    public static let conversationCreated: Int = 3002
+    public static let conversationUpdated: Int = 3003
+    public static let conversationUnreadCountChanged: Int = 3004
+    public static let conversationDeleted: Int = 3005
+    public static let notificationReceived: Int = 3501
+    public static let syncStarted: Int = 4001
+    public static let syncFinished: Int = 4002
+    public static let syncFailed: Int = 4003
+    public static let syncProgress: Int = 4004
+    public static let syncTaskCompleted: Int = 4005
+    public static let syncStateChanged: Int = 4006
+    public static let syncResyncNeeded: Int = 4007
+    public static let syncReadiness: Int = 4008
+    public static let extensionEvent: Int = 5001
+    public static let viewUpdated: Int = 6001
+}

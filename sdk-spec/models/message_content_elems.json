@@ -1,0 +1,407 @@
+{
+  "group": "message_content_elems",
+  "description": "Typed message content payloads mirrored from flare_proto message_content.proto. Use these instead of ad-hoc JsonObject in adapters.",
+  "models": [
+    {
+      "name": "MediaSourceInfo",
+      "description": "Image/video/audio/file source descriptor (uuid, url, dimensions).",
+      "fields": [
+        {
+          "name": "uuid",
+          "wireName": "uuid",
+          "type": "String",
+          "required": false,
+          "description": "Stable media uuid."
+        },
+        {
+          "name": "imageId",
+          "wireName": "imageId",
+          "type": "String",
+          "required": false,
+          "description": "Image id when applicable."
+        },
+        {
+          "name": "url",
+          "wireName": "url",
+          "type": "String",
+          "required": false,
+          "description": "Resolved URL."
+        },
+        {
+          "name": "mimeType",
+          "wireName": "mimeType",
+          "type": "String",
+          "required": false,
+          "description": "MIME type."
+        },
+        {
+          "name": "size",
+          "wireName": "size",
+          "type": "UInt64",
+          "required": false,
+          "description": "Byte size."
+        },
+        {
+          "name": "width",
+          "wireName": "width",
+          "type": "Int32",
+          "required": false,
+          "description": "Width in pixels."
+        },
+        {
+          "name": "height",
+          "wireName": "height",
+          "type": "Int32",
+          "required": false,
+          "description": "Height in pixels."
+        },
+        {
+          "name": "blurhash",
+          "wireName": "blurhash",
+          "type": "String",
+          "required": false,
+          "description": "Blurhash placeholder for image previews."
+        },
+        {
+          "name": "durationMs",
+          "wireName": "durationMs",
+          "type": "Int32",
+          "required": false,
+          "description": "Duration for audio/video."
+        }
+      ]
+    },
+    {
+      "name": "TextContentPayload",
+      "description": "Text message body.",
+      "fields": [
+        {
+          "name": "text",
+          "wireName": "text",
+          "type": "String",
+          "required": true,
+          "description": "Plain text body."
+        }
+      ]
+    },
+    {
+      "name": "ImageContentPayload",
+      "description": "Image message payload.",
+      "fields": [
+        {
+          "name": "imageId",
+          "wireName": "imageId",
+          "type": "String",
+          "required": false,
+          "description": "Uploaded image id."
+        },
+        {
+          "name": "source",
+          "wireName": "source",
+          "type": "MediaSourceInfo",
+          "required": false,
+          "description": "Source descriptor."
+        },
+        {
+          "name": "thumbnail",
+          "wireName": "thumbnail",
+          "type": "MediaSourceInfo",
+          "required": false,
+          "description": "Thumbnail descriptor."
+        },
+        {
+          "name": "description",
+          "wireName": "description",
+          "type": "String",
+          "required": false,
+          "description": "Caption."
+        }
+      ]
+    },
+    {
+      "name": "ImageGroupItem",
+      "description": "One image inside an image group.",
+      "fields": [
+        {
+          "name": "imageId",
+          "wireName": "imageId",
+          "type": "String",
+          "required": true,
+          "description": "Image id."
+        },
+        {
+          "name": "url",
+          "wireName": "url",
+          "type": "String",
+          "required": false,
+          "description": "Resolved URL."
+        },
+        {
+          "name": "title",
+          "wireName": "title",
+          "type": "String",
+          "required": false,
+          "description": "Item title."
+        },
+        {
+          "name": "width",
+          "wireName": "width",
+          "type": "Int32",
+          "required": false,
+          "description": "Width."
+        },
+        {
+          "name": "height",
+          "wireName": "height",
+          "type": "Int32",
+          "required": false,
+          "description": "Height."
+        }
+      ]
+    },
+    {
+      "name": "ImageGroupContentPayload",
+      "description": "Image group payload.",
+      "fields": [
+        {
+          "name": "images",
+          "wireName": "images",
+          "type": "ImageGroupItemList",
+          "required": true,
+          "description": "Grouped images."
+        },
+        {
+          "name": "title",
+          "wireName": "title",
+          "type": "String",
+          "required": false,
+          "description": "Group title."
+        }
+      ]
+    },
+    {
+      "name": "VideoContentPayload",
+      "description": "Video message payload.",
+      "fields": [
+        {
+          "name": "videoId",
+          "wireName": "videoId",
+          "type": "String",
+          "required": false,
+          "description": "Uploaded video id."
+        },
+        {
+          "name": "source",
+          "wireName": "source",
+          "type": "MediaSourceInfo",
+          "required": false,
+          "description": "Video source."
+        },
+        {
+          "name": "cover",
+          "wireName": "cover",
+          "type": "MediaSourceInfo",
+          "required": false,
+          "description": "Cover image."
+        },
+        {
+          "name": "description",
+          "wireName": "description",
+          "type": "String",
+          "required": false,
+          "description": "Caption."
+        }
+      ]
+    },
+    {
+      "name": "AudioContentPayload",
+      "description": "Audio message payload.",
+      "fields": [
+        {
+          "name": "audioId",
+          "wireName": "audioId",
+          "type": "String",
+          "required": false,
+          "description": "Uploaded audio id."
+        },
+        {
+          "name": "source",
+          "wireName": "source",
+          "type": "MediaSourceInfo",
+          "required": false,
+          "description": "Audio source."
+        },
+        {
+          "name": "durationMs",
+          "wireName": "durationMs",
+          "type": "Int32",
+          "required": false,
+          "description": "Duration."
+        }
+      ]
+    },
+    {
+      "name": "FileContentPayload",
+      "description": "File message payload.",
+      "fields": [
+        {
+          "name": "fileId",
+          "wireName": "fileId",
+          "type": "String",
+          "required": false,
+          "description": "Uploaded file id."
+        },
+        {
+          "name": "name",
+          "wireName": "name",
+          "type": "String",
+          "required": false,
+          "description": "Display name."
+        },
+        {
+          "name": "url",
+          "wireName": "url",
+          "type": "String",
+          "required": false,
+          "description": "Download URL."
+        },
+        {
+          "name": "mimeType",
+          "wireName": "mimeType",
+          "type": "String",
+          "required": false,
+          "description": "MIME type."
+        },
+        {
+          "name": "size",
+          "wireName": "size",
+          "type": "UInt64",
+          "required": false,
+          "description": "Byte size."
+        }
+      ]
+    },
+    {
+      "name": "EmojiContentPayload",
+      "description": "Emoji message payload.",
+      "fields": [
+        {
+          "name": "emoji",
+          "wireName": "emoji",
+          "type": "String",
+          "required": true,
+          "description": "Emoji key or unicode."
+        }
+      ]
+    },
+    {
+      "name": "StickerContentPayload",
+      "description": "Sticker message payload.",
+      "fields": [
+        {
+          "name": "stickerId",
+          "wireName": "stickerId",
+          "type": "String",
+          "required": true,
+          "description": "Sticker id."
+        },
+        {
+          "name": "packageId",
+          "wireName": "packageId",
+          "type": "String",
+          "required": false,
+          "description": "Sticker package id."
+        },
+        {
+          "name": "url",
+          "wireName": "url",
+          "type": "String",
+          "required": false,
+          "description": "Sticker URL."
+        },
+        {
+          "name": "width",
+          "wireName": "width",
+          "type": "Int32",
+          "required": false,
+          "description": "Width."
+        },
+        {
+          "name": "height",
+          "wireName": "height",
+          "type": "Int32",
+          "required": false,
+          "description": "Height."
+        },
+        {
+          "name": "format",
+          "wireName": "format",
+          "type": "String",
+          "required": false,
+          "description": "webp/gif/png."
+        }
+      ]
+    },
+    {
+      "name": "ForwardSourceMessage",
+      "description": "One source message inside a forward bundle.",
+      "fields": [
+        {
+          "name": "sourceMessageId",
+          "wireName": "sourceMessageId",
+          "type": "String",
+          "required": true,
+          "description": "Original message id."
+        },
+        {
+          "name": "sourceConversationId",
+          "wireName": "sourceConversationId",
+          "type": "String",
+          "required": false,
+          "description": "Original conversation id."
+        },
+        {
+          "name": "sourceSenderId",
+          "wireName": "sourceSenderId",
+          "type": "String",
+          "required": false,
+          "description": "Original sender id."
+        },
+        {
+          "name": "plainText",
+          "wireName": "plainText",
+          "type": "String",
+          "required": false,
+          "description": "Preview text."
+        }
+      ]
+    },
+    {
+      "name": "ForwardContentPayload",
+      "description": "Forward message payload.",
+      "fields": [
+        {
+          "name": "merge",
+          "wireName": "merge",
+          "type": "Boolean",
+          "required": false,
+          "description": "Merge forwarded messages into one card."
+        },
+        {
+          "name": "title",
+          "wireName": "title",
+          "type": "String",
+          "required": false,
+          "description": "Forward title."
+        },
+        {
+          "name": "sourceMessages",
+          "wireName": "sourceMessages",
+          "type": "ForwardSourceMessageList",
+          "required": true,
+          "description": "Forwarded sources."
+        }
+      ]
+    }
+  ]
+}

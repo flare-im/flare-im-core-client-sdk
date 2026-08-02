@@ -1,0 +1,43 @@
+{
+  "key": "views",
+  "facade": "client.views",
+  "description": "Core observable message/conversation views.",
+  "methods": [
+    {
+      "name": "openTimeline",
+      "operation": "view.timeline.open",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "OpenTimelineViewRequest",
+      "response": "ViewOpenResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "loadOlderTimeline",
+      "operation": "view.timeline.load_older",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "LoadOlderTimelineViewRequest",
+      "response": "ViewLoadOlderResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "openConversationList",
+      "operation": "view.conversation_list.open",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "OpenConversationListViewRequest",
+      "response": "ViewOpenResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "close",
+      "operation": "view.close",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "CloseViewRequest",
+      "response": "CloseViewResponse",
+      "stability": "stable"
+    }
+  ]
+}

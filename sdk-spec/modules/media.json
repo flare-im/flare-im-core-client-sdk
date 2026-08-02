@@ -1,0 +1,190 @@
+{
+  "key": "media",
+  "facade": "client.media",
+  "description": "Media access URL and local cache operations.",
+  "methods": [
+    {
+      "name": "uploadFile",
+      "operation": "media.upload_file",
+      "transport": "ffi-symbol",
+      "cApi": "flare_media_upload_file",
+      "request": "UploadFileRequest",
+      "response": "MediaUploadResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "uploadImage",
+      "operation": "media.upload_image",
+      "transport": "ffi-symbol",
+      "cApi": "flare_media_upload_image",
+      "request": "UploadFileRequest",
+      "response": "MediaUploadResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "uploadVideo",
+      "operation": "media.upload_video",
+      "transport": "ffi-symbol",
+      "cApi": "flare_media_upload_video",
+      "request": "UploadFileRequest",
+      "response": "MediaUploadResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "uploadBytes",
+      "operation": "media.upload_bytes",
+      "transport": "ffi-symbol",
+      "cApi": "flare_media_upload_bytes",
+      "request": "UploadBytesRequest",
+      "response": "MediaUploadResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "deleteFile",
+      "operation": "media.delete_file",
+      "transport": "ffi-symbol",
+      "cApi": "flare_media_delete_file",
+      "request": "DeleteMediaFileRequest",
+      "response": "DeleteMediaFileResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "getMediaUrl",
+      "operation": "media.get_url",
+      "transport": "media-dispatch-json",
+      "cApi": "flare_media_dispatch_json",
+      "dispatchOp": "get_url",
+      "request": "GetMediaUrlRequest",
+      "response": "MediaAccessUrl",
+      "stability": "stable"
+    },
+    {
+      "name": "getTempDownloadUrl",
+      "operation": "media.temp_download_url",
+      "transport": "media-dispatch-json",
+      "cApi": "flare_media_dispatch_json",
+      "dispatchOp": "temp_download_url",
+      "request": "TempDownloadUrlRequest",
+      "response": "MediaAccessUrl",
+      "stability": "stable"
+    },
+    {
+      "name": "resolveMediaAccess",
+      "operation": "media.resolve_access",
+      "transport": "media-dispatch-json",
+      "cApi": "flare_media_dispatch_json",
+      "dispatchOp": "resolve_access",
+      "request": "ResolveMediaAccessRequest",
+      "response": "MediaResolvedAccess",
+      "stability": "stable"
+    },
+    {
+      "name": "cacheRemoteMedia",
+      "operation": "media.cache_remote",
+      "transport": "media-dispatch-json",
+      "cApi": "flare_media_dispatch_json",
+      "dispatchOp": "cache_remote",
+      "request": "CacheRemoteMediaRequest",
+      "response": "MediaCacheEntry",
+      "stability": "stable"
+    },
+    {
+      "name": "getMediaCacheStats",
+      "operation": "media.cache_stats",
+      "transport": "media-dispatch-json",
+      "cApi": "flare_media_dispatch_json",
+      "dispatchOp": "cache_stats",
+      "request": "Unit",
+      "response": "MediaCacheStats",
+      "stability": "stable"
+    },
+    {
+      "name": "setMediaCacheMaxBytes",
+      "operation": "media.set_cache_max_bytes",
+      "transport": "media-dispatch-json",
+      "cApi": "flare_media_dispatch_json",
+      "dispatchOp": "set_cache_max_bytes",
+      "request": "SetMediaCacheMaxBytesRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "setMediaCacheRoot",
+      "operation": "media.set_cache_root",
+      "transport": "media-dispatch-json",
+      "cApi": "flare_media_dispatch_json",
+      "dispatchOp": "set_cache_root",
+      "request": "SetMediaCacheRootRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "clearMediaCache",
+      "operation": "media.clear_cache",
+      "transport": "media-dispatch-json",
+      "cApi": "flare_media_dispatch_json",
+      "dispatchOp": "clear_cache",
+      "request": "Unit",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "getUserDownloadSubfolder",
+      "operation": "media.user_download_get_subfolder",
+      "transport": "media-dispatch-json",
+      "cApi": "flare_media_dispatch_json",
+      "dispatchOp": "user_download_get_subfolder",
+      "request": "Unit",
+      "response": "UserDownloadSubfolderResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "setUserDownloadSubfolder",
+      "operation": "media.user_download_set_subfolder",
+      "transport": "media-dispatch-json",
+      "cApi": "flare_media_dispatch_json",
+      "dispatchOp": "user_download_set_subfolder",
+      "request": "SetUserDownloadSubfolderRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "getUserDownloadSavedPath",
+      "operation": "media.user_download_get_saved_path",
+      "transport": "media-dispatch-json",
+      "cApi": "flare_media_dispatch_json",
+      "dispatchOp": "user_download_get_saved_path",
+      "request": "GetUserDownloadSavedPathRequest",
+      "response": "UserDownloadSavedPathResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "deleteUserDownloadRecord",
+      "operation": "media.user_download_delete_record",
+      "transport": "media-dispatch-json",
+      "cApi": "flare_media_dispatch_json",
+      "dispatchOp": "user_download_delete_record",
+      "request": "DeleteUserDownloadRecordRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "cancelUserFileDownload",
+      "operation": "media.cancel_user_file_download",
+      "transport": "ffi-symbol",
+      "cApi": "flare_media_cancel_user_file_download",
+      "request": "CancelUserFileDownloadRequest",
+      "response": "BooleanResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "downloadFileToDownloads",
+      "operation": "media.download_file_to_downloads",
+      "transport": "ffi-symbol",
+      "cApi": "flare_media_download_file_to_downloads",
+      "request": "DownloadFileToDownloadsRequest",
+      "response": "UserDownloadSavedPathResponse",
+      "stability": "stable"
+    }
+  ]
+}

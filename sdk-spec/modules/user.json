@@ -1,0 +1,17 @@
+{
+  "key": "user",
+  "facade": "client.user",
+  "description": "User profile cache (business-fed identity for messages and conversations).",
+  "methods": [
+    {
+      "name": "upsertUserProfiles",
+      "operation": "user.upsert_profiles",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "UpsertUserProfilesRequest",
+      "response": "Unit",
+      "stability": "stable",
+      "description": "Push user profiles (name/avatar) into the local identity cache; reads batch-join the cache to render current identity. Business calls this when syncing friends/users/groups."
+    }
+  ]
+}

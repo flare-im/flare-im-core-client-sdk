@@ -1,0 +1,55 @@
+{
+  "group": "diagnostics",
+  "description": "Runtime diagnostics and observability models.",
+  "enums": [],
+  "models": [
+    {
+      "name": "RuntimeHealthResponse",
+      "description": "Runtime health snapshot including metrics and event drop counters.",
+      "fields": [
+        {
+          "name": "metricsEnabled",
+          "wireName": "metricsEnabled",
+          "type": "Boolean",
+          "required": true,
+          "description": "Whether SDK metrics collection is enabled for this session."
+        },
+        {
+          "name": "state",
+          "wireName": "state",
+          "type": "String",
+          "required": true,
+          "description": "Current SDK connection state."
+        },
+        {
+          "name": "stateCode",
+          "wireName": "stateCode",
+          "type": "Int32",
+          "required": true,
+          "description": "Numeric SDK state code used by lower-level FFI state calls."
+        },
+        {
+          "name": "sessionGeneration",
+          "wireName": "sessionGeneration",
+          "type": "UInt64",
+          "required": true,
+          "description": "Current SDK session generation."
+        },
+        {
+          "name": "rawSubscriberDroppedTotal",
+          "wireName": "rawSubscriberDroppedTotal",
+          "type": "UInt64",
+          "required": true,
+          "description": "Total raw subscriber events dropped because bounded queues were full."
+        },
+        {
+          "name": "metricsJson",
+          "wireName": "metricsJson",
+          "type": "String",
+          "required": true,
+          "description": "JSON string for the metrics snapshot containing counters, gauges, and histograms."
+        }
+      ]
+    }
+  ]
+}

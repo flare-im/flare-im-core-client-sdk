@@ -1,0 +1,44 @@
+{
+  "conversations": [
+    {
+      "conversationId": "group-1",
+      "conversationType": "group",
+      "businessType": "default",
+      "channelId": "group-1",
+      "membersCount": 3,
+      "displayName": "Group One",
+      "avatarUrl": "https://example.com/group-1.png",
+      "lastSenderNickname": "Alice",
+      "lastSenderAvatarUrl": "https://example.com/alice.png",
+      "unreadCount": 0,
+      "lastReadSeq": 0,
+      "peerReadSeq": 0,
+      "maxSeq": 0,
+      "visibleAfterSeq": 0,
+      "isPinned": false,
+      "isMuted": false,
+      "isArchived": false,
+      "updatedAt": 1000,
+      "createdAt": 900,
+      "ext": {},
+      "participantVersion": 1,
+      "memberPreview": [
+        {
+          "userId": "alice",
+          "roles": ["owner"],
+          "muted": false,
+          "pinned": false,
+          "attributes": {},
+          "joinedAt": 900,
+          "nickname": "Alice"
+        }
+      ],
+      "participants": [],
+      "mentionCount": 0,
+      "mentionMe": false,
+      "version": 1
+    }
+  ],
+  "totalUnread": 0,
+  "syncState": "synced"
+}

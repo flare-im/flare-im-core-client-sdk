@@ -1,0 +1,9 @@
+{
+  "capability": "sfu.call",
+  "op": "room.join",
+  "correlationId": "cap-join-1",
+  "payload": {
+    "roomId": "room-1",
+    "conversationId": "group-100"
+  }
+}

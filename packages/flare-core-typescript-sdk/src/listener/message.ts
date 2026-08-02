@@ -1,0 +1,35 @@
+/** GENERATED. Do not edit by hand. */
+import type { EventCallback } from './common';
+import type { MessageMutationEvent, MessageReceivedBatchEvent, MessageReceivedEvent, MessageSendAckEvent, MessageSendFailedEvent, ReactionChangedEvent, ReadReceiptEvent, TypingAggregateEvent, TypingEvent } from '../model';
+
+/** Message listener callbacks. */
+export interface MessageEventListener {
+  /** A single message was received. */
+  onMessageReceived?(event: MessageReceivedEvent): void;
+  /** A batch of messages was received. */
+  onMessageReceivedBatch?(event: MessageReceivedBatchEvent): void;
+  /** A message send operation was acknowledged. */
+  onMessageSendAck?(event: MessageSendAckEvent): void;
+  /** A message send operation failed. */
+  onMessageSendFailed?(event: MessageSendFailedEvent): void;
+  /** A message was recalled. */
+  onMessageRecalled?(event: MessageMutationEvent): void;
+  /** A message was edited. */
+  onMessageEdited?(event: MessageMutationEvent): void;
+  /** A message was deleted. */
+  onMessageDeleted?(event: MessageMutationEvent): void;
+  /** A message read receipt changed. */
+  onMessageReadReceipt?(event: ReadReceiptEvent): void;
+  /** A message reaction changed. */
+  onMessageReactionChanged?(event: ReactionChangedEvent): void;
+  /** A conversation input or typing status changed. */
+  onInputStatusChanged?(event: TypingEvent): void;
+  /** Aggregated typing status changed for a large conversation. */
+  onTypingAggregateChanged?(event: TypingAggregateEvent): void;
+  /** A burn-after-read message was burned. */
+  onMessageBurned?(event: MessageMutationEvent): void;
+  /** A message was pinned. */
+  onMessagePinned?(event: MessageMutationEvent): void;
+  /** A message was unpinned. */
+  onMessageUnpinned?(event: MessageMutationEvent): void;
+}

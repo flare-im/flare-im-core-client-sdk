@@ -1,0 +1,160 @@
+{
+  "key": "session",
+  "facade": "client",
+  "description": "SDK lifecycle, authenticated session and process-level utilities.",
+  "methods": [
+    {
+      "name": "create",
+      "operation": "sdk.create",
+      "transport": "ffi-symbol",
+      "cApi": "flare_sdk_create",
+      "request": "CreateClientRequest",
+      "response": "CreateClientResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "init",
+      "operation": "sdk.init",
+      "transport": "ffi-symbol",
+      "cApi": "flare_sdk_init",
+      "request": "SdkConfig",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "uninit",
+      "operation": "sdk.uninit",
+      "transport": "ffi-symbol",
+      "cApi": "flare_sdk_uninit",
+      "request": "Unit",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "login",
+      "operation": "sdk.login",
+      "transport": "ffi-symbol",
+      "cApi": "flare_sdk_login",
+      "request": "LoginRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "prepare",
+      "operation": "sdk.prepare",
+      "transport": "ffi-symbol",
+      "cApi": "flare_sdk_prepare",
+      "request": "LoginRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "connect",
+      "operation": "sdk.connect",
+      "transport": "ffi-symbol",
+      "cApi": "flare_sdk_connect",
+      "request": "LoginRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "updateAccessToken",
+      "operation": "sdk.update_access_token",
+      "transport": "ffi-symbol",
+      "cApi": "flare_sdk_update_access_token",
+      "request": "UpdateAccessTokenRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "setHeartbeatAppState",
+      "operation": "sdk.set_heartbeat_app_state",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "SetHeartbeatAppStateRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "setHeartbeatNatTimeout",
+      "operation": "sdk.set_heartbeat_nat_timeout",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "SetHeartbeatNatTimeoutRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "heartbeatEffectiveInterval",
+      "operation": "sdk.heartbeat_effective_interval",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "Unit",
+      "response": "HeartbeatEffectiveIntervalResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "logout",
+      "operation": "sdk.logout",
+      "transport": "ffi-symbol",
+      "cApi": "flare_sdk_logout",
+      "request": "Unit",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "dispose",
+      "operation": "sdk.dispose",
+      "transport": "ffi-symbol",
+      "cApi": "flare_sdk_release",
+      "request": "Unit",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "hardReset",
+      "operation": "sdk.hard_reset",
+      "transport": "ffi-symbol",
+      "cApi": "flare_sdk_hard_reset",
+      "request": "Unit",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "currentUserId",
+      "operation": "sdk.current_user_id",
+      "transport": "ffi-symbol",
+      "cApi": "flare_sdk_current_user_id",
+      "request": "Unit",
+      "response": "CurrentUserIdResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "isConnected",
+      "operation": "sdk.is_connected",
+      "transport": "ffi-symbol",
+      "cApi": "flare_sdk_is_connected",
+      "request": "Unit",
+      "response": "BooleanResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "sessionActive",
+      "operation": "sdk.session_active",
+      "transport": "ffi-symbol",
+      "cApi": "flare_sdk_session_active",
+      "request": "Unit",
+      "response": "BooleanResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "generateCoreToken",
+      "operation": "sdk.generate_core_token",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "CoreTokenRequest",
+      "response": "CoreTokenResponse",
+      "stability": "stable"
+    }
+  ]
+}

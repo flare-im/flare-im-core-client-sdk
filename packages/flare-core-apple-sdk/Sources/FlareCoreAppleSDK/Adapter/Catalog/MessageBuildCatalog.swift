@@ -1,0 +1,30 @@
+import Foundation
+
+/// GENERATED. Do not edit by hand.
+let messageBuildCatalog: [MessageBuildCatalogEntry] = [
+    MessageBuildCatalogEntry(op: .createAnnouncement, method: "buildAnnouncement", requestType: "BuildAnnouncementMessageRequest", contentType: .announcement, messageType: 83, summary: "Build announcement message", stability: "stable"),
+    MessageBuildCatalogEntry(op: .createAudio, method: "buildAudio", requestType: "BuildAudioMessageRequest", contentType: .audio, messageType: 4, summary: "Build audio message", stability: "stable"),
+    MessageBuildCatalogEntry(op: .createCard, method: "buildCard", requestType: "BuildCardMessageRequest", contentType: .card, messageType: 7, summary: "Build card message", stability: "stable"),
+    MessageBuildCatalogEntry(op: .createCustom, method: "buildCustom", requestType: "BuildCustomMessageRequest", contentType: .custom, messageType: 100, summary: "Build custom message", stability: "stable"),
+    MessageBuildCatalogEntry(op: .createEmoji, method: "buildEmoji", requestType: "BuildEmojiMessageRequest", contentType: .emoji, messageType: 9, summary: "Build emoji message", stability: "stable"),
+    MessageBuildCatalogEntry(op: .createFile, method: "buildFile", requestType: "BuildFileMessageRequest", contentType: .file, messageType: 5, summary: "Build file message", stability: "stable"),
+    MessageBuildCatalogEntry(op: .createForward, method: "buildForward", requestType: "BuildForwardMessageRequest", contentType: .forward, messageType: 12, summary: "Build forward message", stability: "stable"),
+    MessageBuildCatalogEntry(op: .createImage, method: "buildImage", requestType: "BuildImageMessageRequest", contentType: .image, messageType: 2, summary: "Build image message", stability: "stable"),
+    MessageBuildCatalogEntry(op: .createImageGroup, method: "buildImageGroup", requestType: "BuildImageGroupMessageRequest", contentType: .imageGroup, messageType: 32, summary: "Multi-image group", stability: "beta"),
+    MessageBuildCatalogEntry(op: .createLinkCard, method: "buildLinkCard", requestType: "BuildLinkCardMessageRequest", contentType: .linkCard, messageType: 11, summary: "Build link card message", stability: "stable"),
+    MessageBuildCatalogEntry(op: .createLocation, method: "buildLocation", requestType: "BuildLocationMessageRequest", contentType: .location, messageType: 6, summary: "Build location message", stability: "stable"),
+    MessageBuildCatalogEntry(op: .createMiniProgram, method: "buildMiniProgram", requestType: "BuildMiniProgramMessageRequest", contentType: .miniProgram, messageType: 13, summary: "Build mini program message", stability: "stable"),
+    MessageBuildCatalogEntry(op: .createNotification, method: "buildNotification", requestType: "BuildNotificationMessageRequest", contentType: .notification, messageType: 61, summary: "Build notification message", stability: "stable"),
+    MessageBuildCatalogEntry(op: .createPlaceholder, method: "buildPlaceholder", requestType: "BuildPlaceholderMessageRequest", contentType: .placeholder, messageType: 111, summary: "Build placeholder message", stability: "stable"),
+    MessageBuildCatalogEntry(op: .createQuote, method: "buildQuote", requestType: "BuildQuoteMessageRequest", contentType: .quote, messageType: 15, summary: "Build quote message", stability: "stable"),
+    MessageBuildCatalogEntry(op: .createRichDoc, method: "buildRichDoc", requestType: "BuildRichDocMessageRequest", contentType: .richText, messageType: 30, summary: "Build rich doc message", stability: "stable"),
+    MessageBuildCatalogEntry(op: .createSchedule, method: "buildSchedule", requestType: "BuildScheduleMessageRequest", contentType: .schedule, messageType: 82, summary: "Build schedule message", stability: "stable"),
+    MessageBuildCatalogEntry(op: .createSticker, method: "buildSticker", requestType: "BuildStickerMessageRequest", contentType: .sticker, messageType: 8, summary: "Build sticker message", stability: "stable"),
+    MessageBuildCatalogEntry(op: .createSystem, method: "buildSystem", requestType: "BuildSystemMessageRequest", contentType: .system, messageType: 60, summary: "Build system message", stability: "stable"),
+    MessageBuildCatalogEntry(op: .createTask, method: "buildTask", requestType: "BuildTaskMessageRequest", contentType: .task, messageType: 81, summary: "Build task message", stability: "stable"),
+    MessageBuildCatalogEntry(op: .createText, method: "buildText", requestType: "BuildTextMessageRequest", contentType: .text, messageType: 1, summary: "Build text message", stability: "stable"),
+    MessageBuildCatalogEntry(op: .createThreadReply, method: "buildThreadReply", requestType: "BuildThreadReplyMessageRequest", contentType: .text, messageType: 1, summary: "Build thread reply message", stability: "stable"),
+    MessageBuildCatalogEntry(op: .createVideo, method: "buildVideo", requestType: "BuildVideoMessageRequest", contentType: .video, messageType: 3, summary: "Build video message", stability: "stable"),
+    MessageBuildCatalogEntry(op: .createVote, method: "buildVote", requestType: "BuildVoteMessageRequest", contentType: .vote, messageType: 80, summary: "Build vote message", stability: "stable"),
+    MessageBuildCatalogEntry(op: .createWithContent, method: "buildWithContent", requestType: "BuildWithContentMessageRequest", contentType: .custom, messageType: 100, summary: "Build with content message", stability: "stable"),
+]

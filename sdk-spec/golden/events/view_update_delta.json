@@ -1,0 +1,50 @@
+{
+  "viewId": "view-1",
+  "kind": "delta",
+  "delta": {
+    "viewType": "timeline",
+    "hasMore": false,
+    "ops": [
+      {
+        "op": "insert",
+        "key": "client:cm1",
+        "index": 0,
+        "item": {
+          "serverId": "server-msg-1",
+          "clientMsgId": "cm1",
+          "conversationId": "c1",
+          "conversationType": 1,
+          "channelId": "u2",
+          "senderId": "u2",
+          "source": 0,
+          "conversationSeq": 7,
+          "createdAt": 1000,
+          "clientCreatedAt": 999,
+          "messageType": 0,
+          "timelineKey": "client:cm1",
+          "timelineSortTs": 1000,
+          "content": {
+            "contentType": "text",
+            "text": "hello",
+            "mentions": []
+          },
+          "senderName": "User Two",
+          "senderAvatar": "https://example.com/u2.png",
+          "senderDisplayName": "User Two",
+          "status": 2,
+          "isRead": false,
+          "isRecalled": false,
+          "isEdited": false,
+          "mentionUsers": [],
+          "mentionAll": false,
+          "attributes": {},
+          "extensions": {},
+          "reactions": [],
+          "textPreview": "hello",
+          "version": 1,
+          "updatedAt": 1000
+        }
+      }
+    ]
+  }
+}

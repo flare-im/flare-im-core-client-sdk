@@ -1,0 +1,282 @@
+{
+  "group": "views",
+  "description": "Core observable view models.",
+  "models": [
+    {
+      "name": "OpenTimelineViewRequest",
+      "description": "Request for opening an observable conversation timeline view.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Conversation id to observe."
+        },
+        {
+          "name": "messageLimit",
+          "wireName": "messageLimit",
+          "type": "UInt32",
+          "required": true,
+          "description": "Maximum messages to include in the initial snapshot."
+        }
+      ]
+    },
+    {
+      "name": "OpenConversationListViewRequest",
+      "description": "Request for opening an observable conversation list view.",
+      "fields": [
+        {
+          "name": "conversationLimit",
+          "wireName": "conversationLimit",
+          "type": "UInt32",
+          "required": true,
+          "description": "Maximum conversations to include in the initial snapshot."
+        }
+      ]
+    },
+    {
+      "name": "LoadOlderTimelineViewRequest",
+      "description": "Request for extending an open timeline view with older messages.",
+      "fields": [
+        {
+          "name": "viewId",
+          "wireName": "viewId",
+          "type": "String",
+          "required": true,
+          "description": "Timeline view id returned from openTimeline."
+        },
+        {
+          "name": "messageLimit",
+          "wireName": "messageLimit",
+          "type": "UInt32",
+          "required": true,
+          "description": "Maximum older messages to load in this page."
+        }
+      ]
+    },
+    {
+      "name": "CloseViewRequest",
+      "description": "Request for closing an observable view.",
+      "fields": [
+        {
+          "name": "viewId",
+          "wireName": "viewId",
+          "type": "String",
+          "required": true,
+          "description": "View id returned from an open view call."
+        }
+      ]
+    },
+    {
+      "name": "ViewSnapshot",
+      "description": "Tagged snapshot emitted by core observable views.",
+      "fields": [
+        {
+          "name": "viewType",
+          "wireName": "viewType",
+          "type": "String",
+          "required": true,
+          "description": "Snapshot tag: timeline or conversationList."
+        },
+        {
+          "name": "data",
+          "wireName": "data",
+          "type": "JsonObject",
+          "required": true,
+          "description": "Snapshot payload selected by viewType."
+        }
+      ]
+    },
+    {
+      "name": "ViewOpenResponse",
+      "description": "Response returned when opening an observable view.",
+      "fields": [
+        {
+          "name": "viewId",
+          "wireName": "viewId",
+          "type": "String",
+          "required": true,
+          "description": "Opened view id."
+        },
+        {
+          "name": "snapshot",
+          "wireName": "snapshot",
+          "type": "ViewSnapshot",
+          "required": true,
+          "description": "Initial snapshot for this view."
+        }
+      ]
+    },
+    {
+      "name": "ViewDeltaOp",
+      "description": "One operation in an observable view delta.",
+      "fields": [
+        {
+          "name": "op",
+          "wireName": "op",
+          "type": "String",
+          "required": true,
+          "description": "Delta operation: insert, update, remove, or move."
+        },
+        {
+          "name": "key",
+          "wireName": "key",
+          "type": "String",
+          "required": true,
+          "description": "Stable item key owned by core."
+        },
+        {
+          "name": "index",
+          "wireName": "index",
+          "type": "UInt32",
+          "required": true,
+          "description": "Target index after applying the operation."
+        },
+        {
+          "name": "fromIndex",
+          "wireName": "fromIndex",
+          "type": "UInt32",
+          "required": false,
+          "description": "Previous index for move operations."
+        },
+        {
+          "name": "item",
+          "wireName": "item",
+          "type": "JsonObject",
+          "required": false,
+          "description": "Inserted or updated item payload."
+        }
+      ]
+    },
+    {
+      "name": "ViewDelta",
+      "description": "Typed delta emitted by core observable views.",
+      "fields": [
+        {
+          "name": "viewType",
+          "wireName": "viewType",
+          "type": "String",
+          "required": true,
+          "description": "Delta tag: timeline or conversationList."
+        },
+        {
+          "name": "ops",
+          "wireName": "ops",
+          "type": "ViewDeltaOpList",
+          "required": true,
+          "description": "Ordered delta operations."
+        },
+        {
+          "name": "conversation",
+          "wireName": "conversation",
+          "type": "Conversation",
+          "required": false,
+          "description": "Latest timeline conversation header for timeline deltas."
+        },
+        {
+          "name": "hasMore",
+          "wireName": "hasMore",
+          "type": "Boolean",
+          "required": false,
+          "description": "Latest timeline pagination state for timeline deltas."
+        },
+        {
+          "name": "totalUnread",
+          "wireName": "totalUnread",
+          "type": "UInt64",
+          "required": false,
+          "description": "Latest total unread value for conversation list deltas."
+        },
+        {
+          "name": "syncState",
+          "wireName": "syncState",
+          "type": "String",
+          "required": false,
+          "description": "Latest sync state for conversation list deltas."
+        }
+      ]
+    },
+    {
+      "name": "ViewUpdate",
+      "description": "Observable view update event payload.",
+      "fields": [
+        {
+          "name": "viewId",
+          "wireName": "viewId",
+          "type": "String",
+          "required": true,
+          "description": "Updated view id."
+        },
+        {
+          "name": "kind",
+          "wireName": "kind",
+          "type": "String",
+          "required": true,
+          "description": "Update kind: snapshot or delta."
+        },
+        {
+          "name": "snapshot",
+          "wireName": "snapshot",
+          "type": "ViewSnapshot",
+          "required": false,
+          "description": "Latest snapshot for this view when kind is snapshot."
+        },
+        {
+          "name": "delta",
+          "wireName": "delta",
+          "type": "ViewDelta",
+          "required": false,
+          "description": "View delta when kind is delta."
+        }
+      ]
+    },
+    {
+      "name": "ViewLoadOlderResponse",
+      "description": "Response returned after extending an observable timeline view.",
+      "fields": [
+        {
+          "name": "viewId",
+          "wireName": "viewId",
+          "type": "String",
+          "required": true,
+          "description": "Updated timeline view id."
+        },
+        {
+          "name": "loadedCount",
+          "wireName": "loadedCount",
+          "type": "UInt32",
+          "required": true,
+          "description": "Number of older messages inserted into the view window."
+        },
+        {
+          "name": "hasMore",
+          "wireName": "hasMore",
+          "type": "Boolean",
+          "required": true,
+          "description": "Whether older messages may still be available."
+        },
+        {
+          "name": "update",
+          "wireName": "update",
+          "type": "ViewUpdate",
+          "required": false,
+          "description": "Delta or snapshot that applies this page to the view."
+        }
+      ]
+    },
+    {
+      "name": "CloseViewResponse",
+      "description": "Response returned when closing an observable view.",
+      "fields": [
+        {
+          "name": "closed",
+          "wireName": "closed",
+          "type": "Boolean",
+          "required": true,
+          "description": "Whether a view registration was closed."
+        }
+      ]
+    }
+  ]
+}

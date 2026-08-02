@@ -1,0 +1,13 @@
+{
+  "module": {
+    "name": "flare_core_harmony_arkts_sdk",
+    "type": "har",
+    "description": "Typed HarmonyOS ArkTS adapter for Flare IM Core SDK",
+    "deviceTypes": [
+      "phone",
+      "tablet",
+      "2in1"
+    ],
+    "requestPermissions": []
+  }
+}

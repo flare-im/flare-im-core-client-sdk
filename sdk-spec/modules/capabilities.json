@@ -1,0 +1,67 @@
+{
+  "key": "capabilities",
+  "facade": "client.capabilities",
+  "description": "Capability discovery and optional plugin dispatch through capability dispatch ops.",
+  "methods": [
+    {
+      "name": "listCapabilities",
+      "operation": "capability.list",
+      "transport": "capability-dispatch-json",
+      "cApi": "flare_capability_dispatch_json",
+      "dispatchOp": "capability_list",
+      "request": "ListCapabilitiesRequest",
+      "response": "ListCapabilitiesResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "listUserCapabilities",
+      "operation": "capability.list_user",
+      "transport": "capability-dispatch-json",
+      "cApi": "flare_capability_dispatch_json",
+      "dispatchOp": "capability_list_user",
+      "request": "ListUserCapabilitiesRequest",
+      "response": "ListUserCapabilitiesResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "dispatchCapability",
+      "operation": "capability.dispatch",
+      "transport": "capability-dispatch-json",
+      "cApi": "flare_capability_dispatch_json",
+      "dispatchOp": "capability_dispatch",
+      "request": "DispatchCapabilityRequest",
+      "response": "DispatchCapabilityResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "grantCapability",
+      "operation": "capability.grant",
+      "transport": "capability-dispatch-json",
+      "cApi": "flare_capability_dispatch_json",
+      "dispatchOp": "capability_grant",
+      "request": "GrantCapabilityRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "revokeCapability",
+      "operation": "capability.revoke",
+      "transport": "capability-dispatch-json",
+      "cApi": "flare_capability_dispatch_json",
+      "dispatchOp": "capability_revoke",
+      "request": "RevokeCapabilityRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "sendCallSignal",
+      "operation": "capability.send_call_signal",
+      "transport": "capability-dispatch-json",
+      "cApi": "flare_capability_dispatch_json",
+      "dispatchOp": "send_call_signal",
+      "request": "SendCallSignalRequest",
+      "response": "Unit",
+      "stability": "stable"
+    }
+  ]
+}

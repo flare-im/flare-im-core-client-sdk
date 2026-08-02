@@ -1,0 +1,4 @@
+module CFlareImCoreSdkFFI {
+    header "include/flare_im_core_sdk_ffi.h"
+    export *
+}

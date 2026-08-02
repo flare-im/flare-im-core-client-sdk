@@ -1,0 +1,43 @@
+{
+  "key": "events",
+  "facade": "client.events",
+  "description": "Typed SDK event stream.",
+  "methods": [
+    {
+      "name": "subscribeEvents",
+      "operation": "event.subscribe",
+      "transport": "ffi-symbol",
+      "cApi": "flare_event_subscribe",
+      "request": "SubscribeEventsRequest",
+      "response": "Subscription",
+      "stability": "stable"
+    },
+    {
+      "name": "subscribeEventsBatch",
+      "operation": "event.subscribe_batch",
+      "transport": "ffi-symbol",
+      "cApi": "flare_event_subscribe_batch",
+      "request": "SubscribeEventsRequest",
+      "response": "Subscription",
+      "stability": "stable"
+    },
+    {
+      "name": "unsubscribe",
+      "operation": "event.unsubscribe",
+      "transport": "ffi-symbol",
+      "cApi": "flare_event_unsubscribe",
+      "request": "UnsubscribeRequest",
+      "response": "Unit",
+      "stability": "stable"
+    },
+    {
+      "name": "unsubscribeAll",
+      "operation": "event.unsubscribe_all",
+      "transport": "ffi-symbol",
+      "cApi": "flare_event_unsubscribe_all",
+      "request": "Unit",
+      "response": "Unit",
+      "stability": "stable"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "conversationId": "group-100",
+  "typingUserIds": [
+    "user-a",
+    "user-b"
+  ],
+  "typingCount": 2
+}

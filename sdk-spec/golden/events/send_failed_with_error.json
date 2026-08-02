@@ -1,0 +1,14 @@
+{
+  "clientMsgId": "cm-timeout-1",
+  "reason": "timeout",
+  "error": {
+    "code": "timeout",
+    "message": "message send timed out before durable acknowledgement",
+    "operation": "message.send",
+    "retryable": true,
+    "details": {
+      "phase": "durable_ack",
+      "conversationId": "group-100"
+    }
+  }
+}

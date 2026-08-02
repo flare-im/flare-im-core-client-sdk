@@ -1,0 +1,196 @@
+{
+  "colors": {
+    "light": {
+      "primary": "#7C3AED",
+      "primaryHover": "#6D28D9",
+      "primaryActive": "#5B21B6",
+      "success": "#22C55E",
+      "warning": "#F59E0B",
+      "error": "#EF4444",
+      "info": "#6D5DF6",
+      "robot": "#64748B",
+      "important": "#F59E0B",
+      "pinned": "#7C3AED",
+      "bg": {
+        "primary": "#FFFFFF",
+        "secondary": "#F5F6F8",
+        "tertiary": "#F2F3F5",
+        "hover": "#EEF1F6",
+        "selected": "#F1EAFF",
+        "disabled": "#F2F3F5"
+      },
+      "text": {
+        "primary": "#111318",
+        "secondary": "#6B7280",
+        "tertiary": "#A3A7AE",
+        "disabled": "#C9CDD4",
+        "link": "#7C3AED",
+        "linkHover": "#6D28D9"
+      },
+      "border": {
+        "primary": "#E7E9EE",
+        "secondary": "#EEF0F4",
+        "hover": "#D7DBE3",
+        "selected": "#7C3AED"
+      },
+      "bubble": {
+        "self": "#7C3AED",
+        "other": "#ECE5FF",
+        "robot": "#F4F0FF",
+        "system": "#F2F3F5"
+      }
+    },
+    "dark": {
+      "bg": {
+        "primary": "#1A1D23",
+        "secondary": "#111318",
+        "tertiary": "#22262E",
+        "hover": "rgba(255, 255, 255, 0.06)",
+        "selected": "rgba(124, 58, 237, 0.20)"
+      },
+      "text": {
+        "primary": "rgba(255, 255, 255, 0.94)",
+        "secondary": "rgba(255, 255, 255, 0.62)",
+        "tertiary": "rgba(255, 255, 255, 0.4)",
+        "link": "#C4B5FD"
+      },
+      "border": {
+        "primary": "rgba(255, 255, 255, 0.10)",
+        "secondary": "rgba(255, 255, 255, 0.08)",
+        "selected": "#A78BFA"
+      },
+      "bubble": {
+        "self": "#8B5CF6",
+        "other": "#241D33",
+        "robot": "#2B2340"
+      }
+    }
+  },
+  "sizes": {
+    "spacing": {
+      "xs": "4px",
+      "sm": "8px",
+      "md": "12px",
+      "lg": "16px",
+      "xl": "20px",
+      "2xl": "24px"
+    },
+    "radius": {
+      "xs": "2px",
+      "sm": "4px",
+      "md": "6px",
+      "lg": "8px",
+      "xl": "12px"
+    },
+    "fontSize": {
+      "xs": "11px",
+      "sm": "12px",
+      "md": "13px",
+      "lg": "14px",
+      "xl": "15px",
+      "2xl": "16px",
+      "3xl": "18px",
+      "4xl": "20px"
+    },
+    "lineHeight": {
+      "tight": "1.2",
+      "normal": "1.5",
+      "relaxed": "1.6"
+    },
+    "layout": {
+      "leftPanel": "260px",
+      "rightPanel": "300px",
+      "headerHeight": "60px",
+      "sessionItemHeight": "68px",
+      "avatarSize": "42px"
+    }
+  },
+  "shadows": {
+    "none": "none",
+    "sm": "0 1px 2px rgba(17, 19, 24, 0.06)",
+    "md": "0 6px 18px rgba(17, 19, 24, 0.10)",
+    "lg": "0 18px 48px rgba(17, 19, 24, 0.18)",
+    "xl": "0 24px 64px rgba(17, 19, 24, 0.22)"
+  },
+  "transitions": {
+    "fast": "140ms ease",
+    "normal": "180ms ease",
+    "slow": "220ms ease"
+  },
+  "composer": {
+    "surfaceShadow": "0 1px 2px rgba(31, 35, 41, 0.06)",
+    "expandedShadow": "0 8px 32px rgba(31, 35, 41, 0.12)",
+    "attachMenuShadow": "0 4px 16px rgba(31, 35, 41, 0.12)"
+  },
+  "darkComposer": {
+    "surfaceShadow": "0 1px 2px rgba(0, 0, 0, 0.2)",
+    "expandedShadow": "0 8px 32px rgba(0, 0, 0, 0.35)",
+    "attachMenuShadow": "0 4px 16px rgba(0, 0, 0, 0.35)"
+  },
+  "flutter": {
+    "darkColors": {
+      "bgPrimary": "#1A1D23",
+      "bgSecondary": "#111318",
+      "bgTertiary": "#22262E",
+      "bgHover": "#262626",
+      "bgSelected": "#2B2147",
+      "textPrimary": "#FFFFFFFF",
+      "textSecondary": "#A6A6A6",
+      "textTertiary": "#6B7280",
+      "textLink": "#C4B5FD",
+      "borderPrimary": "#3A3F4A",
+      "borderSecondary": "#2F3440",
+      "borderSelected": "#A78BFA",
+      "bubbleSelf": "#8B5CF6",
+      "bubbleOther": "#241D33",
+      "bubbleRobot": "#2B2340"
+    },
+    "semanticColors": {
+      "loginScreenCanvas": "#FFFFFFFF",
+      "loginLogoBackground": "#FFFFFFFF",
+      "loginLogoAccent": "{colors.light.primary}",
+      "loginCardSurface": "#FFFFFFFF",
+      "loginCardBorder": "{colors.light.border.primary}",
+      "loginSubtitle": "{colors.light.text.secondary}",
+      "loginHint": "{colors.light.text.tertiary}",
+      "loginCtaBackground": "{colors.light.primary}",
+      "loginCtaForeground": "#FFFFFFFF",
+      "loginInputBorder": "#E5E5E5",
+      "loginInputFill": "{colors.light.bg.secondary}",
+      "conversationListCanvas": "#FFFFFFFF",
+      "conversationListDivider": "{colors.light.border.secondary}",
+      "conversationListSearchStroke": "#E9D5FF",
+      "conversationListPinnedBorder": "#8CC4B5FD",
+      "conversationListPinnedTile": "#F5F3FF",
+      "conversationListPinnedAvatar": "#EDE9FE",
+      "conversationListItemStroke": "#E3EAF5",
+      "conversationListAvatarFallback": "#E8EEF8",
+      "conversationListPinLabel": "{colors.light.primary}",
+      "conversationListDraftAccent": "#EA580C",
+      "conversationListMentionAccent": "#EA580C",
+      "conversationListQuoteWarning": "#D48806",
+      "conversationListOnlineDot": "#16A34A",
+      "conversationListUnreadBadgeBg": "{colors.light.primary}",
+      "conversationListUnreadBadgeFg": "#FFFFFFFF",
+      "composerToolbarIcon": "{colors.light.text.secondary}",
+      "composerSendBackground": "{colors.light.primary}",
+      "composerSendForeground": "#FFFFFFFF",
+      "composerSendDisabledBg": "#E8EAEF",
+      "composerSendDisabledFg": "#B0B5BF",
+      "composerReplyStripBg": "#F5F5F5",
+      "composerReplyStripBorder": "#0F000000",
+      "composerReplyStripLabel": "#646A73",
+      "composerReplyStripPreview": "#8F959E",
+      "composerReplyStripClose": "#86909C",
+      "composerReplyStripSep": "#E0E0E0",
+      "messageReadReceipt": "{colors.light.primary}",
+      "messageStatusMuted": "{colors.light.text.secondary}",
+      "messageMediaPlaceholderBg": "{colors.light.bg.tertiary}",
+      "messageVideoPlayOverlay": "#8F000000",
+      "chatCanvas": "#F7F6FB",
+      "chatSelfBubbleFill": "{colors.light.primary}",
+      "chatConnectionBannerBg": "#F3E8FF",
+      "chatConnectionBannerFg": "{colors.light.primaryActive}"
+    }
+  }
+}

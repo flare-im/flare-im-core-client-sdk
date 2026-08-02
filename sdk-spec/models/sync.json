@@ -1,0 +1,128 @@
+{
+  "group": "sync",
+  "description": "Explicit sync reconciliation models.",
+  "enums": [],
+  "models": [
+    {
+      "name": "ConversationVersion",
+      "description": "Conversation version stamp used to reconcile client-known summaries.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Stable conversation id."
+        },
+        {
+          "name": "version",
+          "wireName": "version",
+          "type": "UInt64",
+          "required": true,
+          "description": "Known conversation summary version."
+        }
+      ]
+    },
+    {
+      "name": "SyncConversationSummariesRequest",
+      "description": "Request for summary sync with the caller's known conversation versions.",
+      "fields": [
+        {
+          "name": "knownVersions",
+          "wireName": "knownVersions",
+          "type": "ConversationVersionList",
+          "required": true,
+          "description": "Client-known conversation versions before sync."
+        }
+      ]
+    },
+    {
+      "name": "SyncConversationSummariesResponse",
+      "description": "Summary sync result listing conversations missing or newer than the caller's known versions.",
+      "fields": [
+        {
+          "name": "changedConversations",
+          "wireName": "changedConversations",
+          "type": "ConversationVersionList",
+          "required": true,
+          "description": "Conversations whose version is missing or newer after summary sync."
+        }
+      ]
+    },
+    {
+      "name": "ConversationHistoryBackfillRequest",
+      "description": "Request to backfill one conversation's historical messages into the local store.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Stable conversation id."
+        },
+        {
+          "name": "limit",
+          "wireName": "limit",
+          "type": "Int32",
+          "required": false,
+          "description": "Maximum messages per backfill page."
+        },
+        {
+          "name": "maxPages",
+          "wireName": "maxPages",
+          "type": "UInt32",
+          "required": false,
+          "description": "Maximum historical pages to request for this call."
+        }
+      ]
+    },
+    {
+      "name": "ConversationHistoryBackfillResponse",
+      "description": "Result of direct local-store historical backfill for one conversation.",
+      "fields": [
+        {
+          "name": "conversationId",
+          "wireName": "conversationId",
+          "type": "String",
+          "required": true,
+          "description": "Stable conversation id."
+        },
+        {
+          "name": "pagesLoaded",
+          "wireName": "pagesLoaded",
+          "type": "UInt32",
+          "required": true,
+          "description": "Number of older pages that advanced the local oldest seq."
+        },
+        {
+          "name": "oldestSeqBefore",
+          "wireName": "oldestSeqBefore",
+          "type": "UInt64",
+          "required": true,
+          "description": "Oldest local conversation seq before backfill."
+        },
+        {
+          "name": "oldestSeqAfter",
+          "wireName": "oldestSeqAfter",
+          "type": "UInt64",
+          "required": true,
+          "description": "Oldest local conversation seq after backfill."
+        },
+        {
+          "name": "hasMore",
+          "wireName": "hasMore",
+          "type": "Boolean",
+          "required": true,
+          "description": "Whether the server reported more history remains."
+        },
+        {
+          "name": "completed",
+          "wireName": "completed",
+          "type": "Boolean",
+          "required": true,
+          "description": "True when this call reached the earliest visible history or the server reported no more pages."
+        }
+      ]
+    }
+  ]
+}

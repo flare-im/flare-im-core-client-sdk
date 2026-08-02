@@ -1,0 +1,972 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Flare IM Cross-Platform Visual Design</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --app: #f7f8fb;
+      --surface: #ffffff;
+      --surface-alt: #f1f4f8;
+      --brand: #6d5df6;
+      --brand-deep: #5647d9;
+      --brand-soft: #eef0ff;
+      --link: #1a75d1;
+      --ink: #111318;
+      --secondary: #687080;
+      --tertiary: #9aa3b2;
+      --line: #e6e9f0;
+      --incoming: #ffffff;
+      --outgoing: #6d5df6;
+      --plugin: #f7f5ff;
+      --success: #16a34a;
+      --warning: #d97706;
+      --danger: #ef4444;
+      --shadow: 0 18px 48px rgba(17, 19, 24, 0.10);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 12% 0%, rgba(109, 93, 246, 0.08), transparent 360px),
+        linear-gradient(180deg, #fbfcff 0%, var(--app) 52%, #eff2f7 100%);
+      color: var(--ink);
+    }
+    .board {
+      width: 1440px;
+      min-height: 1900px;
+      margin: 0 auto;
+      padding: 36px;
+    }
+    h1, h2, h3, p { margin: 0; }
+    h1 { font-size: 30px; line-height: 1.18; font-weight: 820; }
+    h2 { font-size: 18px; line-height: 1.25; font-weight: 780; }
+    h3 { font-size: 13px; line-height: 1.25; font-weight: 760; }
+    p { font-size: 12px; line-height: 1.55; color: var(--secondary); }
+    .topline {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 24px;
+      margin-bottom: 28px;
+    }
+    .tagline { max-width: 600px; text-align: right; }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 24px;
+      align-items: start;
+    }
+    .panel {
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid rgba(230, 233, 240, 0.96);
+      border-radius: 8px;
+      padding: 18px;
+      box-shadow: 0 1px 2px rgba(17, 19, 24, 0.04);
+    }
+    .panel + .panel { margin-top: 24px; }
+    .panel-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+    .chip {
+      height: 24px;
+      padding: 0 9px;
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      background: var(--brand-soft);
+      color: var(--brand-deep);
+      font-size: 11px;
+      font-weight: 680;
+      white-space: nowrap;
+    }
+    .desktop-app {
+      height: 680px;
+      display: grid;
+      grid-template-columns: 56px 238px minmax(0, 1fr) 240px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .rail {
+      background: #f0f3f8;
+      border-right: 1px solid var(--line);
+      padding: 12px 7px;
+      display: grid;
+      grid-template-rows: repeat(6, 42px) 1fr 42px;
+      gap: 8px;
+    }
+    .rail-btn {
+      display: grid;
+      place-items: center;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      color: var(--secondary);
+      font-size: 12px;
+      font-weight: 760;
+      background: transparent;
+    }
+    .rail-btn.active {
+      background: var(--brand);
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(109, 93, 246, 0.28);
+    }
+    .conversation-list {
+      border-right: 1px solid var(--line);
+      background: var(--surface);
+      min-width: 0;
+    }
+    .list-header {
+      padding: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+    .list-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .title {
+      font-size: 18px;
+      line-height: 1.2;
+      font-weight: 820;
+    }
+    .round {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      display: grid;
+      place-items: center;
+      background: var(--surface);
+      color: var(--secondary);
+      font-weight: 780;
+      font-size: 14px;
+    }
+    .search {
+      height: 36px;
+      border-radius: 8px;
+      background: var(--surface-alt);
+      border: 1px solid transparent;
+      display: flex;
+      align-items: center;
+      padding: 0 11px;
+      color: var(--secondary);
+      font-size: 12px;
+    }
+    .filter-row {
+      display: flex;
+      gap: 6px;
+      padding-top: 10px;
+    }
+    .filter {
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: var(--surface-alt);
+      font-size: 11px;
+      color: var(--secondary);
+      font-weight: 650;
+    }
+    .filter.active {
+      background: var(--brand);
+      color: #fff;
+    }
+    .conversation {
+      height: 76px;
+      display: grid;
+      grid-template-columns: 42px 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border-bottom: 1px solid var(--line);
+    }
+    .conversation.active {
+      background: var(--brand-soft);
+      box-shadow: inset 3px 0 0 var(--brand);
+    }
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #e8eef8, #f6f0ff);
+      color: #4b5565;
+      font-weight: 780;
+      font-size: 13px;
+      position: relative;
+      overflow: hidden;
+    }
+    .avatar.online::after {
+      content: "";
+      position: absolute;
+      right: 1px;
+      bottom: 2px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      background: var(--success);
+    }
+    .conv-main { min-width: 0; }
+    .conv-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+    .conv-title {
+      font-size: 13px;
+      font-weight: 760;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .time {
+      font-size: 10px;
+      color: var(--tertiary);
+      white-space: nowrap;
+    }
+    .preview {
+      font-size: 12px;
+      color: var(--secondary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .unread {
+      min-width: 22px;
+      height: 20px;
+      padding: 0 6px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: var(--brand);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 780;
+    }
+    .chat {
+      min-width: 0;
+      min-height: 0;
+      background: #f8f9fd;
+      display: grid;
+      grid-template-rows: 66px 1fr auto;
+    }
+    .chat-header {
+      background: rgba(255, 255, 255, 0.94);
+      border-bottom: 1px solid var(--line);
+      padding: 10px 16px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 14px;
+    }
+    .subtitle {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--secondary);
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+    }
+    .header-actions { display: flex; gap: 8px; }
+    .timeline {
+      position: relative;
+      min-height: 0;
+      padding: 14px 18px 10px 24px;
+      overflow: hidden;
+    }
+    .rail-line {
+      position: absolute;
+      top: 22px;
+      bottom: 22px;
+      left: 17px;
+      width: 2px;
+      background: linear-gradient(var(--brand), rgba(109, 93, 246, 0.08));
+      border-radius: 999px;
+      opacity: 0.55;
+    }
+    .time-pill {
+      width: max-content;
+      margin: 0 auto 10px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid var(--line);
+      color: var(--secondary);
+      font-size: 11px;
+      box-shadow: 0 1px 2px rgba(17, 19, 24, 0.04);
+    }
+    .msg {
+      display: flex;
+      gap: 10px;
+      align-items: end;
+      margin: 8px 0;
+    }
+    .msg.self {
+      justify-content: flex-end;
+    }
+    .sender {
+      font-size: 11px;
+      color: var(--secondary);
+      font-weight: 650;
+      margin: 0 0 2px 2px;
+    }
+    .bubble {
+      max-width: 286px;
+      border-radius: 16px;
+      padding: 9px 11px;
+      background: var(--incoming);
+      border: 1px solid rgba(230, 233, 240, 0.86);
+      box-shadow: 0 1px 2px rgba(17, 19, 24, 0.04);
+      font-size: 13px;
+      line-height: 1.48;
+      color: var(--ink);
+      overflow-wrap: anywhere;
+    }
+    .self .bubble {
+      background: var(--outgoing);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 10px 20px rgba(109, 93, 246, 0.22);
+    }
+    .meta {
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+      margin-top: 6px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.82);
+    }
+    .incoming-meta { color: var(--tertiary); }
+    .quote {
+      padding: 7px 9px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.18);
+      border-left: 3px solid rgba(255, 255, 255, 0.72);
+      margin-bottom: 6px;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .media {
+      width: 210px;
+      padding: 0;
+      overflow: hidden;
+      background: #dfe8f6;
+      border: 0;
+      display: grid;
+      grid-template-rows: 112px auto;
+    }
+    .media-art {
+      background:
+        linear-gradient(135deg, rgba(26, 117, 209, 0.25), rgba(109, 93, 246, 0.25)),
+        linear-gradient(135deg, #dbeafe, #eef2ff);
+      position: relative;
+    }
+    .media-art::after {
+      content: "4";
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      min-width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      background: rgba(17, 19, 24, 0.68);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 780;
+    }
+    .media-caption {
+      padding: 8px 10px;
+      background: var(--surface);
+      font-size: 12px;
+      color: var(--secondary);
+    }
+    .failed {
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      background: #fff7f7;
+      color: var(--ink);
+      box-shadow: none;
+    }
+    .failed-row {
+      margin-top: 8px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      color: var(--danger);
+      font-size: 12px;
+      font-weight: 680;
+    }
+    .composer {
+      padding: 10px 14px 14px;
+      background: rgba(255, 255, 255, 0.96);
+      border-top: 1px solid var(--line);
+    }
+    .reconnect {
+      height: 28px;
+      border-radius: 8px;
+      background: #fff8e6;
+      border: 1px solid rgba(217, 119, 6, 0.28);
+      color: var(--warning);
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      font-size: 12px;
+      margin-bottom: 8px;
+      font-weight: 650;
+    }
+    .compose-box {
+      min-height: 92px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      display: grid;
+      grid-template-rows: auto 1fr 38px;
+      overflow: hidden;
+      box-shadow: 0 1px 2px rgba(17, 19, 24, 0.04);
+    }
+    .reply-strip {
+      min-height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 10px;
+      background: var(--brand-soft);
+      border-bottom: 1px solid var(--line);
+      color: var(--brand-deep);
+      font-size: 12px;
+      font-weight: 680;
+    }
+    .input {
+      padding: 11px 12px;
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--secondary);
+    }
+    .toolbar {
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 8px;
+      background: #fbfcff;
+    }
+    .tools { display: flex; gap: 6px; }
+    .tool {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      color: var(--secondary);
+      font-size: 12px;
+      font-weight: 760;
+    }
+    .tool.active {
+      background: var(--brand-soft);
+      color: var(--brand-deep);
+    }
+    .send {
+      width: 36px;
+      height: 28px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: var(--brand);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 780;
+    }
+    .details {
+      min-width: 0;
+      border-left: 1px solid var(--line);
+      background: var(--surface);
+      padding: 14px;
+      overflow: hidden;
+    }
+    .details-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .info-block {
+      border-top: 1px solid var(--line);
+      padding: 14px 0;
+    }
+    .info-row {
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--secondary);
+    }
+    .switch {
+      width: 34px;
+      height: 20px;
+      border-radius: 999px;
+      background: var(--brand);
+      position: relative;
+    }
+    .switch::after {
+      content: "";
+      position: absolute;
+      right: 3px;
+      top: 3px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #fff;
+    }
+    .mobile-phone {
+      width: 390px;
+      height: 780px;
+      margin: 0 auto;
+      border-radius: 34px;
+      border: 10px solid #111318;
+      overflow: hidden;
+      background: #f8f9fd;
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-rows: 84px 1fr auto;
+    }
+    .mobile-header {
+      background: rgba(255, 255, 255, 0.96);
+      border-bottom: 1px solid var(--line);
+      padding: 22px 12px 10px;
+      display: grid;
+      grid-template-columns: 34px 1fr 34px 34px;
+      gap: 8px;
+      align-items: center;
+    }
+    .mobile-title {
+      min-width: 0;
+    }
+    .mobile-title b {
+      display: block;
+      font-size: 15px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .mobile-title span {
+      display: block;
+      margin-top: 3px;
+      font-size: 11px;
+      color: var(--secondary);
+    }
+    .mobile-timeline {
+      padding: 14px;
+      overflow: hidden;
+      position: relative;
+    }
+    .mobile-msg {
+      margin: 10px 0;
+      display: flex;
+      gap: 8px;
+      align-items: end;
+    }
+    .mobile-msg.self { justify-content: flex-end; }
+    .mobile-bubble {
+      max-width: 260px;
+      border-radius: 16px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      padding: 9px 11px;
+      font-size: 14px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+    .mobile-msg.self .mobile-bubble {
+      background: var(--brand);
+      color: #fff;
+      border-color: transparent;
+    }
+    .sheet {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      border-radius: 16px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      box-shadow: 0 18px 40px rgba(17, 19, 24, 0.18);
+      padding: 10px;
+    }
+    .sheet-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .sheet-action {
+      height: 50px;
+      border-radius: 10px;
+      background: var(--surface-alt);
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      color: var(--secondary);
+      font-weight: 680;
+    }
+    .mobile-composer {
+      background: var(--surface);
+      border-top: 1px solid var(--line);
+      padding: 8px 10px 14px;
+    }
+    .mobile-compose {
+      min-height: 54px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      display: grid;
+      grid-template-columns: 34px 1fr 34px;
+      align-items: end;
+      gap: 6px;
+      padding: 8px;
+    }
+    .mobile-input {
+      min-height: 36px;
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      line-height: 1.45;
+      color: var(--secondary);
+    }
+    .tokens {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+    }
+    .token {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      overflow: hidden;
+    }
+    .swatch { height: 48px; }
+    .token-label { padding: 8px; }
+    .token-label b { display: block; font-size: 11px; }
+    .token-label span { display: block; margin-top: 3px; font-size: 10px; color: var(--secondary); }
+    .message-gallery {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .gallery-card {
+      min-height: 156px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      padding: 12px;
+    }
+    .gallery-card.plugin { background: var(--plugin); }
+    .gallery-title {
+      font-size: 12px;
+      font-weight: 760;
+      margin-bottom: 8px;
+    }
+    .gallery-box {
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #fbfcff;
+      padding: 10px;
+      min-height: 90px;
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--secondary);
+    }
+    .state-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .state {
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: var(--surface-alt);
+      color: var(--secondary);
+      font-size: 11px;
+      font-weight: 680;
+    }
+    .state.danger { color: var(--danger); background: #fff1f1; }
+    .state.warn { color: var(--warning); background: #fff8e6; }
+    .state.ok { color: var(--success); background: #eaf8ef; }
+  </style>
+</head>
+<body>
+  <main class="board">
+    <header class="topline">
+      <div>
+        <h1>Flare IM 统一设计图</h1>
+        <p>高保真方向：克制的工作台、清晰的消息节奏、可靠状态优先。</p>
+      </div>
+      <p class="tagline">视觉风险点是“时间线状态轨”：只在同步、未读、置顶、失败和搜索定位时出现，让可靠性成为产品识别点。</p>
+    </header>
+
+    <section class="grid">
+      <div class="panel">
+        <div class="panel-title">
+          <h2>桌面标准态</h2>
+          <span class="chip">Web / Flutter PC / Tauri</span>
+        </div>
+        <div class="desktop-app">
+          <aside class="rail">
+            <div class="rail-btn active">聊</div>
+            <div class="rail-btn">搜</div>
+            <div class="rail-btn">媒</div>
+            <div class="rail-btn">插</div>
+            <div class="rail-btn">诊</div>
+            <div class="rail-btn">设</div>
+            <div></div>
+            <div class="rail-btn">我</div>
+          </aside>
+          <aside class="conversation-list">
+            <div class="list-header">
+              <div class="list-header-row">
+                <div class="title">消息</div>
+                <div class="round">+</div>
+              </div>
+              <div class="search">搜索会话、消息、文件</div>
+              <div class="filter-row">
+                <span class="filter active">全部</span>
+                <span class="filter">未读</span>
+                <span class="filter">@我</span>
+                <span class="filter">失败</span>
+              </div>
+            </div>
+            <div class="conversation active">
+              <div class="avatar online">群</div>
+              <div class="conv-main">
+                <div class="conv-top"><span class="conv-title">Core SDK 体验群</span><span class="time">21:57</span></div>
+                <div class="preview">[图片组] 4 张 · 已同步到多端</div>
+              </div>
+              <div class="unread">8</div>
+            </div>
+            <div class="conversation">
+              <div class="avatar">项</div>
+              <div class="conv-main">
+                <div class="conv-top"><span class="conv-title">插件市场设计</span><span class="time">20:41</span></div>
+                <div class="preview">草稿：投票卡片的失败 fallback...</div>
+              </div>
+              <span class="chip">草稿</span>
+            </div>
+            <div class="conversation">
+              <div class="avatar">AI</div>
+              <div class="conv-main">
+                <div class="conv-top"><span class="conv-title">SDK 助手</span><span class="time">18:09</span></div>
+                <div class="preview">@你 提醒：mentionUsers 已补齐</div>
+              </div>
+              <span class="chip">@</span>
+            </div>
+            <div class="conversation">
+              <div class="avatar">测</div>
+              <div class="conv-main">
+                <div class="conv-top"><span class="conv-title">多人发送压测</span><span class="time">昨天</span></div>
+                <div class="preview">1 条本地消息发送失败</div>
+              </div>
+              <span class="state danger">失败</span>
+            </div>
+          </aside>
+          <section class="chat">
+            <header class="chat-header">
+              <div>
+                <div class="title">Core SDK 体验群</div>
+                <div class="subtitle"><span class="dot"></span><span>128 人 · 已连接 · seq 204812</span></div>
+              </div>
+              <div class="header-actions">
+                <div class="round">查</div><div class="round">钉</div><div class="round">话</div><div class="round">详</div>
+              </div>
+            </header>
+            <div class="timeline">
+              <div class="rail-line"></div>
+              <div class="time-pill">今天 21:56</div>
+              <div class="msg">
+                <div class="avatar">林</div>
+                <div>
+                  <div class="sender">林夏</div>
+                  <div class="bubble">Web 和 Flutter PC 都使用同一套密度。长 URL、中文和内联 code 都需要在气泡内安全换行。</div>
+                </div>
+              </div>
+              <div class="msg self">
+                <div class="bubble">
+                  <div class="quote">回复 林夏：输入器不能被面板遮住</div>
+                  收到。Composer 拆成状态条、引用条、文本区和工具栏，发送按钮保持稳定尺寸。
+                  <div class="meta"><span>21:57</span><span>已读</span></div>
+                </div>
+              </div>
+              <div class="msg">
+                <div class="avatar">周</div>
+                <div>
+                  <div class="sender">周然</div>
+                  <div class="bubble media">
+                    <div class="media-art"></div>
+                    <div class="media-caption">图片组 · 4 张 · 点击预览</div>
+                  </div>
+                </div>
+              </div>
+              <div class="msg self">
+                <div class="bubble failed">
+                  这条消息发送失败后必须保留，不能从时间线消失。
+                  <div class="failed-row"><span>发送失败</span><span>重试</span><span>删除</span></div>
+                </div>
+              </div>
+            </div>
+            <footer class="composer">
+              <div class="reconnect">正在重连，消息会进入本地队列；恢复后自动重试</div>
+              <div class="compose-box">
+                <div class="reply-strip"><span>回复 林夏：输入框面板问题</span><span>关闭</span></div>
+                <div class="input">输入消息，支持 @、emoji/sticker、文件、语音、富文本和插件消息。</div>
+                <div class="toolbar">
+                  <div class="tools">
+                    <div class="tool">附</div><div class="tool">@</div><div class="tool active">表</div><div class="tool">贴</div><div class="tool">音</div><div class="tool">富</div><div class="tool">插</div>
+                  </div>
+                  <div class="send">发</div>
+                </div>
+              </div>
+            </footer>
+          </section>
+          <aside class="details">
+            <div class="details-head">
+              <div class="avatar online">群</div>
+              <div>
+                <h3>会话详情</h3>
+                <p>成员、能力、插件和诊断常驻。</p>
+              </div>
+            </div>
+            <div class="info-block">
+              <div class="info-row"><span>置顶会话</span><span class="switch"></span></div>
+              <div class="info-row"><span>免打扰</span><span>关闭</span></div>
+              <div class="info-row"><span>媒体下载</span><span>可用</span></div>
+              <div class="info-row"><span>插件市场</span><span>已启用</span></div>
+            </div>
+            <div class="info-block">
+              <h3>插件消息</h3>
+              <p style="margin-top:6px">任务、日程、投票、公告、自定义卡片共用 plugin card token，未安装时降级为 Info Card。</p>
+            </div>
+            <div class="info-block">
+              <h3>诊断</h3>
+              <div class="state-row">
+                <span class="state ok">connected</span>
+                <span class="state">p95 41ms</span>
+                <span class="state warn">sync gap 0</span>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">
+          <h2>移动标准态</h2>
+          <span class="chip">Flutter / iOS / Android / Web mobile</span>
+        </div>
+        <div class="mobile-phone">
+          <header class="mobile-header">
+            <div class="round">返</div>
+            <div class="mobile-title">
+              <b>Core SDK 体验群</b>
+              <span>128 人 · 已连接</span>
+            </div>
+            <div class="round">查</div>
+            <div class="round">多</div>
+          </header>
+          <section class="mobile-timeline">
+            <div class="time-pill">刚刚</div>
+            <div class="mobile-msg">
+              <div class="avatar">林</div>
+              <div class="mobile-bubble">移动端保持单栏，长按打开操作面板，同时保留失败消息的重试入口。</div>
+            </div>
+            <div class="mobile-msg self">
+              <div class="mobile-bubble">输入区支持多行，不被表情/贴纸/mention 面板遮挡。</div>
+            </div>
+            <div class="sheet">
+              <h3 style="margin-bottom:10px">消息操作</h3>
+              <div class="sheet-grid">
+                <div class="sheet-action">回应</div>
+                <div class="sheet-action">回复</div>
+                <div class="sheet-action">复制</div>
+                <div class="sheet-action">转发</div>
+                <div class="sheet-action">多选</div>
+                <div class="sheet-action">编辑</div>
+                <div class="sheet-action">撤回</div>
+                <div class="sheet-action">删除</div>
+              </div>
+            </div>
+          </section>
+          <footer class="mobile-composer">
+            <div class="mobile-compose">
+              <div class="round">+</div>
+              <div class="mobile-input">输入消息</div>
+              <div class="send">发</div>
+            </div>
+          </footer>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-title">
+        <h2>跨端 Token 映射</h2>
+        <span class="chip">Vue tokens / Flutter / SwiftUI / Compose 同源</span>
+      </div>
+      <div class="tokens">
+        <div class="token"><div class="swatch" style="background:#f7f8fb"></div><div class="token-label"><b>bg.app</b><span>#F7F8FB</span></div></div>
+        <div class="token"><div class="swatch" style="background:#ffffff"></div><div class="token-label"><b>bg.surface</b><span>#FFFFFF</span></div></div>
+        <div class="token"><div class="swatch" style="background:#6d5df6"></div><div class="token-label"><b>brand.primary</b><span>#6D5DF6</span></div></div>
+        <div class="token"><div class="swatch" style="background:#eef0ff"></div><div class="token-label"><b>brand.soft</b><span>#EEF0FF</span></div></div>
+        <div class="token"><div class="swatch" style="background:#1a75d1"></div><div class="token-label"><b>accent.link</b><span>#1A75D1</span></div></div>
+        <div class="token"><div class="swatch" style="background:#ef4444"></div><div class="token-label"><b>state.danger</b><span>#EF4444</span></div></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-title">
+        <h2>消息展示设计</h2>
+        <span class="chip">内容类型、状态和 fallback 一屏可评审</span>
+      </div>
+      <div class="message-gallery">
+        <div class="gallery-card"><div class="gallery-title">文本 / 富文本</div><div class="gallery-box">支持中文、English、长链接、inline code、@成员，高亮但不破坏换行。</div></div>
+        <div class="gallery-card"><div class="gallery-title">引用 / 转发</div><div class="gallery-box">引用条显示发送者和摘要；转发卡显示来源、数量和展开入口。</div></div>
+        <div class="gallery-card"><div class="gallery-title">图片 / 视频</div><div class="gallery-box">预览稳定比例；上传/下载/打开所在位置都有明确状态。</div></div>
+        <div class="gallery-card"><div class="gallery-title">音频 / 文件</div><div class="gallery-box">音频波形与时长；文件名、大小、下载进度和失败重试。</div></div>
+        <div class="gallery-card"><div class="gallery-title">位置 / 链接</div><div class="gallery-box">地图缩略、地址；链接卡显示域名、标题、缩略图 fallback。</div></div>
+        <div class="gallery-card"><div class="gallery-title">表情包 / 贴纸</div><div class="gallery-box">优先渲染资产；未知 token 显示“未安装表情”，避免乱码或原始符号外露。</div></div>
+        <div class="gallery-card plugin"><div class="gallery-title">插件卡片</div><div class="gallery-box">任务、日程、投票、公告、自定义消息同一插件卡片骨架。</div></div>
+        <div class="gallery-card"><div class="gallery-title">失败 / 撤回</div><div class="gallery-box">失败消息保留气泡和稳定 key；撤回消息弱化显示，不提供无效操作。</div></div>
+      </div>
+      <div class="state-row">
+        <span class="state">pending</span>
+        <span class="state warn">sending</span>
+        <span class="state ok">sent</span>
+        <span class="state ok">delivered</span>
+        <span class="state ok">read</span>
+        <span class="state danger">failed</span>
+        <span class="state">edited</span>
+        <span class="state">recalled</span>
+        <span class="state warn">plugin unavailable</span>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
