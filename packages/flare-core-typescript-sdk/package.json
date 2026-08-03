@@ -1,6 +1,6 @@
 {
   "name": "@flare-im/sdk",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Flare IM client SDK for TypeScript — runtime-agnostic core with per-runtime transports (web/WASM, Tauri, React Native, uni-app).",
   "type": "module",
   "main": "src/index.ts",
@@ -18,8 +18,8 @@
       "default": "./devtools/vite/flareCoreWebAppVite.js"
     },
     "./media": "./src/media/index.ts",
-    "./adapter/*": "./src/adapter/*",
-    "./bridge/*": "./src/bridge/*",
+    "./adapter/*": "./src/adapter/*.ts",
+    "./bridge/*": "./src/bridge/*.ts",
     "./lifecycle": "./src/lifecycle/index.ts",
     "./web": "./src/adapters/web/index.ts",
     "./tauri": "./src/adapters/tauri/index.ts",
