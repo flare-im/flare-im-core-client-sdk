@@ -9,7 +9,7 @@ const repoRoot = resolve(sdkRoot, "..");
 const scanRoots = [
   "packages/flare-core-apple-sdk/Sources/FlareCoreAppleSDK/Bridge",
   "packages/flare-core-flutter-sdk/lib/src/bridge",
-  "packages/flare-core-vue-im-ui/src",
+  "packages/vue-im-ui/src",
   "examples/flare-core-web-app/src",
   "examples/flare-core-tauri-app/src",
   "examples/flare-core-electron-app/src",
@@ -108,42 +108,42 @@ const forbiddenPatterns = [
   {
     name: "runtime local-only media payload",
     pattern: /\b(remoteUploadStatus|local_only|browser-file-object-url|localFiles)\b/,
-    pathIncludes: "packages/flare-core-vue-im-ui/src/app/message-enhancements/",
+    pathIncludes: "packages/vue-im-ui/src/app/message-enhancements/",
   },
   {
     name: "runtime hard-coded login user seed",
     pattern: /\bVITE_FLARE_USER_ID\s*,\s*['"][^'"]+['"]/,
-    pathIncludes: "packages/flare-core-vue-im-ui/src/composables/useflarecoreclient.ts",
+    pathIncludes: "packages/vue-im-ui/src/composables/useflarecoreclient.ts",
   },
   {
     name: "runtime hard-coded SDK Lab data seed",
     pattern: /\b(messageText|peerUserId|userIds|capabilityTargetUserId|downloadKey|displayFileName)\s*:\s*['"][^'"]+['"]/,
-    pathIncludes: "packages/flare-core-vue-im-ui/src/composables/useflarecoreclient.ts",
+    pathIncludes: "packages/vue-im-ui/src/composables/useflarecoreclient.ts",
   },
   {
     name: "client-side conversation resort",
     pattern: /\bconversations\.value\s*=\s*[\s\S]{0,400}\.sort\s*\(/,
-    pathIncludes: "packages/flare-core-vue-im-ui/src/composables/useflarecoreclient.ts",
+    pathIncludes: "packages/vue-im-ui/src/composables/useflarecoreclient.ts",
   },
   {
     name: "client-side timeline normalization",
     pattern: /\bmessages\.value\s*=\s*normalizeTimelineMessagesForDisplay\b/,
-    pathIncludes: "packages/flare-core-vue-im-ui/src/composables/useflarecoreclient.ts",
+    pathIncludes: "packages/vue-im-ui/src/composables/useflarecoreclient.ts",
   },
   {
     name: "conversation list view snapshot resort",
     pattern: /\bapplyConversationListViewSnapshot\b[\s\S]{0,1600}\bsnapshot\.conversations\b[\s\S]{0,800}\.sort\s*\(/,
-    pathIncludes: "packages/flare-core-vue-im-ui/src/composables/useflarecoreclient.ts",
+    pathIncludes: "packages/vue-im-ui/src/composables/useflarecoreclient.ts",
   },
   {
     name: "timeline view snapshot shadow merge",
     pattern: /\bapplyTimelineViewSnapshot\b[\s\S]{0,2200}\b(normalizeTimelineMessagesForDisplay|mergeTimelineMessage|compareTimelineMessages|\.sort\s*\()/,
-    pathIncludes: "packages/flare-core-vue-im-ui/src/composables/useflarecoreclient.ts",
+    pathIncludes: "packages/vue-im-ui/src/composables/useflarecoreclient.ts",
   },
   {
     name: "timeline view delta shadow merge",
     pattern: /\bapplyTimelineViewDelta\b[\s\S]{0,1800}\b(normalizeTimelineMessagesForDisplay|mergeTimelineMessage|compareTimelineMessages|\.sort\s*\()/,
-    pathIncludes: "packages/flare-core-vue-im-ui/src/composables/useflarecoreclient.ts",
+    pathIncludes: "packages/vue-im-ui/src/composables/useflarecoreclient.ts",
   },
   {
     name: "flutter provider conversation resort",

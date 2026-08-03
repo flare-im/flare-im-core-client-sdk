@@ -5,8 +5,8 @@ import InputItem from '@ant-design/react-native/lib/input-item';
 import List from '@ant-design/react-native/lib/list';
 import Tag from '@ant-design/react-native/lib/tag';
 import WhiteSpace from '@ant-design/react-native/lib/white-space';
-import type { MessageBuildCatalogEntry } from 'flare-core-typescript-sdk/model';
-import { MessageBuildOp } from 'flare-core-typescript-sdk/model';
+import type { MessageBuildCatalogEntry } from '@flare-im/sdk/model';
+import { MessageBuildOp } from '@flare-im/sdk/model';
 import { styles } from '../../styles';
 import { colors } from '../../theme/tokens';
 import {

@@ -8,11 +8,11 @@ const tokenPath = resolve(sdkRoot, "shared/design-tokens/flare-im.tokens.json");
 
 const tsOut = resolve(
   sdkRoot,
-  "packages/flare-core-vue-im-ui/src/design-system/theme/generated/flare-design-tokens.ts",
+  "packages/vue-im-ui/src/design-system/theme/generated/flare-design-tokens.ts",
 );
 const cssOut = resolve(
   sdkRoot,
-  "packages/flare-core-vue-im-ui/src/design-system/styles/generated/flare-design-tokens.css",
+  "packages/vue-im-ui/src/design-system/styles/generated/flare-design-tokens.css",
 );
 const dartOut = resolve(
   sdkRoot,

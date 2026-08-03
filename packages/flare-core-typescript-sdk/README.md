@@ -1,4 +1,4 @@
-# flare-core-typescript-sdk
+# @flare-im/sdk
 
 Flare IM 的 TypeScript 客户端 SDK —— 对 Rust 核心（`flare-im-core-sdk`）的类型化封装。
 
@@ -8,7 +8,7 @@ Flare IM 的 TypeScript 客户端 SDK —— 对 Rust 核心（`flare-im-core-sd
 ## 安装
 
 ```bash
-npm install flare-core-typescript-sdk
+npm install @flare-im/sdk
 ```
 
 ## 按运行时选择入口
@@ -17,13 +17,13 @@ npm install flare-core-typescript-sdk
 
 | 运行时 | 导入路径 | 传输 / 存储 |
 |---|---|---|
-| 浏览器 / H5 | `flare-core-typescript-sdk/web` | WebSocket（WASM）+ IndexedDB |
-| Tauri 桌面 | `flare-core-typescript-sdk/tauri` | QUIC + SQLite |
-| uni-app | `flare-core-typescript-sdk/uni-app` | 原生核心 |
-| React Native | `flare-core-typescript-sdk/react-native` | 原生核心 |
+| 浏览器 / H5 | `@flare-im/sdk/web` | WebSocket（WASM）+ IndexedDB |
+| Tauri 桌面 | `@flare-im/sdk/tauri` | QUIC + SQLite |
+| uni-app | `@flare-im/sdk/uni-app` | 原生核心 |
+| React Native | `@flare-im/sdk/react-native` | 原生核心 |
 
 ```ts
-import { FlareCoreSdk } from "flare-core-typescript-sdk/uni-app";
+import { FlareCoreSdk } from "@flare-im/sdk/uni-app";
 ```
 
 浏览器端换成 `/web`，Tauri 换成 `/tauri`，其余代码不变。
@@ -33,7 +33,7 @@ import { FlareCoreSdk } from "flare-core-typescript-sdk/uni-app";
 ## 其它子路径
 
 ```ts
-import { SdkOperations, SdkEvents } from "flare-core-typescript-sdk/contract";
+import { SdkOperations, SdkEvents } from "@flare-im/sdk/contract";
 ```
 
 `api` / `listener` / `model` / `callback` / `contract` / `media` / `lifecycle`

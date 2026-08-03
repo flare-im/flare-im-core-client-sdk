@@ -270,7 +270,7 @@ Operation availability:
 
 | Platform | Implementation target |
 | --- | --- |
-| Web | `flare-core-vue-im-ui` tokens/components, responsive desktop/mobile |
+| Web | `@flare-im/vue-ui` tokens/components, responsive desktop/mobile |
 | Tauri | Same Vue UI with denser desktop defaults, file open/download affordances enabled |
 | Flutter | Map tokens to `FlareThemeTokens`, support mobile and desktop layout with shared state names |
 | iOS | Map to `FlareDesign`, use native safe area, sheets, context menus |

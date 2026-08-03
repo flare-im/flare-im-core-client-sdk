@@ -88,7 +88,7 @@ Current focus: 移除 ts-sdk electron adapter(决策:避免死代码)→ 存储�
 ## 本轮新增(已完成并验证)
 - ✅ **Step 2(结构下沉)**:`webProductionBridge`+`idbWasmStorageHost` 从 UI 包下沉到
   `typescript-sdk/src/adapters/web`(注入式 `loadRuntime`,Vite 专属的 `wasmLoader` 留 UI 注入);
-  vue-im-ui `createProductionAppClient` 改消费 `flare-core-typescript-sdk/web`;删旧文件、改 smoke.test 导入。
+  vue-im-ui `createProductionAppClient` 改消费 `@flare-im/sdk/web`;删旧文件、改 smoke.test 导入。
   验证:SDK `tsc` + vue-im-ui `vue-tsc` 干净、smoke **94/94**、web adapter vitest 21/21。
 - ✅ **Step 3(TransportProfile)**:SDK 新增 `adapters/_shared/transportProfile.ts`(单一能力权威:
   per-runtime transports/storage/native)+ package.json `./transport` 导出;vue-im-ui `appTransportSelector`
@@ -102,8 +102,8 @@ Current focus: 移除 ts-sdk electron adapter(决策:避免死代码)→ 存储�
 
 ## Notes / open questions
 - 关键文件:
-  - 下沉源:`packages/flare-core-vue-im-ui/src/app/infrastructure/sdk/{webProductionBridge,idbWasmStorageHost,wasmLoader,createProductionAppClient}.ts`
-  - SDK 目标:`packages/flare-core-typescript-sdk/src/adapters/web/`
+  - 下沉源:`packages/@flare-im/vue-ui/src/app/infrastructure/sdk/{webProductionBridge,idbWasmStorageHost,wasmLoader,createProductionAppClient}.ts`
+  - SDK 目标:`packages/@flare-im/sdk/src/adapters/web/`
   - 蓝本:`adapters/tauri/{flareCoreSdk,tauriNativeBridge}.ts`、`bridge/ffiNativeBridge.ts`
   - Electron:`examples/flare-core-electron-app/{electron/main.ts,electron/preload.ts,src/main.ts,package.json}`
   - 传输配置源:`useFlareCoreClient.ts` (~L203 buildLoginTransportConfig)、`appTransportSelector.ts`

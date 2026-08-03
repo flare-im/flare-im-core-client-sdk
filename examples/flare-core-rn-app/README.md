@@ -1,10 +1,10 @@
 # flare-core-rn-app
 
-`flare-core-typescript-sdk` 的 **React Native** IM 应用入口，使用 React 19、React Native 0.86 与 Ant Design React Native 实现移动端会话/消息工作台。
+`@flare-im/sdk` 的 **React Native** IM 应用入口，使用 React 19、React Native 0.86 与 Ant Design React Native 实现移动端会话/消息工作台。
 
 ## SDK
 
-- Package: `packages/flare-core-typescript-sdk`
+- Package: `packages/@flare-im/sdk`
 - Adapter: `src/adapters/react-native`
 - Native bridge: `globalThis.__FLARE_IM_CORE_NATIVE__` 或 RN native module `FlareImCoreSdk.invoke`
 - Core ABI: `flare-im-core-sdk/bindings/c`

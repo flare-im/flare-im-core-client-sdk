@@ -1,4 +1,4 @@
-import { MessageContentType, type Conversation, type Message } from 'flare-core-typescript-sdk/model';
+import { MessageContentType, type Conversation, type Message } from '@flare-im/sdk/model';
 import type { ConversationItem, TimelineMessage } from '../../types';
 
 const FALLBACK_AVATAR_COLOR = '#1677ff';

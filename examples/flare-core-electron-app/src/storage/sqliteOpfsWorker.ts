@@ -5,7 +5,7 @@
  * engine + persistence run here; the main-thread host (`sqliteOpfsStorageHost.ts`)
  * drives it over a small request/response protocol.
  *
- * Storage model mirrors the IndexedDB host (`flare-core-typescript-sdk/web`
+ * Storage model mirrors the IndexedDB host (`@flare-im/sdk/web`
  * idbWasmStorageHost): four KV tables keyed exactly the same way, so a packaged
  * desktop app persists the same snapshot to a real SQLite file instead of IndexedDB.
  *

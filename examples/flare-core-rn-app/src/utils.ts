@@ -1,4 +1,4 @@
-import { MessageContentType } from 'flare-core-typescript-sdk/model';
+import { MessageContentType } from '@flare-im/sdk/model';
 import { colors } from './theme/tokens';
 import type { ConversationItem, PresenceStatus, SdkStatus, TimelineMessage, UploadTask } from './types';
 

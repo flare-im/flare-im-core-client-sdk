@@ -2,15 +2,15 @@
 
 Electron desktop wrapper for the same Vue 3 workbench used by
 `examples/flare-core-web-app`. The renderer owns its `src/App.vue` and
-`src/router.ts`, while importing `flare-core-vue-im-ui/app` building blocks so
+`src/router.ts`, while importing `@flare-im/vue-ui/app` building blocks so
 login, conversations, chat, SDK Lab, media, diagnostics, theme, and i18n stay
 aligned with the web example.
 
 ## Stack
 
-- Renderer: Vue 3 + Vite + Naive UI + local app/router shell + `flare-core-vue-im-ui/app` workbench blocks
+- Renderer: Vue 3 + Vite + Naive UI + local app/router shell + `@flare-im/vue-ui/app` workbench blocks
 - Route views: `src/views/*` owns Electron page composition and wraps shared workbench components
-- SDK entry: `flare-core-typescript-sdk` web client directly (WASM core), no app-level native module
+- SDK entry: `@flare-im/sdk` web client directly (WASM core), no app-level native module
 - Desktop shell: Electron main/preload with context isolation and no renderer
   Node integration
 - Production renderer hosting: local loopback static server for `dist/`
@@ -18,7 +18,7 @@ aligned with the web example.
 
 ## Transport & storage
 
-This app uses the `flare-core-typescript-sdk` **web client directly** (WASM core in the
+This app uses the `@flare-im/sdk` **web client directly** (WASM core in the
 renderer) — the same path as the web/H5 examples. **Transport is always WebSocket**: the
 WASM build compiles QUIC out (`quinn` is `#[cfg(not(wasm32))]`) and a renderer cannot open
 raw UDP, so QUIC is not available without running the native Rust core. For a QUIC + SQLite
@@ -109,5 +109,5 @@ Artifacts are written to `release/`.
   they do in the browser app.
 - External navigations are opened by the OS browser.
 - Renderer code remains browser-shaped. Add reusable SDK or UI behavior to
-  `packages/flare-core-vue-im-ui` or `packages/flare-core-typescript-sdk`, not
+  `packages/@flare-im/vue-ui` or `packages/@flare-im/sdk`, not
   to the Electron shell.

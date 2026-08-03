@@ -25,10 +25,10 @@ test("uni-app mounts the local Vue workbench once through the TypeScript uni ada
   const pageSource = read("pages/index/index.vue");
   const routerSource = read("src/router.ts");
 
-  assert.match(mainSource, /flare-core-typescript-sdk\/uni-app/);
+  assert.match(mainSource, /@flare-im/sdk\/uni-app/);
   assert.match(mainSource, /configureProductionAppClientFactory\(\(\) => FlareCoreSdk\.createClient\(\)\)/);
   assert.match(mainSource, /installUniFlarePlatformAdapters\(\)/);
-  assert.match(mainSource, /flare-core-vue-im-ui\/app\/style\.css/);
+  assert.match(mainSource, /@flare-im/vue-ui\/app\/style\.css/);
   assert.match(pageSource, /<FlareCoreApp\s*\/>/);
   assert.match(pageSource, /src\/FlareCoreApp\.vue/);
   for (const view of [
@@ -43,7 +43,7 @@ test("uni-app mounts the local Vue workbench once through the TypeScript uni ada
     assert.match(routerSource, new RegExp(`\\./views/${view}\\.vue`));
   }
   assert.doesNotMatch(routerSource, /Flare(ChatWorkspace|LoginScreen|WorkbenchLayout|HomeSyncScreen|ConversationsPanel|ChatPlaceholder|SdkLabPanel)/);
-  assert.doesNotMatch(routerSource, /flare-core-vue-im-ui\/sdk-lab/);
+  assert.doesNotMatch(routerSource, /@flare-im/vue-ui\/sdk-lab/);
 
   const pages = JSON.parse(pagesSource);
   assert.deepEqual(

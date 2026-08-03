@@ -9,9 +9,9 @@ const workspaceRoot = path.resolve(__dirname, "../../../..");
 export default defineConfig({
   resolve: {
     alias: {
-      "flare-core-typescript-sdk/web": path.resolve(__dirname, "src/adapters/web/index.ts"),
-      "flare-core-typescript-sdk/tauri": path.resolve(__dirname, "src/adapters/tauri/index.ts"),
-      "flare-core-typescript-sdk": path.resolve(__dirname, "src/index.ts"),
+      "@flare-im/sdk/web": path.resolve(__dirname, "src/adapters/web/index.ts"),
+      "@flare-im/sdk/tauri": path.resolve(__dirname, "src/adapters/tauri/index.ts"),
+      "@flare-im/sdk": path.resolve(__dirname, "src/index.ts"),
     },
   },
   server: {

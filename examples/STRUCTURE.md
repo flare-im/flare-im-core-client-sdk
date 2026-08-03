@@ -11,15 +11,15 @@ flare-core-{platform}-app
 | Platform   | Directory                 | SDK Package                         |
 |------------|---------------------------|-------------------------------------|
 | Flutter    | `flare-core-flutter-app`  | `packages/flare-core-flutter-sdk`   |
-| Web        | `flare-core-web-app`      | `packages/flare-core-typescript-sdk` (web) |
-| React Native | `flare-core-rn-app`     | `packages/flare-core-typescript-sdk` (react-native) |
+| Web        | `flare-core-web-app`      | `packages/@flare-im/sdk` (web) |
+| React Native | `flare-core-rn-app`     | `packages/@flare-im/sdk` (react-native) |
 | Android    | `flare-core-android-app`  | `packages/flare-core-android-sdk`   |
 | iOS        | `flare-core-ios-app`      | `packages/flare-core-apple-sdk`     |
 | HarmonyOS ArkTS | `flare-core-arkts-app` | `packages/flare-core-harmony-arkts-sdk` |
 | HarmonyOS Cangjie | `flare-core-cangjie-app` | `packages/flare-core-harmony-cangjie-sdk` |
-| uni-app    | `flare-core-uni-app`      | `packages/flare-core-typescript-sdk` (uni-app) |
-| Electron   | `flare-core-electron-app` | `packages/flare-core-typescript-sdk` (web) |
-| Tauri      | `flare-core-tauri-app`    | `packages/flare-core-typescript-sdk` (`/tauri`) |
+| uni-app    | `flare-core-uni-app`      | `packages/@flare-im/sdk` (uni-app) |
+| Electron   | `flare-core-electron-app` | `packages/@flare-im/sdk` (web) |
+| Tauri      | `flare-core-tauri-app`    | `packages/@flare-im/sdk` (`/tauri`) |
 
 ## Canonical Application Layers
 

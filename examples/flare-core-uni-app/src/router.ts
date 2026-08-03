@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory } from "vue-router";
-import { getFlareSdkSingleton } from "flare-core-vue-im-ui/app";
+import { getFlareSdkSingleton } from "@flare-im/vue-ui/app";
 import ChatPlaceholderView from "./views/ChatPlaceholderView.vue";
 import ChatView from "./views/ChatView.vue";
 import ConversationsView from "./views/ConversationsView.vue";

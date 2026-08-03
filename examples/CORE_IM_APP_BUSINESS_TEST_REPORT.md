@@ -290,9 +290,9 @@ iOS 跳过项需要以下环境才可执行：`FLARE_IOS_LIVE_AUDIO=1`、`FLARE_
 | Rust bindings runtime | `rtk cargo test --manifest-path flare-im-core-sdk/Cargo.toml -p flare-im-core-sdk-bindings-runtime message_dispatch -- --nocapture` | 通过：2 个测试 |
 | Rust core SDK | `rtk cargo test --manifest-path flare-im-core-sdk/Cargo.toml -p flare-im-core-sdk local_edit_refreshes_message_preview_and_conversation_latest -- --nocapture` | 通过 |
 | Rust core SDK | `rtk cargo test --manifest-path flare-im-core-sdk/Cargo.toml -p flare-im-core-sdk build_thread_reply_keeps_reply_text_in_typed_thread_title -- --nocapture` | 通过 |
-| TypeScript SDK | `rtk yarn --cwd flare-im-core-client-sdk/packages/flare-core-typescript-sdk vitest run test/wire_codec_contract.test.ts` | 通过：22 个测试 |
-| TypeScript SDK | `rtk yarn --cwd flare-im-core-client-sdk/packages/flare-core-typescript-sdk typecheck` | 通过 |
-| Vue IM UI | `rtk yarn --cwd flare-im-core-client-sdk/packages/flare-core-vue-im-ui typecheck` | 通过 |
+| TypeScript SDK | `rtk yarn --cwd flare-im-core-client-sdk/packages/@flare-im/sdk vitest run test/wire_codec_contract.test.ts` | 通过：22 个测试 |
+| TypeScript SDK | `rtk yarn --cwd flare-im-core-client-sdk/packages/@flare-im/sdk typecheck` | 通过 |
+| Vue IM UI | `rtk yarn --cwd flare-im-core-client-sdk/packages/@flare-im/vue-ui typecheck` | 通过 |
 | Flutter macOS UI | `rtk flutter analyze lib/interface/widgets/conversation_item/conversation_item.dart` | 通过；仅输出项目既有 CocoaPods/SPM 迁移提示 |
 
 ### 12.4 当前仍保留的问题
@@ -478,9 +478,9 @@ iOS 跳过项需要以下环境才可执行：`FLARE_IOS_LIVE_AUDIO=1`、`FLARE_
 | Core SDK batch inbound | `rtk cargo test --manifest-path flare-im-core-sdk/Cargo.toml --features lifecycle-sqlite finish_batch_publishes_batch_without_single_message_replay` | 通过 |
 | Core SDK mentions | `rtk cargo test --manifest-path flare-im-core-sdk/Cargo.toml --features lifecycle-sqlite build_text_materializes_structured_user_mentions` | 通过 |
 | Load example | `rtk cargo check --manifest-path flare-im-core-sdk/Cargo.toml --example group_latency_throughput --features lifecycle-sqlite` | 通过 |
-| TS SDK wire codec | `rtk yarn --cwd flare-im-core-client-sdk/packages/flare-core-typescript-sdk vitest run test/wire_codec_contract.test.ts` | 通过：22 个测试 |
-| Vue IM UI | `rtk yarn --cwd flare-im-core-client-sdk/packages/flare-core-vue-im-ui typecheck` | 通过 |
-| Vue IM UI smoke | `rtk yarn --cwd flare-im-core-client-sdk/packages/flare-core-vue-im-ui vitest run src/app/shared/testing/smoke.test.ts` | 通过：101 个测试 |
+| TS SDK wire codec | `rtk yarn --cwd flare-im-core-client-sdk/packages/@flare-im/sdk vitest run test/wire_codec_contract.test.ts` | 通过：22 个测试 |
+| Vue IM UI | `rtk yarn --cwd flare-im-core-client-sdk/packages/@flare-im/vue-ui typecheck` | 通过 |
+| Vue IM UI smoke | `rtk yarn --cwd flare-im-core-client-sdk/packages/@flare-im/vue-ui vitest run src/app/shared/testing/smoke.test.ts` | 通过：101 个测试 |
 | Web 示例 | `rtk yarn --cwd flare-im-core-client-sdk/examples/flare-core-web-app typecheck` | 通过 |
 | Tauri 示例 | `rtk yarn --cwd flare-im-core-client-sdk/examples/flare-core-tauri-app typecheck` | 通过 |
 

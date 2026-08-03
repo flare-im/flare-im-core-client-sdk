@@ -1,4 +1,4 @@
-import type { FlareImClient, SdkConfig } from 'flare-core-typescript-sdk/api';
+import type { FlareImClient, SdkConfig } from '@flare-im/sdk/api';
 import type {
   Conversation,
   ImageGroupContentPayload,
@@ -6,8 +6,8 @@ import type {
   MessageBuildCatalogEntry,
   MessageContent,
   SendMessageResponse,
-} from 'flare-core-typescript-sdk/model';
-import { HeartbeatAppState, MessageBuildOp, MessageContentType, NetworkInterfaceKind } from 'flare-core-typescript-sdk/model';
+} from '@flare-im/sdk/model';
+import { HeartbeatAppState, MessageBuildOp, MessageContentType, NetworkInterfaceKind } from '@flare-im/sdk/model';
 import {
   RN_CAPABILITY_OPERATIONS,
   RN_CONNECTION_OPERATIONS,

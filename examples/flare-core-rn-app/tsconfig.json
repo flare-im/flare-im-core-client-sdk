@@ -16,9 +16,9 @@
       "@ui/*": ["src/*"],
       "@shared/*": ["src/shared/*"],
       "@business/*": ["src/business/*"],
-      "flare-core-typescript-sdk": ["../../packages/flare-core-typescript-sdk/src/index.ts"],
-      "flare-core-typescript-sdk/*": ["../../packages/flare-core-typescript-sdk/src/*"],
-      "flare-core-typescript-sdk/react-native": [
+      "@flare-im/sdk": ["../../packages/flare-core-typescript-sdk/src/index.ts"],
+      "@flare-im/sdk/*": ["../../packages/flare-core-typescript-sdk/src/*"],
+      "@flare-im/sdk/react-native": [
         "../../packages/flare-core-typescript-sdk/src/adapters/react-native/index.ts"
       ]
     }

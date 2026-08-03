@@ -1,6 +1,6 @@
 # Flare IM 客户端 — 多端传输与存储架构设计报告
 
-> 范围:`packages/flare-core-typescript-sdk` 结构与 `src/adapters` 优化;
+> 范围:`packages/@flare-im/sdk` 结构与 `src/adapters` 优化;
 > `examples/flare-core-electron-app`、`examples/flare-core-uni-app` 的补全。
 > 目标剖面:Web/H5 = WebSocket + IndexedDB;PC/Android/iOS = WebSocket + QUIC + 协议竞速 + SQLite。
 
@@ -21,8 +21,8 @@
 
 ```
 examples/<app>            产品组合 / 路由 / 主题            (web, electron, uni, tauri, rn, flutter, android)
-  └─ flare-core-vue-im-ui                                  共享 Vue UI + 应用基础设施(composables/app/infrastructure)
-       └─ flare-core-typescript-sdk                        L2:类型化 API + Bridge 选择 + codec
+  └─ @flare-im/vue-ui                                  共享 Vue UI + 应用基础设施(composables/app/infrastructure)
+       └─ @flare-im/sdk                        L2:类型化 API + Bridge 选择 + codec
             └─ flare-im-core-sdk (Rust)                    L1 行为核心:传输竞速 / 排序 / 同步 / 存储引擎
                  ├─ bindings/wasm  → 浏览器 WASM           WS(JS host)+ IndexedDB(host 回调)
                  └─ bindings/c     → 原生 cdylib/静态库     QUIC + WS 竞速 + SQLite(进程内)
@@ -60,10 +60,10 @@ Electron 的 `preload.ts` 只暴露通知/文件揭示,**没有任何 SDK 原生
 
 1. **传输/存储真实现被困在 UI 包。** 生产级 WASM 桥 `webProductionBridge.ts`(313 行,含连接态机、
    超时、事件管线、best-effort 节流)与 IndexedDB 存储 host `idbWasmStorageHost.ts`(384 行)位于
-   **`flare-core-vue-im-ui/app/infrastructure`**(UI 包),而 SDK 自己的
+   **`@flare-im/vue-ui/app/infrastructure`**(UI 包),而 SDK 自己的
    `adapters/web/webFlareImClient.ts` 只是 16 行壳。按 flare-im-spec 约束 5「可复用客户端基础设施下沉
    packages」,这两块是 **product-neutral 的传输/存储基础设施**,应下沉到
-   `flare-core-typescript-sdk/src/adapters/web`,让任何宿主(不止 Vue UI、含 Electron 渲染回退)都能复用。
+   `@flare-im/sdk/src/adapters/web`,让任何宿主(不止 Vue UI、含 Electron 渲染回退)都能复用。
 
 2. **`src/adapters` 缺少"运行时剖面"这一一等概念。** 现在每个 adapter 的 `flareCoreSdk.ts` 只做
    bridge 选择,传输能力(能否 QUIC、存储是 sqlite 还是 idb)散落在 UI 包的

@@ -15,7 +15,7 @@ import {
   WASM_STORAGE_CHANGED_EVENT,
   type WasmStorageChangedDetail,
   type WasmStorageHostCallbacks,
-} from "flare-core-typescript-sdk/web";
+} from "@flare-im/sdk/web";
 
 type WorkerResponse = { id: number; ok: true; result: unknown } | { id: number; ok: false; error: string };
 

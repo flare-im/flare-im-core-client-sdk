@@ -1,14 +1,14 @@
 # flare-core-uni-app
 
-`flare-core-typescript-sdk` 的 **uni-app** IM 工作台模板。
+`@flare-im/sdk` 的 **uni-app** IM 工作台模板。
 
-这个示例不再维护一套重复的 uni 专属 UI。uni-app 负责平台启动、页面入口、`src/router.ts` 路由注册和 SDK client factory；登录、首页同步、会话列表、聊天、消息构建、媒体、能力、诊断和 SDK Lab 功能面复用 `packages/flare-core-vue-im-ui/app` 暴露的组件与业务函数，SDK 调用走 `packages/flare-core-typescript-sdk` 的 `uni-app` adapter。
+这个示例不再维护一套重复的 uni 专属 UI。uni-app 负责平台启动、页面入口、`src/router.ts` 路由注册和 SDK client factory；登录、首页同步、会话列表、聊天、消息构建、媒体、能力、诊断和 SDK Lab 功能面复用 `packages/@flare-im/vue-ui/app` 暴露的组件与业务函数，SDK 调用走 `packages/@flare-im/sdk` 的 `uni-app` adapter。
 
 ## SDK
 
-- Package: `packages/flare-core-typescript-sdk`
+- Package: `packages/@flare-im/sdk`
 - Adapter: `src/adapters/uni-app`
-- UI/workbench blocks: `packages/flare-core-vue-im-ui/app`
+- UI/workbench blocks: `packages/@flare-im/vue-ui/app`
 
 ## 传输与存储
 
@@ -47,7 +47,7 @@ tests/                 # uni-app / H5 / Flutter parity 约束
 - 消息编辑、删除、反应、引用、置顶、转发、重发与批量选择入口
 - diagnostics、connection/session、media cache、presence、capability、events SDK Lab
 
-功能面与 `examples/flare-core-flutter-app` 的工作台目标对齐；Vue/uni 侧通过 `packages/flare-core-vue-im-ui/app` 复用组件、状态函数和平台 adapter hook，同时把应用壳与路由留在 uni 示例内，避免共享包变成固定应用。
+功能面与 `examples/flare-core-flutter-app` 的工作台目标对齐；Vue/uni 侧通过 `packages/@flare-im/vue-ui/app` 复用组件、状态函数和平台 adapter hook，同时把应用壳与路由留在 uni 示例内，避免共享包变成固定应用。
 
 ## 开发
 

@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { MessageBuildOp, MessageContentType, type MessageBuildCatalogEntry } from 'flare-core-typescript-sdk/model';
+import { MessageBuildOp, MessageContentType, type MessageBuildCatalogEntry } from '@flare-im/sdk/model';
 import { createRnFlareClient } from '../application/sdk/createRnFlareClient';
 import {
   createRnWorkbenchSdkService,

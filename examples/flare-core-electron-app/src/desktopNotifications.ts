@@ -2,7 +2,7 @@ import {
   configureDesktopNotifications,
   playDesktopNotificationSound,
   type DesktopNotificationPayload,
-} from "flare-core-vue-im-ui/app";
+} from "@flare-im/vue-ui/app";
 
 type ElectronDesktopBridge = {
   notify(payload: DesktopNotificationPayload): Promise<boolean>;

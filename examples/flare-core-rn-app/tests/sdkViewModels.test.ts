@@ -1,6 +1,6 @@
 import * as assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { MessageContentType, ConversationType, type Conversation, type Message } from 'flare-core-typescript-sdk/model';
+import { MessageContentType, ConversationType, type Conversation, type Message } from '@flare-im/sdk/model';
 import { conversationToItem, messageToTimelineMessage, messagesToTimeline } from '../src/application/mappers/sdkViewModels.ts';
 
 function baseConversation(overrides: Partial<Conversation> = {}): Conversation {

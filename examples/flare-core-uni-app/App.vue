@@ -1,3 +1,3 @@
 <script setup lang="ts">
-import "flare-core-vue-im-ui/app/style.css";
+import "@flare-im/vue-ui/app/style.css";
 </script>

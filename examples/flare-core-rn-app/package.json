@@ -2,7 +2,7 @@
   "name": "flare-core-rn-app",
   "private": true,
   "version": "0.1.0",
-  "description": "Production-oriented IM app template for flare-core-typescript-sdk (React Native).",
+  "description": "Production-oriented IM app template for @flare-im/sdk (React Native).",
   "scripts": {
     "postinstall": "node scripts/patch-ant-design-icons-config.js",
     "sync:dev-token-secret": "node scripts/sync-dev-token-secret.js",
@@ -18,7 +18,7 @@
   "dependencies": {
     "@ant-design/icons-react-native": "^2.3.2",
     "@ant-design/react-native": "^5.4.3",
-    "flare-core-typescript-sdk": "file:../../packages/flare-core-typescript-sdk",
+    "@flare-im/sdk": "file:../../packages/flare-core-typescript-sdk",
     "react": "19.2.7",
     "react-native": "0.86.0",
     "react-native-gesture-handler": "^3.0.2",

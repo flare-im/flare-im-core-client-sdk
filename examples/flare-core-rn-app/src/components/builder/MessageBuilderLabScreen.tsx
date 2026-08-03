@@ -2,7 +2,7 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import Button from '@ant-design/react-native/lib/button';
 import WhiteSpace from '@ant-design/react-native/lib/white-space';
-import { MessageBuildOp } from 'flare-core-typescript-sdk/model';
+import { MessageBuildOp } from '@flare-im/sdk/model';
 import { styles } from '../../styles';
 import { colors, spacing } from '../../theme/tokens';
 

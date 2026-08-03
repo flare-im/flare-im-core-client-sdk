@@ -1,4 +1,4 @@
-import type { MessageContentType } from 'flare-core-typescript-sdk/model';
+import type { MessageContentType } from '@flare-im/sdk/model';
 import type {
   RnCapabilityOperation,
   RnConnectionOperation,

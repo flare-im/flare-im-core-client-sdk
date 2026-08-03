@@ -11,7 +11,7 @@
 
 ## 重要前提:6 个示例 App,其中 web/electron/uni/tauri 复用同一套 Vue workbench blocks
 - **原生独立实现(各一套 UI)**:Flutter(Dart)、Android(Kotlin)、iOS(SwiftUI)。
-- **web / electron / uni / tauri**:四端都复用 `packages/flare-core-vue-im-ui/app` 暴露的 workbench 组件、SDK context、media/desktop/transport adapter hooks,但各端自己维护 `App.vue`、`router.ts`、route guard、history 模式和平台初始化。因此 UI 业务能力按共享包统计,应用壳/平台集成按各端统计。
+- **web / electron / uni / tauri**:四端都复用 `packages/@flare-im/vue-ui/app` 暴露的 workbench 组件、SDK context、media/desktop/transport adapter hooks,但各端自己维护 `App.vue`、`router.ts`、route guard、history 模式和平台初始化。因此 UI 业务能力按共享包统计,应用壳/平台集成按各端统计。
 - 另存在 `flare-core-rn-app`(React Native),本清单未并入。
 
 ## 方法学与告警(必读)
@@ -19,7 +19,7 @@
   - Flutter = `flare-core-flutter-app/lib`
   - Android = `flare-core-android-app/app/src/main`
   - iOS = `flare-core-ios-app/Sources`
-  - **web / electron / uni / tauri 的有效 UI 覆盖 = 共享包 `packages/flare-core-vue-im-ui/src` + 各自 `src/App.vue`/`src/router.ts` 壳**(矩阵中 web/uni/tauri 三列仍按共享包能力计;若只 grep 各自薄壳会被误判为空)。
+  - **web / electron / uni / tauri 的有效 UI 覆盖 = 共享包 `packages/@flare-im/vue-ui/src` + 各自 `src/App.vue`/`src/router.ts` 壳**(矩阵中 web/uni/tauri 三列仍按共享包能力计;若只 grep 各自薄壳会被误判为空)。
 - `✓` = 操作名出现(强信号:被调用);`·` = 未出现。
 - ⚠️ **`·` 不一定 = 缺功能**:有的端用了**等价操作**(如 iOS 用 `listConversationsPaginated` 代 `listConversations`)。补齐前需人工复核 `·` 是真缺还是等价覆盖。**Android 2026-06-27 重写后,其 11 个 `·` 与 iOS 同属等价覆盖**(`*ById` / `getOne` / paginated 变体),非真缺。
 
@@ -29,16 +29,16 @@
 | **Flutter** | **113** | 原生 Dart | 基准,近乎完整;可跑 ✅ |
 | **iOS** | **97** | 原生 SwiftUI | 较全(已补 14 项,见下);**✅ 模拟器可运行**;**2026-06-27 工程化重构(i18n/全面 MVVM/平台抽象/MessageBuilder/设计 token)+ 复核修正 `session.connect` 历史误标(98→97)** |
 | **Android** | **105** | 原生 Kotlin (Compose) | **2026-06-27 重写达成并超越 iOS 对齐**:干净 MVVM（镜像 iOS Core/Features）+ Compose 六屏 UI + FlareTheme 设计系统 + i18n（en/zh）；`:app:assembleDebug` BUILD SUCCESSFUL ✅ |
-| **web** | **99** | Vue + `flare-core-typescript-sdk`(WASM) | 共享 workbench blocks + web app/router 壳;2026-06-28 补 4 真缺(prepare/uninit/hardReset/sendMessageNoOss) |
+| **web** | **99** | Vue + `@flare-im/sdk`(WASM) | 共享 workbench blocks + web app/router 壳;2026-06-28 补 4 真缺(prepare/uninit/hardReset/sendMessageNoOss) |
 | **uni** | **99** | Vue + uni 跨端(`uniFlarePlatform`) | 共享 workbench blocks + uni app/router 壳 |
-| **tauri** | **99** | Vue + `flare-core-typescript-sdk/tauri`(桌面/Rust) | 共享 workbench blocks + Tauri app/router 壳 |
+| **tauri** | **99** | Vue + `@flare-im/sdk/tauri`(桌面/Rust) | 共享 workbench blocks + Tauri app/router 壳 |
 
 > web / uni / tauri 的 `99` 三列**数值相同**(共享 Vue UI)。三者真正的区别在**平台集成**,非 UI 能力 —— 见下表。
 
 ## 平台集成差异(web vs uni vs tauri —— 三者的真实区别)
 | 维度 | web | uni | tauri |
 |---|---|---|---|
-| 客户端 SDK | `flare-core-typescript-sdk`(WASM core) | 共享 Vue + `uniFlarePlatform` 适配 | `flare-core-typescript-sdk/tauri`(Rust 桌面后端) |
+| 客户端 SDK | `@flare-im/sdk`(WASM core) | 共享 Vue + `uniFlarePlatform` 适配 | `@flare-im/sdk/tauri`(Rust 桌面后端) |
 | 运行形态 | 浏览器 | App / H5 / 小程序 | 桌面(`src-tauri` Rust 后端) |
 | 媒体 | 媒体代理 / Cache API | SQLite 本地库 / 原生录音 | 本地路径解析 + 文件选择器(`configureAppMediaLocalPathResolver/PathPicker`) |
 | 原生能力 | — | 原生录音、SQLite | 桌面通知、文件对话框(open/reveal)、传输选择器、dev CA 证书 |
@@ -65,7 +65,7 @@
 - ✅ 运行管线已修(sync_ffi + `@convention(c)` + xcodegen);iPhone 17 模拟器实测 `xcodebuild` BUILD SUCCEEDED + `simctl launch` 启动渲染。Lab 操作的运行时执行需连后端(登录后)。
 
 ### web / uni / tauri(共享 Vue,95 → 99;UI 缺口三端相同 —— 改一次三端受益)
-- **2026-06-28 复核 + 补齐(共享 `packages/flare-core-vue-im-ui`)**:对上一版列出的 12 个 `·` 逐个复核 →
+- **2026-06-28 复核 + 补齐(共享 `packages/@flare-im/vue-ui`)**:对上一版列出的 12 个 `·` 逐个复核 →
   - **8 个本就等价覆盖(非真缺,不加冗余具名包装)**:`deleteMessageForEveryone`/`editRichDocByMessageId`/`markMessageReadAndBurn`/`markMessageWithColor`/`unmarkMessage`/`unpinMessage` 全部经 `messageDispatchOptions` 的 `dispatchMessage({op})` 覆盖;`subscribeEventsBatch`→`subscribeEvents`;`syncConversationSummariesWithVersions`→`syncConversationSummaries`。
   - **4 个真缺已补齐**(`useFlareCoreClient.runSessionOperation` + `FlareSdkLabPanel.vue` 按钮):`session.prepare`/`uninit`/`hardReset`、`messages.sendMessageNoOss`。`vue-tsc --noEmit` 0 error。→ web/uni/tauri 各 95 → **99**。
 - **历史列表(已被上面复核取代)**:messages.{deleteMessageForEveryone、editRichDocByMessageId、markMessageReadAndBurn、markMessageWithColor、sendMessageNoOss、unmarkMessage、unpinMessage}、session.{prepare、uninit、hardReset}、events.subscribeEventsBatch、sync.syncConversationSummariesWithVersions。

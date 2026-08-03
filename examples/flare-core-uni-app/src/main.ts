@@ -1,6 +1,6 @@
 import { createSSRApp } from "vue";
-import { FlareCoreSdk } from "flare-core-typescript-sdk/uni-app";
-import { configureMediaProxy } from "flare-core-vue-im-ui/utils";
+import { FlareCoreSdk } from "@flare-im/sdk/uni-app";
+import { configureMediaProxy } from "@flare-im/vue-ui/utils";
 
 import App from "../App.vue";
 import { router } from "./router";
@@ -8,9 +8,9 @@ import {
   configureAppTransportSelector,
   sdkMediaProxyFields,
   configureProductionAppClientFactory,
-} from "flare-core-vue-im-ui/app";
+} from "@flare-im/vue-ui/app";
 import { installUniFlarePlatformAdapters } from "./platform/uniFlarePlatform";
-import "flare-core-vue-im-ui/app/style.css";
+import "@flare-im/vue-ui/app/style.css";
 
 configureMediaProxy(sdkMediaProxyFields());
 if (isUniNativeTransportRuntime()) {

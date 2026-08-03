@@ -2,7 +2,7 @@ import {
   configureAppMediaLocalPathResolver,
   configureAppMediaPathPicker,
   type AppMediaPathPickerRequest,
-} from "flare-core-vue-im-ui/app";
+} from "@flare-im/vue-ui/app";
 
 type UniTempFile = {
   path?: string;

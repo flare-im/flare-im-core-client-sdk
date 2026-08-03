@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { IconOutline } from '@ant-design/icons-react-native';
-import { MessageContentType } from 'flare-core-typescript-sdk/model';
+import { MessageContentType } from '@flare-im/sdk/model';
 import { colors } from '../../theme/tokens';
 import { styles } from '../../styles';
 import type { TimelineMessage } from '../../types';

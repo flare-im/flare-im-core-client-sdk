@@ -1,4 +1,4 @@
-import { ConnectionEventName, MessageEventName } from 'flare-core-typescript-sdk/model';
+import { ConnectionEventName, MessageEventName } from '@flare-im/sdk/model';
 import type { ConversationFilter } from '../types';
 
 export const filters: Array<{ label: string; value: ConversationFilter }> = [
