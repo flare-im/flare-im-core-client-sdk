@@ -134,7 +134,11 @@ function normalizedBuildId(id) {
 }
 function flareVueImUiChunk(id) {
   const normalized = normalizedBuildId(id);
-  if (!normalized.includes("@flare-im/vue-ui")) {
+  // 既认包名也认解析后的目录名：本地开发用 file: 依赖 / alias 指向源码目录，
+  // Vite 解析出来的 id 是真实路径（.../flare-im-design/vue-im-ui/...），里面
+  // 根本没有 "@flare-im/vue-ui" 这一段。只匹配包名的话，这里的所有分包规则
+  // 都静默失效，整个 UI 库落进 vendor —— 表现是构建过体积门禁不过，而不是报错。
+  if (!normalized.includes("@flare-im/vue-ui") && !normalized.includes("/vue-im-ui/")) {
     return void 0;
   }
   if (normalized.includes("/app/components/FlareSdkLabPanel") || normalized.includes("/app/message-enhancements/")) {
@@ -154,10 +158,24 @@ function flareVueImUiChunk(id) {
   }
   return void 0;
 }
+// 未被下面任何显式规则认领的第三方包，按**包名**兜底分组。
+//
+// 原先它们全部落进 Vite 默认的单个 vendor chunk：规则枚举得再细，只要漏掉一个
+// 大包（比如图标库从 @vicons 换到 lucide 之后），vendor 就会重新胀回去，而症状
+// 是"体积门禁不过"，指不到是哪个包。按包名分组让新增依赖天然分散，也让超标时
+// 一眼看得出是谁。
+function fallbackVendorChunk(normalized) {
+  const m = normalized.match(/node_modules\/((?:@[^/]+\/)?[^/]+)/);
+  return m ? `vendor-${m[1].replace(/[@/]/g, "-")}` : void 0;
+}
+
 function nodeModuleChunk(id) {
   const normalized = normalizedBuildId(id);
   if (!normalized.includes("node_modules")) {
     return void 0;
+  }
+  if (normalized.includes("node_modules/lucide-vue-next")) {
+    return "icon-runtime";
   }
   if (normalized.includes("node_modules/protobufjs") || normalized.includes("node_modules/markdown-it")) {
     return "content-runtime";
@@ -187,6 +205,7 @@ function nodeModuleChunk(id) {
     return "naive-runtime";
   }
   return "vendor";
+  return fallbackVendorChunk(normalized);
 }
 function createFlareCoreWebAppViteConfig(options) {
   const appDir = options.appDir;
@@ -224,7 +243,7 @@ function createFlareCoreWebAppViteConfig(options) {
             replacement: path.join(typeScriptSdkRoot, "adapters/_shared/transportProfile.ts")
           },
           {
-            find: /^@flare-im/sdk\/(.+)$/,
+            find: /^@flare-im\/sdk\/(.+)$/,
             replacement: path.join(typeScriptSdkRoot, "$1")
           },
           {
@@ -264,7 +283,7 @@ function createFlareCoreWebAppViteConfig(options) {
             replacement: path.join(vueImUiRoot, "app/styles/index.css")
           },
           {
-            find: /^@flare-im/vue-ui\/app\/components\/(.+)$/,
+            find: /^@flare-im\/vue-ui\/app\/components\/(.+)$/,
             replacement: path.join(vueImUiRoot, "app/components/$1")
           },
           {
@@ -306,7 +325,11 @@ function createFlareCoreWebAppViteConfig(options) {
               if (normalizedId.includes("/views/SdkLabView")) {
                 return "sdk-lab";
               }
-              if (normalizedId.includes("@flare-im/sdk") || normalizedId.includes("flare-im-core-sdk/bindings")) {
+              if (
+                normalizedId.includes("@flare-im/sdk") ||
+                normalizedId.includes("/flare-core-typescript-sdk/") ||
+                normalizedId.includes("flare-im-core-sdk/bindings")
+              ) {
                 return "flare-sdk";
               }
               return void 0;

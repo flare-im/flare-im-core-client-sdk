@@ -18,7 +18,7 @@ export default defineConfig({
         replacement: path.join(typeScriptSdkRoot, "adapters/web/index.ts"),
       },
       {
-        find: /^@flare-im/sdk\/(.+)$/,
+        find: /^@flare-im\/sdk\/(.+)$/,
         replacement: path.join(typeScriptSdkRoot, "$1"),
       },
       {
