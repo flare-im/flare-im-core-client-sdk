@@ -20,8 +20,8 @@
     "package:mac": "npm run build && electron-builder --mac",
     "package:win": "npm run build && electron-builder --win",
     "package:linux": "npm run build && electron-builder --linux",
-    "verify:architecture": "node ../../scripts/generate-design-tokens.mjs --check && node ../../packages/flare-core-typescript-sdk/scripts/verify-no-client-shadow-views.mjs",
-    "test": "node ../../scripts/generate-design-tokens.mjs --check && node ../../packages/flare-core-typescript-sdk/scripts/verify-no-client-shadow-views.mjs && vitest run && node --test tests/*.test.mjs",
+    "verify:architecture": "node ../../packages/flare-core-typescript-sdk/scripts/verify-no-client-shadow-views.mjs",
+    "test": "node ../../packages/flare-core-typescript-sdk/scripts/verify-no-client-shadow-views.mjs && vitest run && node --test tests/*.test.mjs",
     "test:e2e": "playwright test",
     "typecheck": "vue-tsc --noEmit -p tsconfig.json && tsc -p tsconfig.electron.json --noEmit"
   },

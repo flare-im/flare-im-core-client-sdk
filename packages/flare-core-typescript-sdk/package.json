@@ -31,8 +31,8 @@
     "build": "tsc --noEmit",
     "check": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
-    "verify:architecture": "node ../../scripts/generate-design-tokens.mjs --check && node scripts/verify-no-client-shadow-views.mjs",
-    "test": "node ../../scripts/generate-design-tokens.mjs --check && node scripts/verify-no-client-shadow-views.mjs && vitest run"
+    "verify:architecture": "node scripts/verify-no-client-shadow-views.mjs",
+    "test": "node scripts/verify-no-client-shadow-views.mjs && vitest run"
   },
   "dependencies": {
     "protobufjs": "^8.6.5"

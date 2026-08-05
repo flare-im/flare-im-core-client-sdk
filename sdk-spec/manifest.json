@@ -1,6 +1,6 @@
 {
   "name": "flare-im-core-client-sdk",
-  "apiVersion": "0.3.0",
+  "apiVersion": "1.0.0",
   "ffiContractVersion": "flare-im-ffi/v1",
   "sourceOfTruth": "../flare-im-core-sdk",
   "ffiEntry": "../flare-im-core-sdk/bindings/c",

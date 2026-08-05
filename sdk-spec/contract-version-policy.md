@@ -7,11 +7,11 @@ breaking changes behind platform adapters.
 
 | Layer | Current source | Current value | Compatibility rule |
 |-------|----------------|---------------|--------------------|
-| Shared model proto | `../flare-proto/Cargo.toml` | `1.0.1` | Breaking shared model/wire changes require a major version bump or a new `*.vN` proto package before public release. |
-| gRPC service proto | `../flare-grpc-proto/Cargo.toml` | `0.1.0` | Service surface changes are pre-1.0. Breaking request/response or service ownership changes require a minor bump while pre-1.0, and a major bump after 1.0. |
+| Shared model proto | `../flare-proto/Cargo.toml` | `2.0.1` | Breaking shared model/wire changes require a major version bump or a new `*.vN` proto package before public release. |
+| gRPC service proto | `../flare-grpc-proto/Cargo.toml` | `2.0.1` | Service surface changes are pre-1.0. Breaking request/response or service ownership changes require a minor bump while pre-1.0, and a major bump after 1.0. |
 | Native FFI contract | `sdk-spec/manifest.json#ffiContractVersion`, `sdk-spec/native/c_abi.json#contract`, generated platform constants | `flare-im-ffi/v1` | Must be identical across the manifest, generated client spec, native C ABI metadata, and every generated platform package. Any incompatible C ABI, event code, operation id, callback shape, handle policy, or JSON dispatch encoding change requires `vN+1`. |
-| Platform SDK API | `sdk-spec/manifest.json#apiVersion` | `0.3.0` | Semver for the platform SDK contract overlay. Additive modules/models/events are minor bumps before 1.0; breaking platform API or DTO shape changes are minor bumps while pre-1.0 and major bumps after 1.0. |
-| Published package semver | Per package manifest when present | TypeScript `0.2.0`, Flutter `0.1.0` | Package versions may lag the spec while packages are private or unpublished, but must be valid semver and must not claim a newer major contract than `apiVersion`. Release notes must state the sdk-spec `apiVersion` and `ffiContractVersion` they implement. |
+| Platform SDK API | `sdk-spec/manifest.json#apiVersion` | `1.0.0` | Semver for the platform SDK contract overlay. Additive modules/models/events are minor bumps before 1.0; breaking platform API or DTO shape changes are minor bumps while pre-1.0 and major bumps after 1.0. |
+| Published package semver | Per package manifest when present | TypeScript `1.0.6`, Flutter `0.1.0` | Package versions may lag the spec while packages are private or unpublished, but must be valid semver and must not claim a newer major contract than `apiVersion`. Release notes must state the sdk-spec `apiVersion` and `ffiContractVersion` they implement. |
 
 Android and Apple source packages currently do not publish independent semver in
 their package manifests. Their generated `SdkContract` constants are the

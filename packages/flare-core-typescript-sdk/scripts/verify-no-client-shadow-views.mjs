@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { readdir, readFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -9,7 +10,6 @@ const repoRoot = resolve(sdkRoot, "..");
 const scanRoots = [
   "packages/flare-core-apple-sdk/Sources/FlareCoreAppleSDK/Bridge",
   "packages/flare-core-flutter-sdk/lib/src/bridge",
-  "packages/vue-im-ui/src",
   "examples/flare-core-web-app/src",
   "examples/flare-core-tauri-app/src",
   "examples/flare-core-electron-app/src",
@@ -19,6 +19,17 @@ const scanRoots = [
   "examples/flare-core-rn-app/src",
   "examples/flare-core-ios-app/Sources",
 ];
+
+// 扫描根写死一串相对路径，而仓库拆分后其中若干已经不在本仓（vue-im-ui 迁去
+// flare-im-design，部分 example app 各自独立成仓）。原先不过滤，缺一个目录整个
+// 门禁就 ENOENT 崩掉 —— 表现是「测试跑不起来」，而不是「有目录缺了」。
+// 改为存在才扫，并把跳过的显式打出来，免得门禁悄悄缩水成什么都不查。
+const missingScanRoots = scanRoots.filter((rel) => !existsSync(resolve(sdkRoot, rel)));
+const presentScanRoots = scanRoots.filter((rel) => existsSync(resolve(sdkRoot, rel)));
+if (missingScanRoots.length > 0) {
+  console.warn(`[shadow-views] 跳过不存在的扫描根（已拆分到别的仓）：\n  ${missingScanRoots.join("\n  ")}`);
+}
+
 
 const forbiddenIdentifiers = [
   "_mergeConversation",
@@ -405,7 +416,7 @@ for (const root of scanRoots) {
   }
 }
 
-for (const { base, rel } of runtimeSeedScanRoots) {
+for (const { base, rel } of runtimeSeedScanRoots.filter(({ base, rel }) => existsSync(resolve(base, rel)))) {
   let files = [];
   try {
     files = await walk(join(base, rel));
