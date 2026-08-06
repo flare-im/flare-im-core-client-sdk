@@ -4,6 +4,16 @@ This document defines adapter-level runtime behavior for every platform SDK. The
 
 ## Client Lifecycle
 
+Canonical lifecycle:
+
+```text
+create(config)
+login(request)
+use module APIs
+logout()
+dispose()
+```
+
 - One `FlareImClient` instance represents one app/session boundary.
 - `init` must complete before APIs that require storage, networking, or native handles.
 - `login` and `logout` are command APIs. Their return values are the primary success/failure contract.
@@ -66,7 +76,7 @@ details
 cause
 ```
 
-Adapters must not collapse core failures into platform-generic exceptions without preserving the stable `code`.
+Stable error codes are generated from `sdk-spec/manifest.json`. Adapters must not collapse core failures into platform-generic exceptions without preserving the stable `code`.
 
 ## Observability
 
