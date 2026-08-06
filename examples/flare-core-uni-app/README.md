@@ -1,8 +1,10 @@
 # flare-core-uni-app
 
-`@flare-im/sdk` 的 **uni-app** IM 工作台模板。
+English · [中文](README.zh-CN.md)
 
-这个示例不再维护一套重复的 uni 专属 UI。uni-app 负责平台启动、页面入口、`src/router.ts` 路由注册和 SDK client factory；登录、首页同步、会话列表、聊天、消息构建、媒体、能力、诊断和 SDK Lab 功能面复用 `packages/@flare-im/vue-ui/app` 暴露的组件与业务函数，SDK 调用走 `packages/@flare-im/sdk` 的 `uni-app` adapter。
+The **uni-app** IM workbench template for `@flare-im/sdk`.
+
+This example no longer maintains a duplicate uni-specific UI. uni-app is responsible for platform launch, page entry points, `src/router.ts` route registration, and the SDK client factory; the login, home-page sync, conversation list, chat, message building, media, capabilities, diagnostics, and SDK Lab feature surfaces reuse the components and business functions exposed by `packages/@flare-im/vue-ui/app`, and SDK calls go through the `uni-app` adapter of `packages/@flare-im/sdk`.
 
 ## SDK
 
@@ -10,46 +12,46 @@
 - Adapter: `src/adapters/uni-app`
 - UI/workbench blocks: `packages/@flare-im/vue-ui/app`
 
-## 传输与存储
+## Transport and storage
 
-uni-app adapter 按运行时自动分流(`src/main.ts` 的 `configureProductionAppClientFactory` +
+The uni-app adapter automatically splits by runtime (`configureProductionAppClientFactory` in `src/main.ts` +
 `FlareCoreSdk.createClient()`):
 
-| 运行时 | Bridge | 传输 | 存储 |
+| Runtime | Bridge | Transport | Storage |
 | --- | --- | --- | --- |
 | **H5 / web** | WASM | WebSocket | IndexedDB |
-| **App(Android / iOS)** | FFI(`bindings/c` TurboModule)→ 原生 core | WebSocket + QUIC 协议竞速 | SQLite |
+| **App (Android / iOS)** | FFI (`bindings/c` TurboModule) → native core | WebSocket + QUIC protocol race | SQLite |
 
-- 仅在 App 原生运行时(`isUniNativeTransportRuntime()`)启用 QUIC/竞速传输选择器;H5 保持 WebSocket。
-- App 端依赖原生插件把 `bindings/c` 暴露为 `globalThis.__FLARE_IM_CORE_NATIVE__`(TurboModule)。
-- 竞速算法与 SQLite 引擎归 Rust core,客户端只传 `SdkConfig`(`protocolRaceOrder` 等)。详见
-  [docs/design/transport-storage-multiruntime.md](../../docs/design/transport-storage-multiruntime.md)。
+- The QUIC/race transport selector is enabled only in the App native runtime (`isUniNativeTransportRuntime()`); H5 stays on WebSocket.
+- The App side relies on a native plugin to expose `bindings/c` as `globalThis.__FLARE_IM_CORE_NATIVE__` (TurboModule).
+- The race algorithm and the SQLite engine belong to the Rust core; the client only passes `SdkConfig` (`protocolRaceOrder`, etc.). See
+  [docs/design/transport-storage-multiruntime.md](../../docs/design/transport-storage-multiruntime.md) for details.
 
-## 目录结构
+## Directory structure
 
 ```text
-App.vue                # 全局样式入口
-src/main.ts            # uni-app createSSRApp + TS SDK uni adapter 配置
-src/FlareCoreApp.vue   # uni 页面内挂载的 IM workbench 根组件
-src/router.ts          # uni 侧路由表、route guard 和页面注册
-src/platform/          # uni 平台媒体选择、本地路径解析与 Flutter 对齐能力清单
-pages/index/index.vue  # 单一页面入口，挂载 uni 侧 workbench 根组件
-tests/                 # uni-app / H5 / Flutter parity 约束
+App.vue                # Global style entry point
+src/main.ts            # uni-app createSSRApp + TS SDK uni adapter configuration
+src/FlareCoreApp.vue   # Root IM workbench component mounted inside the uni page
+src/router.ts          # uni-side route table, route guard, and page registration
+src/platform/          # uni-platform media picking, local path resolution, and Flutter-aligned capability list
+pages/index/index.vue  # Single-page entry point that mounts the uni-side workbench root component
+tests/                 # uni-app / H5 / Flutter parity constraints
 ```
 
-完整规范见 [`examples/STRUCTURE.md`](../STRUCTURE.md)。
+See the full specification in [`examples/STRUCTURE.md`](../STRUCTURE.md).
 
-## 能力清单
+## Capability list
 
-- SDK 初始化、登录、登出与 token 更新
-- 首页同步 gate、会话列表、会话打开、置顶、免打扰、归档、草稿、已读
-- 聊天窗口、消息搜索、文本/表情/贴纸/富文本/媒体/结构化消息构建
-- 消息编辑、删除、反应、引用、置顶、转发、重发与批量选择入口
-- diagnostics、connection/session、media cache、presence、capability、events SDK Lab
+- SDK initialization, login, logout, and token update
+- Home-page sync gate, conversation list, conversation open, pin, do-not-disturb, archive, draft, read
+- Chat window, message search, and text/emoji/sticker/rich-text/media/structured message building
+- Message edit, delete, reaction, quote, pin, forward, resend, and batch-selection entries
+- diagnostics, connection/session, media cache, presence, capability, events SDK Lab
 
-功能面与 `examples/flare-core-flutter-app` 的工作台目标对齐；Vue/uni 侧通过 `packages/@flare-im/vue-ui/app` 复用组件、状态函数和平台 adapter hook，同时把应用壳与路由留在 uni 示例内，避免共享包变成固定应用。
+The feature surface is aligned with the workbench goals of `examples/flare-core-flutter-app`; the Vue/uni side reuses components, state functions, and platform adapter hooks through `packages/@flare-im/vue-ui/app`, while keeping the application shell and routing inside the uni example to avoid the shared package becoming a fixed application.
 
-## 开发
+## Development
 
 ```bash
 cd examples/flare-core-uni-app

@@ -1,8 +1,10 @@
 # flare-core-arkts-app
 
-`flare-core-harmony-arkts-sdk` 的生产级 HarmonyOS ArkTS IM 应用模板，目录分层与 `flare-core-flutter-app` 对齐。
+English · [中文](README.zh-CN.md)
 
-## 目录结构
+A production-grade HarmonyOS ArkTS IM application template for `flare-core-harmony-arkts-sdk`, with a directory layering aligned to `flare-core-flutter-app`.
+
+## Directory structure
 
 ```text
 entry/src/main/ets/
@@ -16,4 +18,4 @@ entry/src/main/resources/rawfile/
 scripts/
 ```
 
-规范见 [`examples/STRUCTURE.md`](../STRUCTURE.md)。参考实现：`flare-core-flutter-app`。
+See the specification in [`examples/STRUCTURE.md`](../STRUCTURE.md). Reference implementation: `flare-core-flutter-app`.

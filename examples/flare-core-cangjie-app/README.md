@@ -1,8 +1,10 @@
 # flare-core-cangjie-app
 
-`flare-core-harmony-cangjie-sdk` 的生产级 HarmonyOS 仓颉 IM 应用模板，目录分层与 `flare-core-flutter-app` 对齐。
+English · [中文](README.zh-CN.md)
 
-## 目录结构
+A production-grade HarmonyOS Cangjie IM application template for `flare-core-harmony-cangjie-sdk`, with a directory layering aligned to `flare-core-flutter-app`.
+
+## Directory structure
 
 ```text
 src/
@@ -17,4 +19,4 @@ scripts/
 test/
 ```
 
-规范见 [`examples/STRUCTURE.md`](../STRUCTURE.md)。参考实现：`flare-core-flutter-app`。
+See the specification in [`examples/STRUCTURE.md`](../STRUCTURE.md). Reference implementation: `flare-core-flutter-app`.
