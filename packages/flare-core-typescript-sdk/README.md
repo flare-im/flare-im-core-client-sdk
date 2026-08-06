@@ -1,61 +1,70 @@
 # @flare-im/sdk
 
-Flare IM 的 TypeScript 客户端 SDK —— 对 Rust 核心（`flare-im-core-sdk`）的类型化封装。
+English · [中文](README.zh-CN.md)
 
-真正的 IM 逻辑（连接、同步、存储、时间线）全在 Rust 核心里；这个包负责把它接到
-各个 JS 运行时上，并提供完整的 TypeScript 类型。
+The TypeScript client SDK for Flare IM — a typed wrapper over the Rust core (`flare-im-core-sdk`).
 
-## 安装
+All the real IM logic (connection, sync, storage, timeline) lives in the Rust
+core; this package wires it onto the various JS runtimes and provides complete
+TypeScript types.
+
+## Install
 
 ```bash
 npm install @flare-im/sdk
 ```
 
-## 按运行时选择入口
+## Pick an entry point by runtime
 
-不同运行时的传输与存储能力不同，所以入口是分开的 —— 直接从对应子路径导入：
+Transport and storage capabilities differ per runtime, so the entry points are
+split — import from the matching subpath:
 
-| 运行时 | 导入路径 | 传输 / 存储 |
+| Runtime | Import path | Transport / storage |
 |---|---|---|
-| 浏览器 / H5 | `@flare-im/sdk/web` | WebSocket（WASM）+ IndexedDB |
-| Tauri 桌面 | `@flare-im/sdk/tauri` | QUIC + SQLite |
-| uni-app | `@flare-im/sdk/uni-app` | 原生核心 |
-| React Native | `@flare-im/sdk/react-native` | 原生核心 |
+| Browser / H5 | `@flare-im/sdk/web` | WebSocket (WASM) + IndexedDB |
+| Tauri desktop | `@flare-im/sdk/tauri` | QUIC + SQLite |
+| uni-app | `@flare-im/sdk/uni-app` | native core |
+| React Native | `@flare-im/sdk/react-native` | native core |
 
 ```ts
 import { FlareCoreSdk } from "@flare-im/sdk/uni-app";
 ```
 
-浏览器端换成 `/web`，Tauri 换成 `/tauri`，其余代码不变。
+Swap `/uni-app` for `/web` in the browser or `/tauri` for Tauri; the rest of
+your code is unchanged.
 
-> Tauri 入口需要 peer 依赖 `@tauri-apps/api ^2.0.0`。
+> The Tauri entry point requires the peer dependency `@tauri-apps/api ^2.0.0`.
 
-## 其它子路径
+## Other subpaths
 
 ```ts
 import { SdkOperations, SdkEvents } from "@flare-im/sdk/contract";
 ```
 
 `api` / `listener` / `model` / `callback` / `contract` / `media` / `lifecycle`
-分别导出操作、事件监听、数据模型、回调、协议契约、媒体与生命周期。
+export operations, event listeners, data models, callbacks, the protocol
+contract, media, and lifecycle respectively.
 
-## 可运行的完整示例
+## A complete, runnable example
 
-本包是 SDK 层，跑起来需要配套的运行时桥与服务端。完整可运行的应用见仓库
-[`examples/`](../../examples/)，其中 `flare-core-uni-app` 是接线最完整的一个。
+This package is the SDK layer; running it needs the matching runtime bridge and
+a server. For complete, runnable apps see [`examples/`](../../examples/) in the
+repository — `flare-core-uni-app` is the most fully wired one.
 
-服务端起法见 flare-im-core 仓库的 `QUICKSTART.md`（五分钟跑通，无需自建用户体系）。
+For how to start the server, see `QUICKSTART.md` in the flare-im-core repository
+(up and running in five minutes, no self-built user system required).
 
-## 给贡献者
+## For contributors
 
-**不要在这里加 IM 业务逻辑。** 行为应当加进 `flare-im-core-sdk`（Rust），
-经 `bindings/c` 暴露，再更新 `sdk-spec/manifest.json`。这个包只做类型化转发 ——
-逻辑下沉到核心才能让七个端共享同一份实现。
+**Do not add IM business logic here.** Behavior belongs in `flare-im-core-sdk`
+(Rust), exposed through `bindings/c`, then reflected in `sdk-spec/manifest.json`.
+This package only does typed forwarding — pushing logic down into the core is
+what lets all seven platforms share one implementation.
 
-- 契约状态：`contract-synced`
-- 异步模型：Promise + 事件订阅
-- FFI 契约：`flare-im-ffi/v1`
+- Contract status: `contract-synced`
+- Async model: Promise + event subscription
+- FFI contract: `flare-im-ffi/v1`
 
-## 许可
+## License
 
 Apache-2.0
