@@ -1,13 +1,19 @@
 import { createRouter, createWebHashHistory } from "vue-router";
-import { getFlareSdkSingleton } from "@flare-im/vue-ui/app";
-import ChatPlaceholderView from "./views/ChatPlaceholderView.vue";
-import ChatView from "./views/ChatView.vue";
-import ConversationsView from "./views/ConversationsView.vue";
-import LoginView from "./views/LoginView.vue";
-import SyncProgressView from "./views/SyncProgressView.vue";
-import WorkbenchLayout from "./views/WorkbenchLayout.vue";
+import {
+  getFlareSdkSingleton,
+  FlareChatPlaceholder as ChatPlaceholderView,
+  FlareChatWorkspace as ChatView,
+  FlareConversationsPanel as ConversationsView,
+  FlareHomeSyncScreen as SyncProgressView,
+  FlareLoginScreen as LoginView,
+  FlareWorkbenchLayout as WorkbenchLayout,
+} from "@flare-im/vue-ui/app";
 
-const SdkLabView = () => import("./views/SdkLabView.vue");
+// Views come from the shared @flare-im/vue-ui/app workbench building blocks.
+// Platform specifics (SQLite/OPFS storage, desktop notifications) are injected
+// via configure* adapters in main.ts and stay decoupled from these views.
+const SdkLabView = () =>
+  import("@flare-im/vue-ui/app").then((m) => m.FlareSdkLabPanel);
 
 export const router = createRouter({
   history: createWebHashHistory(),

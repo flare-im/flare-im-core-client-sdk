@@ -19,31 +19,34 @@ function readFromMonorepo(path) {
   return readFileSync(join(monorepoRoot, path), "utf8");
 }
 
-test("uni-app mounts the local Vue workbench once through the TypeScript uni adapter", () => {
+test("uni-app mounts the shared Vue workbench once through the TypeScript uni adapter", () => {
   const mainSource = read("src/main.ts");
   const pagesSource = read("pages.json");
   const pageSource = read("pages/index/index.vue");
   const routerSource = read("src/router.ts");
 
-  assert.match(mainSource, /@flare-im/sdk\/uni-app/);
+  assert.match(mainSource, /@flare-im\/sdk\/uni-app/);
   assert.match(mainSource, /configureProductionAppClientFactory\(\(\) => FlareCoreSdk\.createClient\(\)\)/);
   assert.match(mainSource, /installUniFlarePlatformAdapters\(\)/);
-  assert.match(mainSource, /@flare-im/vue-ui\/app\/style\.css/);
+  assert.match(mainSource, /@flare-im\/vue-ui\/app\/style\.css/);
   assert.match(pageSource, /<FlareCoreApp\s*\/>/);
   assert.match(pageSource, /src\/FlareCoreApp\.vue/);
-  for (const view of [
-    "LoginView",
-    "SyncProgressView",
-    "WorkbenchLayout",
-    "ConversationsView",
-    "ChatPlaceholderView",
-    "ChatView",
-    "SdkLabView",
+  // Workbench views are now consumed from the shared @flare-im/vue-ui/app kit
+  // rather than duplicated locally; the app owns only platform wiring.
+  assert.match(routerSource, /@flare-im\/vue-ui\/app/);
+  for (const component of [
+    "FlareLoginScreen",
+    "FlareHomeSyncScreen",
+    "FlareWorkbenchLayout",
+    "FlareConversationsPanel",
+    "FlareChatPlaceholder",
+    "FlareChatWorkspace",
+    "FlareSdkLabPanel",
   ]) {
-    assert.match(routerSource, new RegExp(`\\./views/${view}\\.vue`));
+    assert.match(routerSource, new RegExp(component));
   }
-  assert.doesNotMatch(routerSource, /Flare(ChatWorkspace|LoginScreen|WorkbenchLayout|HomeSyncScreen|ConversationsPanel|ChatPlaceholder|SdkLabPanel)/);
-  assert.doesNotMatch(routerSource, /@flare-im/vue-ui\/sdk-lab/);
+  assert.doesNotMatch(routerSource, /\.\/views\//);
+  assert.doesNotMatch(routerSource, /@flare-im\/vue-ui\/sdk-lab/);
 
   const pages = JSON.parse(pagesSource);
   assert.deepEqual(
@@ -86,10 +89,13 @@ test("uni-app declares the Flutter workbench SDK capability surface it exercises
   }
 });
 
-test("app-composed Vue workbench used by uni-app exercises the same core SDK families as Flutter", () => {
+test("shared Vue workbench consumed by uni-app exercises the same core SDK families as Flutter", () => {
   const clientSource = readFromMonorepo("flare-im-design/vue-im-ui/src/composables/useFlareCoreClient.ts");
-  const sdkLabSource = read("src/views/SdkLabView.vue");
-  const chatSource = read("src/views/ChatView.vue");
+  // The uni-app consumes these workbench views from the shared kit; assert the
+  // shared implementation exercises the same core SDK families as Flutter.
+  const workbenchDir = "flare-im-design/vue-im-ui/src/app/components";
+  const sdkLabSource = readFromMonorepo(`${workbenchDir}/FlareSdkLabPanel.vue`);
+  const chatSource = readFromMonorepo(`${workbenchDir}/FlareChatWorkspace.vue`);
 
   for (const sdkCall of [
     "client.init",
@@ -120,7 +126,7 @@ test("app-composed Vue workbench used by uni-app exercises the same core SDK fam
   assert.match(chatSource, /sendText|sendTypedMessage|sendSticker|sendEmoji/);
 });
 
-test("uni-app keeps one native page and app-owned router views for the workbench", () => {
+test("uni-app keeps one native page and routes the shared workbench views", () => {
   const pagesSource = read("pages.json");
   const routerSource = read("src/router.ts");
 
