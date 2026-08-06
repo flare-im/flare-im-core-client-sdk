@@ -1,6 +1,6 @@
 # Flare IM Core Client SDK
 
-English · [中文](README.zh-CN.md)
+[English](README.md) · 中文
 
 > ## ℹ️ 这是通信基础设施，不是开箱即用的 IM 产品
 >
@@ -25,11 +25,11 @@ English · [中文](README.zh-CN.md)
 > 边界详情见 [GOVERNANCE.md](GOVERNANCE.md)。
 
 
-This workspace contains typed client SDK adapters for `flare-im-core-sdk`.
+本工作区包含面向 `flare-im-core-sdk` 的类型化客户端 SDK 适配层。
 
-The Rust core remains the only place for IM behavior. This workspace owns platform API shape, generated contracts, native artifact placement, docs, examples and contract tests.
+Rust 核心仍是 IM 行为的唯一归属地。本工作区负责平台 API 形态、生成的契约、原生产物落位、文档、示例与契约测试。
 
-## Architecture
+## 架构
 
 ```text
 App
@@ -39,7 +39,7 @@ App
   -> L0 Rust core: ../flare-im-core-sdk
 ```
 
-## Directory Map
+## 目录结构
 
 ```text
 sdk-spec/        split contract source of truth
@@ -49,7 +49,7 @@ examples/        platform smoke apps
 docs/            generated and hand-written SDK docs
 ```
 
-## Commands
+## 命令
 
 ```bash
 make help
@@ -62,28 +62,28 @@ cargo xtask codegen
 cargo xtask wire-boundary-check
 ```
 
-Common `make` targets:
+常用 `make` 目标：
 
-- `make codegen`: regenerate SDK contracts **and sync official/docs/sdk** (11, 17, client-platform-api.json).
-- `make spec`: validate split spec invariants.
-- `make verify`: validate spec, core-contract parity, and package structure.
-- `make all`: sync spec, verify, regenerate packages, and verify structure.
-- `make codegen-check`: verify generated SDK outputs are up to date.
-- `make wire-boundary-check`: verify Rust-owned wire boundary artifacts.
-- `make check`: run spec/codegen/structure plus TypeScript, Dart, Swift, and optional Cangjie checks.
-- `make clean`: remove local package/tool build caches.
+- `make codegen`：重新生成 SDK 契约，**并同步 official/docs/sdk**（11、17、client-platform-api.json）。
+- `make spec`：校验 split spec 不变量。
+- `make verify`：校验 spec、core-contract 一致性与包结构。
+- `make all`：同步 spec、校验、重新生成包并校验结构。
+- `make codegen-check`：校验生成的 SDK 产物是否为最新。
+- `make wire-boundary-check`：校验 Rust 归属的 wire 边界产物。
+- `make check`：运行 spec/codegen/structure，外加 TypeScript、Dart、Swift 以及可选的 Cangjie 检查。
+- `make clean`：清除本地包/工具构建缓存。
 
-## Rules
+## 规则
 
-- Update `sdk-spec/modules/*.json` before changing public SDK APIs.
-- Never duplicate message, conversation, sync, delivery, auth, presence, media, call or plugin business rules in platform packages.
-- Keep platform wrappers thin: validate input, call C ABI, map result, emit typed event or typed error.
-- Generated files are disposable. Do not edit generated files by hand.
+- 在改动公开 SDK API 之前，先更新 `sdk-spec/modules/*.json`。
+- 切勿在平台包中重复实现消息、会话、同步、投递、鉴权、在线状态、媒体、通话或插件的业务规则。
+- 保持平台封装层轻薄：校验输入、调用 C ABI、映射结果、发出类型化事件或类型化错误。
+- 生成的文件是可丢弃的。不要手工编辑生成的文件。
 
-## Production Contracts
+## 生产契约
 
-- Runtime behavior: `docs/runtime-contracts.md`
-- Architecture review and next steps: `docs/architecture-review.md`
+- 运行时行为：`docs/runtime-contracts.md`
+- 架构评审与后续步骤：`docs/architecture-review.md`
 
 ---
 
