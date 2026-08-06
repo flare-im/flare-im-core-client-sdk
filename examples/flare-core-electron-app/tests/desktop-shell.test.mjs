@@ -45,6 +45,6 @@ test("electron renderer vite config stays ESM while main process stays CommonJS"
   assert.match(tsconfig, /vite\.config\.mts/);
   assert.doesNotMatch(tsconfig, /vite\.config\.ts/);
   assert.match(electronTsconfig, /"module":\s*"CommonJS"/);
-  assert.match(viteConfig, /@flare-im/sdk\/devtools\/vite/);
+  assert.match(viteConfig, /@flare-im\/sdk\/devtools\/vite/);
   assert.match(viteConfig, /import\.meta\.url/);
 });
