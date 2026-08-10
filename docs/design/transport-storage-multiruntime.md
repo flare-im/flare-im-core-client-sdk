@@ -32,12 +32,12 @@ examples/<app>            产品组合 / 路由 / 主题            (web, electr
 
 | Runtime | 入口 adapter | NativeBridge | 实际传输 | 实际存储 | 状态 |
 |---|---|---|---|---|---|
-| Web | `adapters/web` → `WebProductionBridge` | WASM | WebSocket | IndexedDB | ✅ 符合目标 |
-| uni-app H5 | `adapters/uni-app`(auto) | WASM | WebSocket | IndexedDB | ✅ |
-| uni-app App | `adapters/uni-app`(auto) | `FfiNativeBridge` → 原生 core | QUIC+WS 竞速 | SQLite | ✅(依赖原生插件已编译) |
-| Tauri | `adapters/tauri` → `TauriNativeBridge` | 原生 core | QUIC+WS 竞速 | SQLite | ✅ |
-| RN | `adapters/react-native` | `FfiNativeBridge` | QUIC+WS 竞速 | SQLite | ✅ |
-| **Electron** | **无专属 adapter** | **回退 `WebProductionBridge`(WASM)** | **仅 WebSocket** | **IndexedDB** | ❌ **缺口** |
+| Web | `adapters/web` → `WebProductionBridge` | WASM | WebSocket | IndexedDB | ✓ 符合目标 |
+| uni-app H5 | `adapters/uni-app`(auto) | WASM | WebSocket | IndexedDB | ✓ |
+| uni-app App | `adapters/uni-app`(auto) | `FfiNativeBridge` → 原生 core | QUIC+WS 竞速 | SQLite | ✓(依赖原生插件已编译) |
+| Tauri | `adapters/tauri` → `TauriNativeBridge` | 原生 core | QUIC+WS 竞速 | SQLite | ✓ |
+| RN | `adapters/react-native` | `FfiNativeBridge` | QUIC+WS 竞速 | SQLite | ✓ |
+| **Electron** | **无专属 adapter** | **回退 `WebProductionBridge`(WASM)** | **仅 WebSocket** | **IndexedDB** | ✗ **缺口** |
 
 证据:`examples/flare-core-electron-app/src/main.ts` 调了
 `configureAppTransportSelector({ runtimeStatus: "electron-native" })`,但**没有**调
@@ -227,7 +227,7 @@ invoke 汇聚到唯一 core。禁止每窗口一个 core、禁止两进程开同
 
 存储后端 = WASM core 可注入的 `setStorageHost`:web 用 IndexedDB host;桌面换 `sqliteOpfsStorageHost`(wa-sqlite 真 SQLite 引擎,OPFS 文件持久化,跑在 Web Worker)。**零原生模块、零 napi-rs**。
 
-### 10.3 已完成并验证(typecheck/单测/无漂移全绿)
+### 10.3 已完成并验证(typecheck/单测/无漂移全部通过)
 - **结构下沉(§2.1)**:`webProductionBridge`+`idbWasmStorageHost` 下沉 `typescript-sdk/src/adapters/web`(注入式 `loadRuntime`);`wasmLoader` 留 UI 注入。
 - **存储 host 可注入**:`WebProductionBridge` 增 `createStorageHost?`(默认 IndexedDB)。
 - **SQLite host(app 自有)**:`examples/flare-core-electron-app/src/storage/{sqliteOpfsStorageHost,sqliteOpfsWorker}.ts` + `wa-sqlite.d.ts`(wa-sqlite+OPFS,4 张 KV 表镜像 IndexedDB host 键策略 + storage-changed 事件)。**共享包不 import wa-sqlite**——只有 electron 用,按放置规则归示例;web/H5/uni/tauri 包零 wa-sqlite。
