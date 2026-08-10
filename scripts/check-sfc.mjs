@@ -159,6 +159,13 @@ async function main() {
   }
 
   console.log(`\nCompiled ${totalFiles} SFC across ${totalApps} app(s).`);
+  // 一个 app 都没扫到时不能悄悄算通过：那说明示例应用不在当前检出里
+  // （web/tauri/flutter/ios/android 五个 app 目前被 .gitignore 排除），
+  // 门禁实际什么也没查，必须让它在 CI 上显式可见。
+  if (totalApps === 0) {
+    console.warn("::warning::未找到任何示例应用，SFC 门禁本次未实际检查任何文件。");
+    console.warn("检出中缺少 examples/*，请确认示例应用是否已纳入版本控制。");
+  }
   if (failures.length) {
     console.error(`\n${failures.length} SFC failed to compile:\n`);
     for (const { file, errors } of failures) {

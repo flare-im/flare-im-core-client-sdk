@@ -392,7 +392,7 @@ for (const rel of forbiddenPaths) {
   }
 }
 
-for (const root of scanRoots) {
+for (const root of presentScanRoots) {
   const files = await walk(join(sdkRoot, root));
   for (const file of files) {
     const source = await readFile(file, "utf8");
