@@ -9,6 +9,18 @@ const WASM_DIR = path.resolve(
   "../../../../../../../flare-im-core-sdk/bindings/wasm/pkg",
 );
 
+/**
+ * wasm 产物来自同级仓库 flare-im-core-sdk 的 `wasm-pack build`，不在本仓内。
+ * 单仓 checkout（CI 默认）里它必然缺失，此时依赖它的用例应当跳过而非失败——
+ * 否则「环境缺件」会被误报成「集成回归」。
+ */
+export function wasmPkgAvailable(): boolean {
+  return (
+    fs.existsSync(path.join(WASM_DIR, "flare_im_core_sdk.js")) &&
+    fs.existsSync(path.join(WASM_DIR, "flare_im_core_sdk_bg.wasm"))
+  );
+}
+
 export async function loadWasmRuntimeForTests(): Promise<FlareWasmRuntime> {
   const jsPath = path.join(WASM_DIR, "flare_im_core_sdk.js");
   const wasmPath = path.join(WASM_DIR, "flare_im_core_sdk_bg.wasm");

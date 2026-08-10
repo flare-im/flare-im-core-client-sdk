@@ -4,7 +4,7 @@ import path from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { LoginFlowMockBridge, operations } from "./testing/loginFlowMockBridge";
-import { loadWasmRuntimeForTests } from "./testing/loadWasmRuntimeForTests";
+import { loadWasmRuntimeForTests, wasmPkgAvailable } from "./testing/loadWasmRuntimeForTests";
 import { WebFlareImClient } from "./webFlareImClient";
 import { WasmNativeBridge } from "../../bridge/wasmNativeBridge";
 import { ffiContractVersion } from "../../contract/sdk_contract";
@@ -80,7 +80,8 @@ describe("web login flow (raw SDK)", () => {
   });
 });
 
-describe("web login flow (wasm integration)", () => {
+// wasm 产物由同级仓 flare-im-core-sdk 构建产出，不在本仓；缺失时整组跳过。
+describe.skipIf(!wasmPkgAvailable())("web login flow (wasm integration)", () => {
   let wasmAvailable = false;
   let wasmLoadError = "";
   let runtime: Awaited<ReturnType<typeof loadWasmRuntimeForTests>> | null = null;

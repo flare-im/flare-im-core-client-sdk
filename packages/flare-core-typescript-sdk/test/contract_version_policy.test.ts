@@ -92,7 +92,14 @@ describe("contract version policy", () => {
     expect(semverMajor(flutterVersion)).toBeLessThanOrEqual(apiMajor);
   });
 
-  it("documents current protocol crate version sources used by release notes", () => {
+  // 这条要读同级仓库（flare-proto / flare-grpc-proto）的 Cargo.toml，
+  // 只有在多仓开发布局下才成立；单仓 checkout（CI 默认）里它们不存在，
+  // 此时应显式跳过而不是失败——失败会把「环境缺件」误报成「契约不一致」。
+  const protocolCratesPresent =
+    fs.existsSync(path.join(flareRoot, "flare-proto/Cargo.toml")) &&
+    fs.existsSync(path.join(flareRoot, "flare-grpc-proto/Cargo.toml"));
+
+  it.skipIf(!protocolCratesPresent)("documents current protocol crate version sources used by release notes", () => {
     const policy = readText(path.join(clientSdkRoot, "sdk-spec/contract-version-policy.md"));
     const flareProtoCargo = readText(path.join(flareRoot, "flare-proto/Cargo.toml"));
     const flareGrpcProtoCargo = readText(path.join(flareRoot, "flare-grpc-proto/Cargo.toml"));
