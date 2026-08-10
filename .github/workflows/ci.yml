@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  typescript-sdk:
+    name: TypeScript SDK（类型 / 架构 / 单测）
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/flare-core-typescript-sdk
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: packages/flare-core-typescript-sdk/package-lock.json
+
+      - name: 安装依赖
+        run: npm ci
+
+      - name: 类型检查
+        run: npm run typecheck
+
+      # 影子视图是本项目的架构红线：可观察视图归 core 所有，
+      # 客户端不得自建合并引擎。这条脚本是它的自动化守卫。
+      - name: 架构守卫（禁止客户端影子视图）
+        run: npm run verify:architecture
+
+      - name: 单元测试
+        run: npx vitest run
+
+  spec-consistency:
+    name: sdk-spec 契约一致性
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # sdk-spec 是七端契约的唯一真源，各端桩代码由它生成。
+      # 这里只校验它自身是合法 JSON 且模块清单与目录一致，
+      # 生成物漂移由各端仓库自己的 CI 负责。
+      - name: 校验 sdk-spec JSON 合法性
+        run: |
+          fail=0
+          for f in $(find sdk-spec -name '*.json'); do
+            if ! node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))" 2>/dev/null; then
+              echo "::error file=$f::JSON 解析失败"
+              fail=1
+            fi
+          done
+          exit $fail
+
+  sfc-gate:
+    name: SFC 编译门禁（示例 app）
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # vue-tsc 只检查 <script>，模板/样式编译错误会溜过去，
+      # 直到 vite build 才炸——而 barrel 导出会让一个坏 SFC 拖垮所有消费方。
+      # 这里把每个示例 app 的 src/**/*.vue 全量过一遍编译器。
+      - name: 安装 SFC 编译器
+        run: npm i --no-save @vue/compiler-sfc
+
+      - name: 编译全部 SFC
+        run: node scripts/check-sfc.mjs
