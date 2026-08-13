@@ -14,6 +14,21 @@ TypeScript types.
 npm install @flare-im/sdk
 ```
 
+> **This package ships TypeScript sources, not compiled JavaScript.**
+>
+> Every entry point resolves to a `.ts` file, so **your bundler has to transpile it**.
+> Most setups already do the right thing (Vite, Next.js with `transpilePackages`,
+> Nuxt, Expo). Two cases need one line of config:
+>
+> - **Webpack**: `node_modules` is excluded from `ts-loader`/`babel-loader` by default —
+>   add an include rule for `@flare-im/sdk`.
+> - **Plain Node.js**: run it through a TS-aware loader (`tsx`, `ts-node`), or import it
+>   from a bundled app rather than directly.
+>
+> Shipping sources is deliberate: the runtime entry points differ per platform and the
+> types stay exact. If your toolchain cannot transpile dependencies, tell us in an issue —
+> that is the signal we need to publish a build.
+
 ## Pick an entry point by runtime
 
 Transport and storage capabilities differ per runtime, so the entry points are

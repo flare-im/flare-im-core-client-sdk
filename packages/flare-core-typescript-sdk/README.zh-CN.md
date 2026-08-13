@@ -13,6 +13,18 @@ Flare IM 的 TypeScript 客户端 SDK —— 对 Rust 核心（`flare-im-core-sd
 npm install @flare-im/sdk
 ```
 
+> **本包发布的是 TypeScript 源码，不是编译后的 JavaScript。**
+>
+> 每个入口都指向 `.ts` 文件，因此**需要你的打包器来编译它**。多数工具链默认就能处理
+> （Vite、配了 `transpilePackages` 的 Next.js、Nuxt、Expo）。两种情况要加一行配置：
+>
+> - **Webpack**：`ts-loader` / `babel-loader` 默认排除 `node_modules`，需要为
+>   `@flare-im/sdk` 加一条 include 规则。
+> - **直接跑 Node.js**：用支持 TS 的加载器（`tsx`、`ts-node`），或者从打包后的应用里引用。
+>
+> 发源码是有意的：各平台的运行时入口不同，且类型能保持精确。如果你的工具链无法编译
+> 依赖，请开 issue 告诉我们——那正是我们需要的、决定要不要发布构建产物的信号。
+
 ## 按运行时选择入口
 
 不同运行时的传输与存储能力不同，所以入口是分开的 —— 直接从对应子路径导入：
