@@ -60,6 +60,42 @@ jobs:
           done
           exit $fail
 
+  example-app-tests:
+    name: 示例应用自带测试
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # 这些测试此前**一个都没在 CI 跑过**：CI 只覆盖 typescript-sdk 包、
+      # sdk-spec 与 SFC 编译，示例应用自带的套件全在盲区。
+      # 代价是真实的——flare-core-tauri-app 的 transport-selector.test.mjs
+      # 正则字面量里 `/` 没转义（`/@flare-im/sdk\/tauri/`），整个文件
+      # 6 个测试从未被解析执行过，而 `node --test` 只报「1 个失败」，
+      # 那个 1 是文件本身加载失败，看起来像一条无关紧要的红。
+      #
+      # 这些套件都是**纯静态断言**（读源码、比对配置），不需要 SDK 构建产物、
+      # 不连后端，所以能在裸 node 上跑，几秒完成。
+      - name: 跑各示例应用的测试套件
+        run: |
+          fail=0
+          for app in flare-core-tauri-app flare-core-electron-app flare-core-uni-app; do
+            dir="examples/$app"
+            [ -d "$dir/tests" ] || { echo "::notice::$app 无 tests 目录，跳过"; continue; }
+            # 用 nullglob 避免没有匹配时把字面量当文件名传给 node
+            files=$(ls "$dir"/tests/*.test.mjs 2>/dev/null || true)
+            if [ -z "$files" ]; then
+              echo "::notice::$app 没有 *.test.mjs"
+              continue
+            fi
+            echo "── $app ──"
+            ( cd "$dir" && node --test tests/*.test.mjs ) || fail=1
+          done
+          exit $fail
+
   sfc-gate:
     name: SFC 编译门禁（示例 app）
     runs-on: ubuntu-latest
