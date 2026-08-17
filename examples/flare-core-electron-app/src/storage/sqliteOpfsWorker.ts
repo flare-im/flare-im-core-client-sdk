@@ -17,6 +17,16 @@
 import SQLiteESMFactory from "wa-sqlite/dist/wa-sqlite.mjs";
 import * as SQLite from "wa-sqlite";
 import { OPFSCoopSyncVFS } from "wa-sqlite/src/examples/OPFSCoopSyncVFS.js";
+// wasm 的地址必须显式交给 emscripten glue，不能用它的默认行为。
+//
+// 默认是「按 glue 脚本自己的 URL 找同名 .wasm」。dev 下 glue 由 vite 转换后
+// 从别的 URL 提供，那个位置没有 .wasm，于是请求落进 SPA 回退拿到 index.html，
+// 报的是 `WebAssembly.instantiate(): expected magic word 00 61 73 6d,
+// found 3c 21 64 6f`——`3c 21 64 6f` 就是 "<!do"。
+//
+// `?url` 让 vite 两种模式下都给出真实可取的地址：dev 直接服务该文件，
+// build 时作为资源产出并改写成带 hash 的路径。
+import wasmUrl from "wa-sqlite/dist/wa-sqlite.wasm?url";
 
 type Req = {
   id: number;
@@ -35,7 +45,7 @@ const TABLES = ["messages", "conversations", "cursors", "pending_sends"] as cons
 function ensureReady(): Promise<void> {
   if (!ready) {
     ready = (async () => {
-      const module = await SQLiteESMFactory();
+      const module = await SQLiteESMFactory({ locateFile: () => wasmUrl });
       sqlite3 = SQLite.Factory(module);
       const vfs = await OPFSCoopSyncVFS.create("flare-opfs", module);
       sqlite3.vfs_register(vfs, true);

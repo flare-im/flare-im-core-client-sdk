@@ -2891,6 +2891,10 @@ vueuc@^0.4.65:
     vdirs "^0.1.4"
     vooks "^0.2.4"
 
+"wa-sqlite@git+https://github.com/rhashimoto/wa-sqlite.git#v1.1.2":
+  version "1.1.1"
+  resolved "git+ssh://git@github.com/rhashimoto/wa-sqlite.git#2bf1c59d89eb6497535a4217bc62fec68a0bb994"
+
 wait-on@^9.0.10:
   version "9.0.10"
   resolved "https://registry.npmjs.org/wait-on/-/wait-on-9.0.10.tgz"
