@@ -266,6 +266,13 @@ function createFlareCoreWebAppViteConfig(options) {
             find: "@flare-im/vue-ui/utils",
             replacement: path.join(vueImUiRoot, "utils/index.ts")
           },
+          // 更具体的子路径必须排在 `/composables` **前面**：字符串 find 是前缀匹配，
+          // 否则 `/composables/sdk` 会先命中 `/composables` 被拼成
+          // `composables/index.ts/sdk`，构建报 ENOTDIR。
+          {
+            find: "@flare-im/vue-ui/composables/sdk",
+            replacement: path.join(vueImUiRoot, "composables/sdk.ts")
+          },
           {
             find: "@flare-im/vue-ui/composables",
             replacement: path.join(vueImUiRoot, "composables/index.ts")
