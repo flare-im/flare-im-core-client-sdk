@@ -216,6 +216,76 @@ function createFlareCoreWebAppViteConfig(options) {
   // Emoji/sticker resources are centralized at the flare-im-design top level
   // (single cross-platform source), served here at /flare-im-ui-assets/.
   const vueImUiAssetRoot = path.resolve(repoRoot, "flare-im-design/assets/emoji-sticker");
+  // kit 在**另一个仓**（flare-im-design）。单独 clone 本仓的 main 里它不存在，
+  // 那时必须让 @flare-im/vue-ui 从 node_modules 的 npm 包解析 —— alias 到一个
+  // 不存在的目录只会报「找不到模块」，看不出根因是依赖模式没切。
+  //
+  // 同级仓存在 → dev 语义（改 kit 立刻生效）；不存在 → published 语义。
+  // 显式设了 FLARE_USE_PUBLISHED_KIT 则以它为准（用于在本工作区验证发布物）。
+  //
+  // @flare-im/sdk 不需要这套判定：它和示例 app 在同一个仓里，永远都在。
+  const explicitKitMode = process.env.FLARE_USE_PUBLISHED_KIT;
+  const usePublishedKit =
+    explicitKitMode === "true" || (explicitKitMode !== "false" && !fs.existsSync(vueImUiRoot));
+  const kitAliases = usePublishedKit
+    ? []
+    : [
+      {
+        find: "@flare-im/vue-ui/style.css",
+        replacement: path.join(vueImUiRoot, "design-system/styles/index.css")
+      },
+      {
+        find: "@flare-im/vue-ui/theme",
+        replacement: path.join(vueImUiRoot, "design-system/theme/index.ts")
+      },
+      {
+        find: "@flare-im/vue-ui/i18n",
+        replacement: path.join(vueImUiRoot, "shared/i18n/index.ts")
+      },
+      {
+        find: "@flare-im/vue-ui/components",
+        replacement: path.join(vueImUiRoot, "components/index.ts")
+      },
+      {
+        find: "@flare-im/vue-ui/utils",
+        replacement: path.join(vueImUiRoot, "utils/index.ts")
+      },
+      // 更具体的子路径必须排在 `/composables` **前面**：字符串 find 是前缀匹配，
+      // 否则 `/composables/sdk` 会先命中 `/composables` 被拼成
+      // `composables/index.ts/sdk`，构建报 ENOTDIR。
+      {
+        find: "@flare-im/vue-ui/composables/sdk",
+        replacement: path.join(vueImUiRoot, "composables/sdk.ts")
+      },
+      {
+        find: "@flare-im/vue-ui/composables",
+        replacement: path.join(vueImUiRoot, "composables/index.ts")
+      },
+      {
+        find: "@flare-im/vue-ui/contracts",
+        replacement: path.join(vueImUiRoot, "shared/contracts/index.ts")
+      },
+      {
+        find: "@flare-im/vue-ui/sdk-lab",
+        replacement: path.join(vueImUiRoot, "app/components/FlareSdkLabPanel.vue")
+      },
+      {
+        find: "@flare-im/vue-ui/app/style.css",
+        replacement: path.join(vueImUiRoot, "app/styles/index.css")
+      },
+      {
+        find: /^@flare-im\/vue-ui\/app\/components\/(.+)$/,
+        replacement: path.join(vueImUiRoot, "app/components/$1")
+      },
+      {
+        find: "@flare-im/vue-ui/app",
+        replacement: path.join(vueImUiRoot, "app/index.ts")
+      },
+      {
+        find: "@flare-im/vue-ui",
+        replacement: path.join(vueImUiRoot, "index.ts")
+      },
+      ];
   return options.defineConfig(({ mode }) => {
     const env = options.loadEnv(mode, appDir, "VITE_");
     return {
@@ -246,61 +316,7 @@ function createFlareCoreWebAppViteConfig(options) {
             find: /^@flare-im\/sdk\/(.+)$/,
             replacement: path.join(typeScriptSdkRoot, "$1")
           },
-          {
-            find: "@flare-im/vue-ui/style.css",
-            replacement: path.join(vueImUiRoot, "design-system/styles/index.css")
-          },
-          {
-            find: "@flare-im/vue-ui/theme",
-            replacement: path.join(vueImUiRoot, "design-system/theme/index.ts")
-          },
-          {
-            find: "@flare-im/vue-ui/i18n",
-            replacement: path.join(vueImUiRoot, "shared/i18n/index.ts")
-          },
-          {
-            find: "@flare-im/vue-ui/components",
-            replacement: path.join(vueImUiRoot, "components/index.ts")
-          },
-          {
-            find: "@flare-im/vue-ui/utils",
-            replacement: path.join(vueImUiRoot, "utils/index.ts")
-          },
-          // 更具体的子路径必须排在 `/composables` **前面**：字符串 find 是前缀匹配，
-          // 否则 `/composables/sdk` 会先命中 `/composables` 被拼成
-          // `composables/index.ts/sdk`，构建报 ENOTDIR。
-          {
-            find: "@flare-im/vue-ui/composables/sdk",
-            replacement: path.join(vueImUiRoot, "composables/sdk.ts")
-          },
-          {
-            find: "@flare-im/vue-ui/composables",
-            replacement: path.join(vueImUiRoot, "composables/index.ts")
-          },
-          {
-            find: "@flare-im/vue-ui/contracts",
-            replacement: path.join(vueImUiRoot, "shared/contracts/index.ts")
-          },
-          {
-            find: "@flare-im/vue-ui/sdk-lab",
-            replacement: path.join(vueImUiRoot, "app/components/FlareSdkLabPanel.vue")
-          },
-          {
-            find: "@flare-im/vue-ui/app/style.css",
-            replacement: path.join(vueImUiRoot, "app/styles/index.css")
-          },
-          {
-            find: /^@flare-im\/vue-ui\/app\/components\/(.+)$/,
-            replacement: path.join(vueImUiRoot, "app/components/$1")
-          },
-          {
-            find: "@flare-im/vue-ui/app",
-            replacement: path.join(vueImUiRoot, "app/index.ts")
-          },
-          {
-            find: "@flare-im/vue-ui",
-            replacement: path.join(vueImUiRoot, "index.ts")
-          },
+          ...kitAliases,
           {
             find: "@flare-im/sdk",
             replacement: path.join(typeScriptSdkRoot, "index.ts")
