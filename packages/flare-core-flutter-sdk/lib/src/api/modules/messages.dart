@@ -11,7 +11,7 @@ abstract interface class MessagesApi {
   Future<Map<String, Object?>> dispatchMessage(Map<String, Object?> request);
   /// sendMessageNoOss maps to `flare_message_dispatch_json` via `message-dispatch-json`, dispatch op `send_no_oss`. Operation: `message.send_no_oss`.
   Future<SendMessageResponse> sendMessageNoOss(SendMessageRequest request);
-  /// sendMessage maps to `flare_message_send` via `ffi-symbol`. Operation: `message.send`.
+  /// sendMessage maps to `flare_message_dispatch_json` via `message-dispatch-json`, dispatch op `send`. Operation: `message.send`.
   Future<SendMessageResponse> sendMessage(SendMessageRequest request, [MessageSendCallback? callback]);
   /// listMessages maps to `flare_message_list` via `ffi-symbol`. Operation: `message.list`.
   Future<ListMessagesResponse> listMessages(ListMessagesRequest request);

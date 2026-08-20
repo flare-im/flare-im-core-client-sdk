@@ -2,7 +2,7 @@
 
 > Generated from split sdk-spec files
 
-- API version: `0.3.0`
+- API version: `1.0.0`
 - FFI contract: `flare-im-ffi/v1`
 - Core source: `../flare-im-core-sdk`
 
@@ -33,8 +33,8 @@
 | `ios` | `packages/flare-core-apple-sdk` | `contract-synced` | async/await + AsyncStream |
 | `arkts` | `packages/flare-core-harmony-arkts-sdk` | `contract-synced` | Promise + typed event emitter |
 | `cangjie` | `packages/flare-core-harmony-cangjie-sdk` | `contract-synced` | native async result |
-| `typescript` | `packages/@flare-im/sdk` | `contract-synced` | Promise + event subscription |
-| `web` | `packages/@flare-im/sdk` | `contract-synced` | Promise + event subscription |
-| `react-native` | `packages/@flare-im/sdk` | `contract-synced` | Promise + native event emitter |
-| `uni-app` | `packages/@flare-im/sdk` | `contract-synced` | Promise + event subscription |
-| `tauri` | `packages/@flare-im/sdk` | `contract-synced` | Promise + event subscription |
+| `typescript` | `packages/flare-core-typescript-sdk` | `contract-synced` | Promise + event subscription |
+| `web` | `packages/flare-core-typescript-sdk` | `contract-synced` | Promise + event subscription |
+| `react-native` | `packages/flare-core-typescript-sdk` | `contract-synced` | Promise + native event emitter |
+| `uni-app` | `packages/flare-core-typescript-sdk` | `contract-synced` | Promise + event subscription |
+| `tauri` | `packages/flare-core-typescript-sdk` | `contract-synced` | Promise + event subscription |

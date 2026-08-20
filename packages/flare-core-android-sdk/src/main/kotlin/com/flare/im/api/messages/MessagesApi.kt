@@ -33,7 +33,7 @@ interface MessagesApi {
     suspend fun dispatchMessage(request: Map<String, Any?>): Map<String, Any?>
     /** sendMessageNoOss maps to `flare_message_dispatch_json` via `message-dispatch-json`, dispatch op `send_no_oss`. Operation: `message.send_no_oss`. */
     suspend fun sendMessageNoOss(request: SendMessageRequest): SendMessageResponse
-    /** sendMessage maps to `flare_message_send` via `ffi-symbol`. Operation: `message.send`. */
+    /** sendMessage maps to `flare_message_dispatch_json` via `message-dispatch-json`, dispatch op `send`. Operation: `message.send`. */
     suspend fun sendMessage(request: SendMessageRequest, callback: MessageSendCallback? = null): SendMessageResponse
     /** listMessages maps to `flare_message_list` via `ffi-symbol`. Operation: `message.list`. */
     suspend fun listMessages(request: ListMessagesRequest): ListMessagesResponse

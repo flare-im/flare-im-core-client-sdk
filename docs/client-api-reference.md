@@ -109,7 +109,7 @@ Message build, send, query and mutation.
 | `createTextMessage` | `CreateTextMessageRequest` | `Message` | `ffi-symbol` | `flare_message_create_text` |
 | `dispatchMessage` | `MessageDispatchRequest` | `JsonValue` | `dispatch-json` | `flare_message_dispatch_json` |
 | `sendMessageNoOss` | `SendMessageRequest` | `SendMessageResponse` | `message-dispatch-json` | `flare_message_dispatch_json` |
-| `sendMessage` | `SendMessageRequest` | `SendMessageResponse` | `ffi-symbol` | `flare_message_send` |
+| `sendMessage` | `SendMessageRequest` | `SendMessageResponse` | `message-dispatch-json` | `flare_message_dispatch_json` |
 | `listMessages` | `ListMessagesRequest` | `ListMessagesResponse` | `ffi-symbol` | `flare_message_list` |
 | `recallMessage` | `RecallMessageRequest` | `Unit` | `ffi-symbol` | `flare_message_recall` |
 | `editTextByMessageId` | `EditTextByMessageIdRequest` | `Unit` | `message-dispatch-json` | `flare_message_dispatch_json` |
