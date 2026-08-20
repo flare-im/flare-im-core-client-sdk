@@ -79,16 +79,51 @@ jobs:
       #
       # 这些套件都是**纯静态断言**（读源码、比对配置），不需要 SDK 构建产物、
       # 不连后端，所以能在裸 node 上跑，几秒完成。
+      # 这一步是 2026-08-20 补的。此前这个 job 是**红的**，而且红得很误导：
+      #
+      #   ##[notice]flare-core-tauri-app 无 tests 目录，跳过
+      #   ── flare-core-electron-app ── # tests 3 / pass 3
+      #   ── flare-core-uni-app ── not ok 4 … ENOENT: …/flare-im-design/…
+      #
+      # 两处都是环境缺失，不是测试真的坏了：
+      #   1. flare-core-tauri-app 是**独立仓**，被本仓 .gitignore 刻意排除
+      #      （避免变成没有 .gitmodules 的 gitlink）。CI 的 checkout 里根本没有它，
+      #      于是清单里点了名的那个 app 被「跳过」——而它恰恰是这个 job 当初为之
+      #      建立的那个案例（tauri 的 6 个测试曾因正则未转义从未执行）。
+      #   2. uni-app 的 parity 测试要读同级仓 flare-im-design 的源码做比对。
+      #
+      # 两个仓都是公开仓，直接拉进来，而不是把它们从清单里删掉。
+      - name: 拉取测试需要的外部仓
+        run: |
+          BR="${GITHUB_REF_NAME:-main}"
+          clone() {
+            git clone --depth 1 -b "$BR" "$1" "$2" 2>/dev/null \
+              || git clone --depth 1 "$1" "$2"
+          }
+          # tauri 示例 app（独立仓，本仓 gitignore 排除）
+          clone https://github.com/flare-im/flare-core-tauri-demo.git \
+            "examples/flare-core-tauri-app"
+          # uni-app 的 parity 测试要按同级布局读它的源码
+          clone https://github.com/flare-im/flare-im-design.git "../flare-im-design"
+
       - name: 跑各示例应用的测试套件
         run: |
           fail=0
           for app in flare-core-tauri-app flare-core-electron-app flare-core-uni-app; do
             dir="examples/$app"
-            [ -d "$dir/tests" ] || { echo "::notice::$app 无 tests 目录，跳过"; continue; }
+            # 点了名却没有 tests 目录 → **判红**，不是 notice 跳过。
+            # 「没验到」和「验过没问题」必须是两种结果：上面那个 tauri 就是被
+            # 一行 notice 悄悄放过的，而 job 照样在跑别的 app、看起来一切正常。
+            if [ ! -d "$dir/tests" ]; then
+              echo "::error::$app 在清单里却没有 tests 目录——是仓没拉下来，还是目录改了？"
+              fail=1
+              continue
+            fi
             # 用 nullglob 避免没有匹配时把字面量当文件名传给 node
             files=$(ls "$dir"/tests/*.test.mjs 2>/dev/null || true)
             if [ -z "$files" ]; then
-              echo "::notice::$app 没有 *.test.mjs"
+              echo "::error::$app 有 tests 目录却没有 *.test.mjs——测试被删了还是改了后缀？"
+              fail=1
               continue
             fi
             echo "── $app ──"
