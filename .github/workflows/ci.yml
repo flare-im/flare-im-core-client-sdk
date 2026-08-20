@@ -100,11 +100,17 @@ jobs:
             git clone --depth 1 -b "$BR" "$1" "$2" 2>/dev/null \
               || git clone --depth 1 "$1" "$2"
           }
-          # tauri 示例 app（独立仓，本仓 gitignore 排除）
+          # 两个独立仓的示例 app（本仓 gitignore 刻意排除，避免 gitlink）。
+          # tauri 的 parity 测试是**横向比对**：它要同时读 web / electron / uni 三个
+          # app 的入口，以及核心 SDK 的 tauri 绑定——所以 web 那个也得拉。
           clone https://github.com/flare-im/flare-core-tauri-demo.git \
             "examples/flare-core-tauri-app"
-          # uni-app 的 parity 测试要按同级布局读它的源码
+          clone https://github.com/flare-im/flare-core-web-demo.git \
+            "examples/flare-core-web-app"
+          # 同级仓：uni 的 parity 测试读 flare-im-design 的组合式源码，
+          # tauri 的测试读 flare-im-core-sdk 的 bindings/tauri/Cargo.toml（验 QUIC feature 链）。
           clone https://github.com/flare-im/flare-im-design.git "../flare-im-design"
+          clone https://github.com/flare-im/flare-im-core-sdk.git "../flare-im-core-sdk"
 
       - name: 跑各示例应用的测试套件
         run: |
