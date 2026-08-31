@@ -142,19 +142,19 @@ function flareVueImUiChunk(id) {
     return void 0;
   }
   if (normalized.includes("/app/components/FlareSdkLabPanel") || normalized.includes("/app/message-enhancements/")) {
-    return "flare-im-sdk-lab";
+    return "flare-im-app";
   }
   if (normalized.includes("/components/message-preview/") || normalized.includes("/app/infrastructure/media/")) {
-    return "flare-im-media";
+    return "flare-im-app";
   }
   if (normalized.includes("/components/shell/FlareDiagnosticsConsole")) {
-    return "flare-im-diagnostics";
+    return "flare-im-app";
   }
   if (normalized.includes("/components/messages/") || normalized.includes("/components/composer/") || normalized.includes("/app/components/FlareChatWorkspace")) {
-    return "flare-im-chat";
+    return "flare-im-app";
   }
   if (normalized.includes("/app/components/") || normalized.includes("/components/shell/")) {
-    return "flare-im-shell";
+    return "flare-im-app";
   }
   return void 0;
 }
@@ -186,25 +186,15 @@ function nodeModuleChunk(id) {
   if (normalized.includes("node_modules/vue/") || normalized.includes("node_modules/@vue/") || normalized.includes("node_modules/vue-router")) {
     return "vue-runtime";
   }
-  if (normalized.includes("node_modules/@css-render") || normalized.includes("node_modules/css-render") || normalized.includes("node_modules/vooks") || normalized.includes("node_modules/vueuc") || normalized.includes("node_modules/treemate") || normalized.includes("node_modules/seemly") || normalized.includes("node_modules/evtd") || normalized.includes("node_modules/async-validator") || normalized.includes("node_modules/date-fns") || normalized.includes("node_modules/lodash-es")) {
-    return "naive-foundation";
+  if (normalized.includes("node_modules/@css-render") || normalized.includes("node_modules/css-render") || normalized.includes("node_modules/vooks") || normalized.includes("node_modules/vueuc") || normalized.includes("node_modules/treemate") || normalized.includes("node_modules/seemly") || normalized.includes("node_modules/evtd") || normalized.includes("node_modules/vdirs") || normalized.includes("node_modules/async-validator") || normalized.includes("node_modules/date-fns") || normalized.includes("node_modules/lodash-es")) {
+    return "naive-ui";
   }
   if (normalized.includes("node_modules/naive-ui")) {
-    if (normalized.includes("/button") || normalized.includes("/input") || normalized.includes("/input-number") || normalized.includes("/select") || normalized.includes("/switch") || normalized.includes("/tabs") || normalized.includes("/form")) {
-      return "naive-controls";
-    }
-    if (normalized.includes("/modal") || normalized.includes("/drawer") || normalized.includes("/dropdown") || normalized.includes("/dialog") || normalized.includes("/message") || normalized.includes("/popover") || normalized.includes("/tooltip")) {
-      return "naive-overlays";
-    }
-    if (normalized.includes("/alert") || normalized.includes("/collapse") || normalized.includes("/config-provider") || normalized.includes("/divider") || normalized.includes("/icon") || normalized.includes("/list") || normalized.includes("/progress") || normalized.includes("/tag")) {
-      return "naive-display";
-    }
-    if (normalized.includes("/_")) {
-      return "naive-foundation";
-    }
-    return "naive-runtime";
+    // naive-ui 的组件互相引用，按子路径拆 chunk 必然形成循环依赖，
+    // 表现为运行时 "Cannot access 've' before initialization" —— 整页白屏。
+    // 构建器会直接报 "Circular chunk"。整包一个 chunk 是唯一安全的切法。
+    return "naive-ui";
   }
-  return "vendor";
   return fallbackVendorChunk(normalized);
 }
 function createFlareCoreWebAppViteConfig(options) {
