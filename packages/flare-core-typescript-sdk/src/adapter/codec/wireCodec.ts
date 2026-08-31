@@ -715,7 +715,7 @@ export function buildForwardMessageRequestToMap(request: BuildForwardMessageRequ
   conversationId: request.conversationId,
   merge: request.merge,
   title: request.title,
-  sourceMessages: request.sourceMessages.map((item) => forwardSourceMessageToMap(item)),
+  sourceMessages: request.sourceMessages.map((item) => messageToMap(item)),
   };
 }
 

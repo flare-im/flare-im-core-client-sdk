@@ -99,15 +99,6 @@ final class DefaultMessageBuilderApi implements MessageBuilderApi {
       'conversationId': request.conversationId,
       'merge': request.merge ?? false,
       'title': request.title,
-      'sourceMessages': request.sourceMessages
-          .map((item) => {
-        'sourceMessageId': item.sourceMessageId,
-        if (item.sourceConversationId != null)
-          'sourceConversationId': item.sourceConversationId!,
-        if (item.sourceSenderId != null)
-          'sourceSenderId': item.sourceSenderId!,
-        if (item.plainText != null) 'plainText': item.plainText!,
-      }).toList(growable: false),
     });
 
   @override

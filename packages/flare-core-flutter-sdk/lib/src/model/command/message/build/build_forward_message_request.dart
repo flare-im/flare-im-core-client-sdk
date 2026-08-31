@@ -1,5 +1,5 @@
 // GENERATED. Do not edit by hand.
-import '../../../content/forward_source_message.dart';
+import '../../../entity/message.dart';
 
 /// Build a forward message.
 final class BuildForwardMessageRequest {
@@ -9,8 +9,8 @@ final class BuildForwardMessageRequest {
   final bool? merge;
   /// wire: `title`. Forward title.
   final String title;
-  /// wire: `sourceMessages`. Messages to forward.
-  final List<ForwardSourceMessage> sourceMessages;
+  /// wire: `sourceMessages`. Messages to forward. Full messages, not id stubs: the forward payload embeds the original content, so the core needs content/senderId/conversationId of each source.
+  final List<Message> sourceMessages;
 
   const BuildForwardMessageRequest({
     this.conversationId = '',

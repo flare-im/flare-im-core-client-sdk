@@ -825,7 +825,7 @@ Build a forward message.
 | `conversationId` | `conversationId` | `String` | yes | Target conversation id. |
 | `merge` | `merge` | `Boolean` | no | Merge into one card. |
 | `title` | `title` | `String` | yes | Forward title. |
-| `sourceMessages` | `sourceMessages` | `ForwardSourceMessageList` | yes | Messages to forward. |
+| `sourceMessages` | `sourceMessages` | `MessageList` | yes | Messages to forward. Full messages, not id stubs: the forward payload embeds the original content, so the core needs content/senderId/conversationId of each source. |
 
 ### BuildImageMessageRequest
 

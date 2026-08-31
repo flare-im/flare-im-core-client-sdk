@@ -269,9 +269,9 @@
         {
           "name": "sourceMessages",
           "wireName": "sourceMessages",
-          "type": "ForwardSourceMessageList",
+          "type": "MessageList",
           "required": true,
-          "description": "Messages to forward."
+          "description": "Messages to forward. Full messages, not id stubs: the forward payload embeds the original content, so the core needs content/senderId/conversationId of each source."
         }
       ]
     },

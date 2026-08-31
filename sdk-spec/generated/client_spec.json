@@ -3611,10 +3611,10 @@
               "wireName": "title"
             },
             {
-              "description": "Messages to forward.",
+              "description": "Messages to forward. Full messages, not id stubs: the forward payload embeds the original content, so the core needs content/senderId/conversationId of each source.",
               "name": "sourceMessages",
               "required": true,
-              "type": "ForwardSourceMessageList",
+              "type": "MessageList",
               "wireName": "sourceMessages"
             }
           ],

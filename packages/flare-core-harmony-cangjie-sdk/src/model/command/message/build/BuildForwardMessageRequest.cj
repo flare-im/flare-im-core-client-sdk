@@ -10,7 +10,7 @@ public class BuildForwardMessageRequest {
     public let merge: ?Bool
     // wire: `title`. Forward title.
     public let title: String
-    // wire: `sourceMessages`. Messages to forward.
+    // wire: `sourceMessages`. Messages to forward. Full messages, not id stubs: the forward payload embeds the original content, so the core needs content/senderId/conversationId of each source.
     public let sourceMessages: String
 
     public init(conversationId!: String, merge!: ?Bool, title!: String, sourceMessages!: String) {

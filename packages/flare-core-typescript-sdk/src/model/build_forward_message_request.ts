@@ -1,5 +1,5 @@
 /** GENERATED. Do not edit by hand. */
-import type { ForwardSourceMessage } from './forward_source_message';
+import type { Message } from './message';
 
 /** Build a forward message. */
 export interface BuildForwardMessageRequest {
@@ -9,6 +9,6 @@ export interface BuildForwardMessageRequest {
   merge?: boolean;
   /** wire: `title`. Forward title. */
   title: string;
-  /** wire: `sourceMessages`. Messages to forward. */
-  sourceMessages: ForwardSourceMessage[];
+  /** wire: `sourceMessages`. Messages to forward. Full messages, not id stubs: the forward payload embeds the original content, so the core needs content/senderId/conversationId of each source. */
+  sourceMessages: Message[];
 }
