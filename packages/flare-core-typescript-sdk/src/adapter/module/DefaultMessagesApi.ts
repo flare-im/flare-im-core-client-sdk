@@ -14,8 +14,8 @@ export class DefaultMessagesApi implements MessagesApi {
     return await invokeMessage(this.bridge, NativeCallMap.messageCreateText, createTextMessageRequestToMap(request));
   }
 
-  async dispatchMessage(request: MessageDispatchRequest): Promise<Record<string, unknown>> {
-    return await invokeMap(this.bridge, NativeCallMap.messageDispatch, request);
+  async dispatchMessage(request: MessageDispatchRequest): Promise<unknown> {
+    return await this.bridge.invoke<unknown>(NativeCallMap.messageDispatch, request);
   }
 
   async sendMessageNoOss(request: SendMessageRequest): Promise<SendMessageResponse> {
@@ -138,8 +138,8 @@ export class DefaultMessagesApi implements MessagesApi {
     return await invokeMessage(this.bridge, NativeCallMap.messageGet, request);
   }
 
-  async getRawMessage(request: GetMessageRequest): Promise<Record<string, unknown>> {
-    return await invokeMap(this.bridge, NativeCallMap.messageGetRaw, request);
+  async getRawMessage(request: GetMessageRequest): Promise<unknown> {
+    return await this.bridge.invoke<unknown>(NativeCallMap.messageGetRaw, request);
   }
 
   async searchMessages(request: MessageSearchQuery): Promise<ListMessagesResponse> {
