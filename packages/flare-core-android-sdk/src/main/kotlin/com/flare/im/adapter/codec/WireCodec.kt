@@ -447,7 +447,12 @@ fun buildForwardMessageRequestToMap(request: BuildForwardMessageRequest): Map<St
     put("merge", request.merge)
     put("title", request.title)
     if (request.sourceMessages.isNotEmpty()) {
-        put("sourceMessages", request.sourceMessages.map { forwardSourceMessageToMap(it) })
+        // 这里的 sourceMessages 是**完整消息**（BuildForwardMessageRequest），
+        // 不同于 ForwardContentPayload 里的 id 存根 —— 两者代码长得一样，别改错。
+        // 转发载荷要把原文嵌进去，核心侧 forward_item_from_source 会读
+        // content / senderId / conversationId；契约已从 ForwardSourceMessage
+        // 改成 Message，这里没跟上会让整个 android-sdk 编译不过。
+        put("sourceMessages", request.sourceMessages.map { messageToWireMap(it) })
     }
 }
 

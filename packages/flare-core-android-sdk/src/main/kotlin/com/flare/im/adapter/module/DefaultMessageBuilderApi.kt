@@ -119,7 +119,9 @@ class DefaultMessageBuilderApi(
                 put("merge", request.merge)
                 put("title", request.title)
                 if (request.sourceMessages.isNotEmpty()) {
-                    put("sourceMessages", request.sourceMessages.map { forwardSourceMessageToMap(it) })
+                    // 完整消息，不是 id 存根：核心侧 forward_item_from_source 要读
+                    // content / senderId / conversationId 才能还原原文。
+                    put("sourceMessages", request.sourceMessages.map { messageToWireMap(it) })
                 }
             },
         )
