@@ -54,8 +54,23 @@ function messageKey(userId: string, message: Record<string, unknown>): string {
   return `${userPrefix(userId)}::${conversationId}::${seq}::${serverId || clientMsgId || cryptoSafeId()}`;
 }
 
-function pendingSendKey(userId: string, entry: Record<string, unknown>): string {
-  const clientMsgId = String(entry.clientMsgId ?? cryptoSafeId());
+/**
+ * `PendingSendVo` 走 snake_case wire（与 `Message` 的 camelCase 不同），两种都认。
+ *
+ * 原来只读 `entry.clientMsgId`：对 snake_case 取到 undefined，于是回退成
+ * `cryptoSafeId()` —— 主键变成随机 UUID，而删除用的是真实 client_msg_id 拼的键，
+ * **永远匹配不上**。后果是待发条目在 IndexedDB 里只增不减；下次登录被重新水化后
+ * 队列会**重发已经送达的消息**。Rust 侧 `let _ = delete_pending_send(...)`
+ * 又吞掉了错误，所以整个过程无声无息。
+ */
+function pendingSendClientMsgId(entry: Record<string, unknown>): string {
+  return String(entry.client_msg_id ?? entry.clientMsgId ?? "").trim();
+}
+
+/** 拿不到 client_msg_id 时返回 null：写一条**删不掉**的行比不写更糟。 */
+function pendingSendKey(userId: string, entry: Record<string, unknown>): string | null {
+  const clientMsgId = pendingSendClientMsgId(entry);
+  if (!clientMsgId) return null;
   return `${userPrefix(userId)}::${clientMsgId}`;
 }
 
@@ -245,7 +260,7 @@ export async function wasmStorageLoadSnapshot(payload: { userId?: string }): Pro
       userId,
     ),
     getAllForUser<{ userId: string; key: string; value: string }>(WASM_CURSORS, userId),
-    getAllForUser<{ userId: string; entry: Record<string, unknown> }>(WASM_PENDING_SENDS, userId),
+    getAllForUser<{ userId: string; key: string; entry: Record<string, unknown> }>(WASM_PENDING_SENDS, userId),
   ]);
   const cursors: Record<string, string> = {};
   for (const row of cursorRows) {
@@ -266,6 +281,29 @@ export async function wasmStorageLoadSnapshot(payload: { userId?: string }): Pro
     .filter(Boolean);
   void deleteRowsByKeys(WASM_MESSAGES, invalidMessageKeys).catch(() => undefined);
   void deleteRowsByKeys(WASM_CONVERSATIONS, invalidConversationKeys).catch(() => undefined);
+
+  // 修历史遗留：pendingSendKey 曾错读 camelCase，对 snake_case wire 取到 undefined
+  // 后回退成随机 UUID 当主键，导致这些行**永远删不掉**（删除按真实 client_msg_id
+  // 拼键），只增不减，且每次登录都被重新水化、把已送达的消息再发一遍。
+  // 这里把错键行重写到正确主键，之后 ack 就能正常把它们弹出。
+  const orphanPendingKeys: string[] = [];
+  for (const row of pendingRows) {
+    const rowKey = String((row as { key?: string }).key ?? "");
+    const wantKey = pendingSendKey(userId, row.entry ?? {});
+    if (!rowKey || !wantKey || rowKey === wantKey) continue;
+    orphanPendingKeys.push(rowKey);
+    void putRow(WASM_PENDING_SENDS, {
+      key: wantKey,
+      userId: userPrefix(userId),
+      entry: row.entry,
+    }).catch(() => undefined);
+  }
+  if (orphanPendingKeys.length) {
+    console.warn(
+      `[flare-core] repaired ${orphanPendingKeys.length} pending-send rows stored under a random key`,
+    );
+    void deleteRowsByKeys(WASM_PENDING_SENDS, orphanPendingKeys).catch(() => undefined);
+  }
   return JSON.stringify({
     messages: canonicalMessages.map((row) => row.message),
     conversations: canonicalConversations.map((row) => row.conversation),
@@ -330,15 +368,20 @@ export async function wasmStorageSavePendingSend(payload: PersistPendingSendPayl
   const userId = payload.userId?.trim();
   if (!userId) return;
   const entry = payload.entry ?? {};
+  const key = pendingSendKey(userId, entry);
+  if (!key) {
+    console.warn("[flare-core] pending send has no client_msg_id; skipped to avoid an undeletable row");
+    return;
+  }
   await putRow(WASM_PENDING_SENDS, {
-    key: pendingSendKey(userId, entry),
+    key,
     userId: userPrefix(userId),
     entry,
   });
   notifyStorageChanged({
     userId,
     kind: "pending_send",
-    id: String(entry.clientMsgId ?? ""),
+    id: pendingSendClientMsgId(entry),
   });
 }
 
@@ -416,3 +459,9 @@ export function createWasmIndexedDbStorageHost(): WasmStorageHostCallbacks {
     deletePendingSend: wasmStorageDeletePendingSend,
   };
 }
+
+/** 仅供测试：主键推导是写入/删除能否对上的唯一依据，必须可单测。 */
+export const __testing = {
+  pendingSendKey,
+  pendingSendClientMsgId,
+};
