@@ -48,6 +48,15 @@ function isBestEffortControlOperation(operation: string): boolean {
   return operation === "message.typing";
 }
 
+/**
+ * 链条等待底层 WASM 调用真正结束时，额外给的宽限期。
+ *
+ * 外层 `withInvokeTimeout` 只负责回复调用方；`invokeChain` 仍要等底层调用
+ * 真正 settle，否则下一次调用会在 wasm32 上重入 Tokio 的 block_on。
+ * 但这个等待**不能无上界**——见 `awaitRuntimeSettledBounded`。
+ */
+const RUNTIME_SETTLE_GRACE_MS = 5_000;
+
 function invokeTimeoutMs(operation: string): number {
   if (operation === "sdk.login") return 120_000;
   if (operation === "sdk.init") return 30_000;
@@ -287,6 +296,50 @@ export class WebProductionBridge implements NativeBridge {
     }
   }
 
+  /**
+   * 有界地等待底层 WASM 调用结束。
+   *
+   * 线上缺陷：只要有一次 WASM 调用永不返回，`invokeChain` 就被**永久**卡住，
+   * 之后每一个 SDK 操作都排在它后面出不来。实测表现是"打开会话后只有第一条
+   * 消息能发出，之后每条都 30s 超时且从未到达服务端，连切换会话也没有反应"
+   * （view_timeline_open 25 秒都不发生），只能刷新页面。
+   * 外层超时只是回复了调用方，链条本身还锁着。
+   *
+   * 超过宽限期就不再等：丢掉这个 runtime 实例。`ensureRuntime` 会重建一个新的，
+   * 挂住的那次调用留在被抛弃的旧实例里，不会与后续调用共享，
+   * 因此不存在 block_on 重入的风险。
+   */
+  private async awaitRuntimeSettledBounded(
+    operation: string,
+    settled: Promise<void>,
+  ): Promise<void> {
+    const graceMs = invokeTimeoutMs(operation) + RUNTIME_SETTLE_GRACE_MS;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let timedOut = false;
+    await Promise.race([
+      settled,
+      new Promise<void>((resolve) => {
+        timer = setTimeout(() => {
+          timedOut = true;
+          resolve();
+        }, graceMs);
+      }),
+    ]);
+    if (timer) {
+      clearTimeout(timer);
+    }
+    if (!timedOut) {
+      return;
+    }
+    console.error(
+      `[flare-core] WASM operation "${operation}" never settled after ${graceMs}ms; `
+      + "dropping the runtime so later calls are not blocked forever",
+    );
+    this.eventsStarted = false;
+    this.runtime = null;
+    this.lastConnectionState = "disconnected";
+  }
+
   async invoke<T>(descriptor: NativeCallDescriptor, request?: unknown): Promise<T> {
     const operation = descriptor.operation;
     if (isBestEffortControlOperation(operation)) {
@@ -349,10 +402,8 @@ export class WebProductionBridge implements NativeBridge {
     };
 
     const next = this.invokeChain.then(run, run);
-    this.invokeChain = next.then(
-      () => runtimeInvokeSettled,
-      () => runtimeInvokeSettled,
-    ).then(
+    const awaitSettled = () => this.awaitRuntimeSettledBounded(operation, runtimeInvokeSettled);
+    this.invokeChain = next.then(awaitSettled, awaitSettled).then(
       () => undefined,
       () => undefined,
     );
