@@ -597,7 +597,11 @@ func buildForwardMessageRequestToMap(_ request: BuildForwardMessageRequest) -> [
         "conversationId": wrapSendable(request.conversationId),
         "merge": wrapSendable(request.merge),
         "title": wrapSendable(request.title),
-        "sourceMessages": AnySendable(request.sourceMessages.map { forwardSourceMessageToMap($0).mapValues { $0.value } }),
+        // sourceMessages 是**完整消息**而不是 id 存根：转发载荷要把原文嵌进去，
+        // 核心侧的 forward_item_from_source 会读 content / senderId / conversationId。
+        // 契约早已从 ForwardSourceMessage 改成 Message，这里却还在调旧的存根编码器，
+        // 于是整个 FlareCoreAppleSDK 编译不过 —— iOS app 因此根本构建不起来。
+        "sourceMessages": AnySendable(request.sourceMessages.map { messageToWireMap($0).mapValues { $0.value } }),
     ]
 }
 func buildImageMessageRequestToMap(_ request: BuildImageMessageRequest) -> [String: AnySendable] {
