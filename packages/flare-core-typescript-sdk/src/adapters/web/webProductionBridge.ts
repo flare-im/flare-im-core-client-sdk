@@ -60,7 +60,15 @@ const RUNTIME_SETTLE_GRACE_MS = 5_000;
 function invokeTimeoutMs(operation: string): number {
   if (operation === "sdk.login") return 120_000;
   if (operation === "sdk.init") return 30_000;
-  if (operation === "message.send" || operation === "message.send_no_oss") return 30_000;
+  if (
+    operation === "message.send"
+    || operation === "message.send_no_oss"
+    // build_and_send 内含本地媒体上传，超时必须与 send 同档，
+    // 否则大文件会在默认 12s 就被判超时。
+    || operation === "message.build_and_send"
+  ) {
+    return 30_000;
+  }
   if (operation === "sync.conversation_history_backfill") return 30_000;
   if (operation.startsWith("sync.") || operation === "conversation.open_timeline") return 8_000;
   if (operation === "conversation.update_draft") return 5_000;
