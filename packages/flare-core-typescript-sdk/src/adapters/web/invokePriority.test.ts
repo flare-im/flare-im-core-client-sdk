@@ -94,4 +94,23 @@ describe("invoke 队列优先级", () => {
     gates.forEach((g) => g());
     await Promise.allSettled([a, b, c]);
   });
+
+  it("mark_read 属于后台：不能挡在发送前面", async () => {
+    // 实测打开 2 万条消息的会话，mark_read 单次约 990ms —— 是后台窗口里最大的一项。
+    // 用户没有在等未读数更新，但它排在发送前面会实打实拖慢上屏。
+    const { bridge, started, gates } = gatedBridge();
+    const first = bridge.invoke({ operation: "message.get" } as never, {}).catch(() => {});
+    await settle();
+    const mark = bridge.invoke({ operation: "conversation.mark_read" } as never, {}).catch(() => {});
+    await settle();
+    const send = bridge.invoke({ operation: "message.send" } as never, {}).catch(() => {});
+    await settle();
+
+    gates.shift()?.();
+    await settle(); await settle();
+    expect(started[1]).toBe("message.send");
+
+    gates.forEach((g) => g());
+    await Promise.allSettled([first, mark, send]);
+  });
 });

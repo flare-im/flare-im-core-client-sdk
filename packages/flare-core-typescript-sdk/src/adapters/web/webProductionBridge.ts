@@ -49,18 +49,27 @@ function isBestEffortControlOperation(operation: string): boolean {
 }
 
 /**
- * 后台批量读：不是用户此刻在等的结果，可以让位。
+ * 可延后的后台操作：用户此刻并不在等它的结果，可以让位给交互操作。
  *
- * 这些操作一次要读几百条消息，在单线程 WASM 上一跑就是几百毫秒。打开会话时的
- * 历史回填正是走 `view.timeline.load_older`，实测把用户的第一次发送挡了 1.2 秒。
+ * 这些操作在单线程 WASM 上一跑就是几百毫秒。实测打开一个 2 万条消息的会话，
+ * 后台窗口约 2.7 秒，逐项完成时刻是：
+ *   +608ms  load_older(96 条)
+ *   +990ms  mark_read          ← 单项最大
+ *   +446ms  load_older(98 条)
+ *   +658ms  history_repair 收尾
+ * 用户的发送一旦落进这个窗口，就要排在其中某一项后面。
  *
- * 判定要保守：只列**确定**属于后台批量读的。像 view.timeline.open 就不能算 ——
- * 用户正盯着它出结果。宁可漏掉几个也不要把交互操作误降级。
+ * mark_read 属于「浏览的副作用」：用户没有在等它返回，未读数晚几百毫秒更新
+ * 不影响任何操作，但它排在发送前面就会实打实地拖慢上屏。
+ *
+ * 判定要保守：只列**确定**用户不在等的。像 view.timeline.open 就不能算 ——
+ * 用户正盯着它出结果。宁可漏掉几个，也不要把交互操作误降级。
  */
 function isBackgroundBulkOperation(operation: string): boolean {
   return (
     operation === "view.timeline.load_older"
     || operation === "message.list"
+    || operation === "conversation.mark_read"
     || operation.startsWith("sync.")
   );
 }
