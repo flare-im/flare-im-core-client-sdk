@@ -71,3 +71,6 @@ sync-flutter:
 # Forward any other target to xtask (kept from the previous Makefile).
 %:
 	@$(CARGO) xtask $@
+
+check-wire: ## 跨端校验 wire 编码器与模型类型一致（防契约漂移只改一端）
+	node scripts/check-wire-encoder-consistency.mjs

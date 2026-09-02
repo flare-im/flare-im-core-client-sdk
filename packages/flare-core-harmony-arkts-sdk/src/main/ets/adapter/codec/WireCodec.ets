@@ -507,12 +507,16 @@ export function buildThreadReplyMessageRequestToMap(request: BuildThreadReplyMes
   };
 }
 
+// sourceMessages 是**完整消息**而不是 id 存根：转发载荷要把原文嵌进去，
+// 核心侧 forward_item_from_source 会读 content / senderId / conversationId。
+// 注意上面的 forwardContentPayloadToMap 里有一段长得一模一样的代码，
+// **那处本来就该**用 id 存根 —— 只有这里要改，别改错位置。
 export function buildForwardMessageRequestToMap(request: BuildForwardMessageRequest): Record<string, Object> {
   return {
   conversationId: request.conversationId,
   merge: request.merge,
   title: request.title,
-  ...(request.sourceMessages.length > 0 ? { sourceMessages: request.sourceMessages.map((item) => forwardSourceMessageToMap(item)) } : {}),
+  ...(request.sourceMessages.length > 0 ? { sourceMessages: request.sourceMessages.map((item) => messageToMap(item)) } : {}),
   };
 }
 
