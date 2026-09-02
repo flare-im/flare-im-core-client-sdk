@@ -450,8 +450,7 @@ fun buildForwardMessageRequestToMap(request: BuildForwardMessageRequest): Map<St
         // 这里的 sourceMessages 是**完整消息**（BuildForwardMessageRequest），
         // 不同于 ForwardContentPayload 里的 id 存根 —— 两者代码长得一样，别改错。
         // 转发载荷要把原文嵌进去，核心侧 forward_item_from_source 会读
-        // content / senderId / conversationId；契约已从 ForwardSourceMessage
-        // 改成 Message，这里没跟上会让整个 android-sdk 编译不过。
+        // content / senderId / conversationId。
         put("sourceMessages", request.sourceMessages.map { messageToWireMap(it) })
     }
 }
@@ -862,7 +861,7 @@ private fun stringValue(value: Any?): String =
  * 消息没有我方的客户端去重 id），protobuf3 又会把未设置的字符串序列化成 ""。
  * 结果一收到实时消息批就整批解码失败，等于收不到消息。
  *
- * TypeScript 与 Swift 一直是「存在即可」，且已在生产上跑通；四端必须一致，
+ * TypeScript 与 Swift 一直是「存在即可」，四端必须一致，
  * 否则同一份 wire 数据在不同端有不同结果。
  */
 private fun requiredStringField(json: Map<String, Any?>, key: String, context: String): String {
