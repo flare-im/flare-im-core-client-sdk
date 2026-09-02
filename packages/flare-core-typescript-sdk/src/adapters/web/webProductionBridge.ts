@@ -49,6 +49,23 @@ function isBestEffortControlOperation(operation: string): boolean {
 }
 
 /**
+ * 后台批量读：不是用户此刻在等的结果，可以让位。
+ *
+ * 这些操作一次要读几百条消息，在单线程 WASM 上一跑就是几百毫秒。打开会话时的
+ * 历史回填正是走 `view.timeline.load_older`，实测把用户的第一次发送挡了 1.2 秒。
+ *
+ * 判定要保守：只列**确定**属于后台批量读的。像 view.timeline.open 就不能算 ——
+ * 用户正盯着它出结果。宁可漏掉几个也不要把交互操作误降级。
+ */
+function isBackgroundBulkOperation(operation: string): boolean {
+  return (
+    operation === "view.timeline.load_older"
+    || operation === "message.list"
+    || operation.startsWith("sync.")
+  );
+}
+
+/**
  * 链条等待底层 WASM 调用真正结束时，额外给的宽限期。
  *
  * 外层 `withInvokeTimeout` 只负责回复调用方；`invokeChain` 仍要等底层调用
@@ -139,8 +156,19 @@ export class WebProductionBridge implements NativeBridge {
   private eventsStarted = false;
   private lastConnectionState: BrowserConnectionState = "disconnected";
   private bestEffortControlInFlight = new Set<string>();
-  /** Serialize WASM invoke — Tokio block_on must not re-enter on wasm32. */
-  private invokeChain: Promise<void> = Promise.resolve();
+  /**
+   * Serialize WASM invoke — Tokio block_on must not re-enter on wasm32.
+   *
+   * 串行是硬约束，但**顺序**不必是先来后到。等待队列分两条泳道：后台批量读排在
+   * 交互操作后面。原来是一条严格 FIFO 的 promise 链，于是打开会话时的历史回填
+   * （一次几百条）会挡在用户的第一次发送前面——实测 Enter→上屏 1253ms，
+   * 而链子空闲时同样的发送只要 52ms。
+   *
+   * 只降级明确属于「后台批量读」的操作，其余保持原有 FIFO 语义，改动面最小。
+   * 正在执行的调用永远不被打断，只影响还在排队的。
+   */
+  private invokeRunning = false;
+  private invokeWaiters: Array<{ background: boolean; admit: () => void }> = [];
   private readonly loadRuntime?: WasmRuntimeLoader;
   private readonly createStorageHost: WasmStorageHostFactory;
 
@@ -409,12 +437,47 @@ export class WebProductionBridge implements NativeBridge {
       }
     };
 
-    const next = this.invokeChain.then(run, run);
-    const awaitSettled = () => this.awaitRuntimeSettledBounded(operation, runtimeInvokeSettled);
-    this.invokeChain = next.then(awaitSettled, awaitSettled).then(
-      () => undefined,
-      () => undefined,
-    );
+    const admitted = this.acquireInvokeSlot(isBackgroundBulkOperation(operation));
+    const next = admitted.then(run, run);
+    // 调用方拿到的是 run 的结果，不等 settle；但队列槽位要等 settle 之后才释放，
+    // 否则下一个调用会在 WASM 还没真正结束时进来（block_on 不可重入）。
+    const releaseAfterSettled = async (): Promise<void> => {
+      try {
+        await this.awaitRuntimeSettledBounded(operation, runtimeInvokeSettled);
+      } finally {
+        this.releaseInvokeSlot();
+      }
+    };
+    void next.then(releaseAfterSettled, releaseAfterSettled);
     return next;
+  }
+
+  /** 取得串行执行权。后台批量读让位给交互操作，同优先级内保持先来后到。 */
+  private acquireInvokeSlot(background: boolean): Promise<void> {
+    return new Promise<void>((resolve) => {
+      const waiter = { background, admit: resolve };
+      if (background) {
+        this.invokeWaiters.push(waiter);
+      } else {
+        // 插到所有后台等待者之前，但排在已有的交互等待者之后（保持 FIFO）
+        const at = this.invokeWaiters.findIndex((w) => w.background);
+        if (at < 0) this.invokeWaiters.push(waiter);
+        else this.invokeWaiters.splice(at, 0, waiter);
+      }
+      this.pumpInvokeQueue();
+    });
+  }
+
+  private releaseInvokeSlot(): void {
+    this.invokeRunning = false;
+    this.pumpInvokeQueue();
+  }
+
+  private pumpInvokeQueue(): void {
+    if (this.invokeRunning) return;
+    const next = this.invokeWaiters.shift();
+    if (!next) return;
+    this.invokeRunning = true;
+    next.admit();
   }
 }
