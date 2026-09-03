@@ -1,0 +1,313 @@
+{
+  "cases": [
+    {
+      "expected": {
+        "canCopy": true,
+        "canDelete": true,
+        "canEdit": true,
+        "canForward": true,
+        "canMultiSelect": true,
+        "canPin": true,
+        "canReact": true,
+        "canRecall": true,
+        "canReply": true,
+        "canResend": false,
+        "canSave": false,
+        "canUnpin": false
+      },
+      "input": {
+        "hasText": true,
+        "isConnected": true,
+        "isFailed": false,
+        "isPending": false,
+        "isPinned": false,
+        "isSelf": true,
+        "messageType": 1,
+        "multiSelectMode": false,
+        "status": 0
+      },
+      "label": "自己的文本"
+    },
+    {
+      "expected": {
+        "canCopy": true,
+        "canDelete": true,
+        "canEdit": false,
+        "canForward": true,
+        "canMultiSelect": true,
+        "canPin": true,
+        "canReact": true,
+        "canRecall": false,
+        "canReply": true,
+        "canResend": false,
+        "canSave": false,
+        "canUnpin": false
+      },
+      "input": {
+        "hasText": true,
+        "isConnected": true,
+        "isFailed": false,
+        "isPending": false,
+        "isPinned": false,
+        "isSelf": false,
+        "messageType": 1,
+        "multiSelectMode": false,
+        "status": 0
+      },
+      "label": "别人的文本"
+    },
+    {
+      "expected": {
+        "canCopy": false,
+        "canDelete": true,
+        "canEdit": false,
+        "canForward": true,
+        "canMultiSelect": true,
+        "canPin": true,
+        "canReact": true,
+        "canRecall": true,
+        "canReply": true,
+        "canResend": false,
+        "canSave": true,
+        "canUnpin": false
+      },
+      "input": {
+        "hasText": false,
+        "isConnected": true,
+        "isFailed": false,
+        "isPending": false,
+        "isPinned": false,
+        "isSelf": true,
+        "messageType": 2,
+        "multiSelectMode": false,
+        "status": 0
+      },
+      "label": "自己的图片(无正文)"
+    },
+    {
+      "expected": {
+        "canCopy": true,
+        "canDelete": true,
+        "canEdit": true,
+        "canForward": true,
+        "canMultiSelect": true,
+        "canPin": true,
+        "canReact": true,
+        "canRecall": true,
+        "canReply": true,
+        "canResend": false,
+        "canSave": false,
+        "canUnpin": false
+      },
+      "input": {
+        "hasText": true,
+        "isConnected": true,
+        "isFailed": false,
+        "isPending": false,
+        "isPinned": false,
+        "isSelf": true,
+        "messageType": 15,
+        "multiSelectMode": false,
+        "status": 0
+      },
+      "label": "自己的富文本"
+    },
+    {
+      "expected": {
+        "canCopy": false,
+        "canDelete": false,
+        "canEdit": false,
+        "canForward": false,
+        "canMultiSelect": false,
+        "canPin": false,
+        "canReact": false,
+        "canRecall": false,
+        "canReply": false,
+        "canResend": false,
+        "canSave": false,
+        "canUnpin": false
+      },
+      "input": {
+        "hasText": true,
+        "isConnected": true,
+        "isFailed": false,
+        "isPending": false,
+        "isPinned": false,
+        "isSelf": true,
+        "messageType": 1,
+        "multiSelectMode": false,
+        "status": 5
+      },
+      "label": "已撤回"
+    },
+    {
+      "expected": {
+        "canCopy": false,
+        "canDelete": false,
+        "canEdit": false,
+        "canForward": false,
+        "canMultiSelect": false,
+        "canPin": false,
+        "canReact": false,
+        "canRecall": false,
+        "canReply": false,
+        "canResend": false,
+        "canSave": false,
+        "canUnpin": false
+      },
+      "input": {
+        "hasText": true,
+        "isConnected": true,
+        "isFailed": false,
+        "isPending": false,
+        "isPinned": false,
+        "isSelf": true,
+        "messageType": 1,
+        "multiSelectMode": false,
+        "status": 6
+      },
+      "label": "已删除"
+    },
+    {
+      "expected": {
+        "canCopy": true,
+        "canDelete": true,
+        "canEdit": false,
+        "canForward": true,
+        "canMultiSelect": true,
+        "canPin": true,
+        "canReact": true,
+        "canRecall": false,
+        "canReply": true,
+        "canResend": true,
+        "canSave": false,
+        "canUnpin": false
+      },
+      "input": {
+        "hasText": true,
+        "isConnected": true,
+        "isFailed": true,
+        "isPending": false,
+        "isPinned": false,
+        "isSelf": true,
+        "messageType": 1,
+        "multiSelectMode": false,
+        "status": 4
+      },
+      "label": "发送失败"
+    },
+    {
+      "expected": {
+        "canCopy": true,
+        "canDelete": true,
+        "canEdit": false,
+        "canForward": true,
+        "canMultiSelect": true,
+        "canPin": true,
+        "canReact": true,
+        "canRecall": false,
+        "canReply": true,
+        "canResend": false,
+        "canSave": false,
+        "canUnpin": false
+      },
+      "input": {
+        "hasText": true,
+        "isConnected": false,
+        "isFailed": true,
+        "isPending": false,
+        "isPinned": false,
+        "isSelf": true,
+        "messageType": 1,
+        "multiSelectMode": false,
+        "status": 4
+      },
+      "label": "发送失败且断线"
+    },
+    {
+      "expected": {
+        "canCopy": true,
+        "canDelete": true,
+        "canEdit": false,
+        "canForward": false,
+        "canMultiSelect": true,
+        "canPin": false,
+        "canReact": false,
+        "canRecall": true,
+        "canReply": true,
+        "canResend": false,
+        "canSave": false,
+        "canUnpin": false
+      },
+      "input": {
+        "hasText": true,
+        "isConnected": true,
+        "isFailed": false,
+        "isPending": true,
+        "isPinned": false,
+        "isSelf": true,
+        "messageType": 1,
+        "multiSelectMode": false,
+        "status": 0
+      },
+      "label": "发送中(pending)"
+    },
+    {
+      "expected": {
+        "canCopy": true,
+        "canDelete": true,
+        "canEdit": true,
+        "canForward": true,
+        "canMultiSelect": true,
+        "canPin": false,
+        "canReact": true,
+        "canRecall": true,
+        "canReply": true,
+        "canResend": false,
+        "canSave": false,
+        "canUnpin": true
+      },
+      "input": {
+        "hasText": true,
+        "isConnected": true,
+        "isFailed": false,
+        "isPending": false,
+        "isPinned": true,
+        "isSelf": true,
+        "messageType": 1,
+        "multiSelectMode": false,
+        "status": 0
+      },
+      "label": "已置顶"
+    },
+    {
+      "expected": {
+        "canCopy": true,
+        "canDelete": true,
+        "canEdit": false,
+        "canForward": true,
+        "canMultiSelect": true,
+        "canPin": true,
+        "canReact": true,
+        "canRecall": false,
+        "canReply": false,
+        "canResend": false,
+        "canSave": false,
+        "canUnpin": false
+      },
+      "input": {
+        "hasText": true,
+        "isConnected": true,
+        "isFailed": false,
+        "isPending": false,
+        "isPinned": false,
+        "isSelf": true,
+        "messageType": 1,
+        "multiSelectMode": true,
+        "status": 0
+      },
+      "label": "多选模式"
+    }
+  ],
+  "note": "由 flare-im-core-sdk domain::message_actions 生成，勿手改"
+}
