@@ -46,6 +46,24 @@ describe("invoke 队列优先级", () => {
 
   const settle = () => new Promise((r) => setTimeout(r, 0));
 
+  /**
+   * 放行到全部结束。
+   *
+   * ⚠️ 不能只 `gates.forEach(g => g())`：那只释放**当时已存在**的门，
+   * 而排在后面的调用是被放行之后才开始执行、才产生自己的门的 ——
+   * 那些门没人放，`allSettled` 就永远挂着。这条用例最初就是这么写的，
+   * 表现为 5 秒超时，看上去像产品挂了，实际是判据自己写错。
+   */
+  async function drain(gates: Array<() => void>, promises: Array<Promise<unknown>>) {
+    for (let i = 0; i < 50; i += 1) {
+      while (gates.length) gates.shift()?.();
+      await settle();
+      await settle();
+      if (!gates.length) break;
+    }
+    await Promise.allSettled(promises);
+  }
+
   it("交互操作插到排队中的后台批量读前面", async () => {
     const { bridge, started, gates } = gatedBridge();
 
@@ -71,8 +89,7 @@ describe("invoke 队列优先级", () => {
     // 关键：发送虽然最后入队，但必须先于两个后台批量读执行
     expect(started[1]).toBe("message.send");
 
-    gates.forEach((g) => g());
-    await Promise.allSettled([first, bg1, bg2, send]);
+    await drain(gates, [first, bg1, bg2, send]);
   });
 
   it("同为交互操作时保持先来后到", async () => {
@@ -91,8 +108,7 @@ describe("invoke 队列优先级", () => {
     await settle(); await settle();
     expect(started[2]).toBe("message.recall");
 
-    gates.forEach((g) => g());
-    await Promise.allSettled([a, b, c]);
+    await drain(gates, [a, b, c]);
   });
 
   it("mark_read 属于后台：不能挡在发送前面", async () => {
@@ -110,7 +126,6 @@ describe("invoke 队列优先级", () => {
     await settle(); await settle();
     expect(started[1]).toBe("message.send");
 
-    gates.forEach((g) => g());
-    await Promise.allSettled([first, mark, send]);
+    await drain(gates, [first, mark, send]);
   });
 });
