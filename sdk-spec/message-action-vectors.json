@@ -1,6 +1,7 @@
 {
   "cases": [
     {
+      "deliveryState": "delivered",
       "expected": {
         "canCopy": true,
         "canDelete": true,
@@ -21,6 +22,7 @@
         "isFailed": false,
         "isPending": false,
         "isPinned": false,
+        "isRead": false,
         "isSelf": true,
         "messageType": 1,
         "multiSelectMode": false,
@@ -29,6 +31,7 @@
       "label": "自己的文本"
     },
     {
+      "deliveryState": "none",
       "expected": {
         "canCopy": true,
         "canDelete": true,
@@ -49,6 +52,7 @@
         "isFailed": false,
         "isPending": false,
         "isPinned": false,
+        "isRead": false,
         "isSelf": false,
         "messageType": 1,
         "multiSelectMode": false,
@@ -57,6 +61,7 @@
       "label": "别人的文本"
     },
     {
+      "deliveryState": "delivered",
       "expected": {
         "canCopy": false,
         "canDelete": true,
@@ -77,6 +82,7 @@
         "isFailed": false,
         "isPending": false,
         "isPinned": false,
+        "isRead": false,
         "isSelf": true,
         "messageType": 2,
         "multiSelectMode": false,
@@ -85,6 +91,7 @@
       "label": "自己的图片(无正文)"
     },
     {
+      "deliveryState": "delivered",
       "expected": {
         "canCopy": true,
         "canDelete": true,
@@ -105,6 +112,7 @@
         "isFailed": false,
         "isPending": false,
         "isPinned": false,
+        "isRead": false,
         "isSelf": true,
         "messageType": 15,
         "multiSelectMode": false,
@@ -113,6 +121,7 @@
       "label": "自己的富文本"
     },
     {
+      "deliveryState": "none",
       "expected": {
         "canCopy": false,
         "canDelete": false,
@@ -133,6 +142,7 @@
         "isFailed": false,
         "isPending": false,
         "isPinned": false,
+        "isRead": false,
         "isSelf": true,
         "messageType": 1,
         "multiSelectMode": false,
@@ -141,6 +151,7 @@
       "label": "已撤回"
     },
     {
+      "deliveryState": "none",
       "expected": {
         "canCopy": false,
         "canDelete": false,
@@ -161,6 +172,7 @@
         "isFailed": false,
         "isPending": false,
         "isPinned": false,
+        "isRead": false,
         "isSelf": true,
         "messageType": 1,
         "multiSelectMode": false,
@@ -169,6 +181,7 @@
       "label": "已删除"
     },
     {
+      "deliveryState": "failed",
       "expected": {
         "canCopy": true,
         "canDelete": true,
@@ -189,6 +202,7 @@
         "isFailed": true,
         "isPending": false,
         "isPinned": false,
+        "isRead": false,
         "isSelf": true,
         "messageType": 1,
         "multiSelectMode": false,
@@ -197,6 +211,7 @@
       "label": "发送失败"
     },
     {
+      "deliveryState": "failed",
       "expected": {
         "canCopy": true,
         "canDelete": true,
@@ -217,6 +232,7 @@
         "isFailed": true,
         "isPending": false,
         "isPinned": false,
+        "isRead": false,
         "isSelf": true,
         "messageType": 1,
         "multiSelectMode": false,
@@ -225,6 +241,7 @@
       "label": "发送失败且断线"
     },
     {
+      "deliveryState": "sending",
       "expected": {
         "canCopy": true,
         "canDelete": true,
@@ -245,6 +262,7 @@
         "isFailed": false,
         "isPending": true,
         "isPinned": false,
+        "isRead": false,
         "isSelf": true,
         "messageType": 1,
         "multiSelectMode": false,
@@ -253,6 +271,7 @@
       "label": "发送中(pending)"
     },
     {
+      "deliveryState": "delivered",
       "expected": {
         "canCopy": true,
         "canDelete": true,
@@ -273,6 +292,7 @@
         "isFailed": false,
         "isPending": false,
         "isPinned": true,
+        "isRead": false,
         "isSelf": true,
         "messageType": 1,
         "multiSelectMode": false,
@@ -281,6 +301,67 @@
       "label": "已置顶"
     },
     {
+      "deliveryState": "read",
+      "expected": {
+        "canCopy": true,
+        "canDelete": true,
+        "canEdit": true,
+        "canForward": true,
+        "canMultiSelect": true,
+        "canPin": true,
+        "canReact": true,
+        "canRecall": true,
+        "canReply": true,
+        "canResend": false,
+        "canSave": false,
+        "canUnpin": false
+      },
+      "input": {
+        "hasText": true,
+        "isConnected": true,
+        "isFailed": false,
+        "isPending": false,
+        "isPinned": false,
+        "isRead": true,
+        "isSelf": true,
+        "messageType": 1,
+        "multiSelectMode": false,
+        "status": 0
+      },
+      "label": "对方已读"
+    },
+    {
+      "deliveryState": "none",
+      "expected": {
+        "canCopy": true,
+        "canDelete": true,
+        "canEdit": false,
+        "canForward": true,
+        "canMultiSelect": true,
+        "canPin": true,
+        "canReact": true,
+        "canRecall": false,
+        "canReply": true,
+        "canResend": false,
+        "canSave": false,
+        "canUnpin": false
+      },
+      "input": {
+        "hasText": true,
+        "isConnected": true,
+        "isFailed": false,
+        "isPending": false,
+        "isPinned": false,
+        "isRead": false,
+        "isSelf": false,
+        "messageType": 1,
+        "multiSelectMode": false,
+        "status": 0
+      },
+      "label": "别人发的"
+    },
+    {
+      "deliveryState": "delivered",
       "expected": {
         "canCopy": true,
         "canDelete": true,
@@ -301,6 +382,7 @@
         "isFailed": false,
         "isPending": false,
         "isPinned": false,
+        "isRead": false,
         "isSelf": true,
         "messageType": 1,
         "multiSelectMode": true,
