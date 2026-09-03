@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import fs from "node:fs";
 import { promises as fsPromises } from "node:fs";
 import path from "node:path";
@@ -38,6 +39,21 @@ function createMediaProxyTable(env) {
       rewrite: (requestPath) => requestPath.slice(storagePrefix.length) || "/"
     }
   };
+}
+// WASM 产物两个文件都不带内容哈希名，而生产 nginx 给 *.wasm 打了一年 immutable：
+// 发新 WASM 后浏览器继续用旧 .wasm 配新胶水 JS，表现为
+// "wasm.__wasm_bindgen_func_elem_NNNN is not a function"（生产实测）。
+// 这里按两个文件的内容算一个构建 id 注入 import.meta.env.VITE_FLARE_WASM_BUILD_ID，
+// 加载端把它挂进查询串，缓存键随内容变，旧缓存自然失效。
+function wasmBindingBuildId(wasmBindingRoot) {
+  const hash = crypto.createHash("sha1");
+  for (const fileName of Array.from(wasmBindingFiles).sort()) {
+    const filePath = path.join(wasmBindingRoot, fileName);
+    if (!fs.existsSync(filePath)) return "";
+    hash.update(fileName);
+    hash.update(fs.readFileSync(filePath));
+  }
+  return hash.digest("hex").slice(0, 12);
 }
 function flareWasmBindingAssets(wasmBindingRoot, appDir) {
   return {
@@ -285,6 +301,7 @@ function createFlareCoreWebAppViteConfig(options) {
         flareVueImUiAssets(vueImUiAssetRoot, appDir)
       ],
       define: {
+        "import.meta.env.VITE_FLARE_WASM_BUILD_ID": JSON.stringify(wasmBindingBuildId(wasmBindingRoot)),
         ...(options.extraDefine ?? {})
       },
       resolve: {
