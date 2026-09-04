@@ -57,8 +57,10 @@ npm run dev
 ```
 
 The example ships a local-development `.env` matching `flare-core-web-app`.
-If your gateway generated a different `flare-im-core/logs/.dev-token-secret`,
-override `VITE_FLARE_TOKEN_SECRET` in `.env.local`.
+The app never holds a signing secret: with only a user id the SDK issues the
+access token from the API gateway (`{httpUrl}/api/v1/auth/tokens`, start the
+gateway with `FLARE_API_GATEWAY_AUTH_DEV_ISSUE=true` locally) and refreshes it
+before expiry; or paste a backend-issued token in the login page.
 
 Useful commands:
 
