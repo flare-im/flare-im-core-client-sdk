@@ -17,7 +17,7 @@ Legend:
 | API | Status | Entry point |
 |-----|--------|-------------|
 | `create`, `init` | Real | Login flow and SDK wrapper. |
-| `generateCoreToken`, `login`, `currentUserId` | Real | Login flow and diagnostics. |
+| `login`（token 由网关签发或应用传入）, `currentUserId` | Real | Login flow and diagnostics. |
 | `updateAccessToken` | Lab | SDK Lab token renewal control generates a fresh core token and updates the session. |
 | `logout` | Real | Auth state / settings flow. |
 | `isConnected`, `sessionActive`, `connection.getConnectionState` | Lab | SDK Lab diagnostics. |

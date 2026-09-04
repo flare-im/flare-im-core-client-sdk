@@ -68,7 +68,7 @@ cd ../flare-im-core-sdk
 FLARE_E2E_TOTAL=20 \
 FLARE_E2E_IN_FLIGHT=8 \
 FLARE_E2E_RECEIVE_TIMEOUT_MS=30000 \
-rtk cargo run --example two_user_latency_throughput --features lifecycle-sqlite,dev-test-token
+rtk cargo run --example two_user_latency_throughput --features lifecycle-sqlite
 ```
 
 Large-group correctness baseline:
@@ -81,7 +81,7 @@ FLARE_GROUP_E2E_IN_FLIGHT=64 \
 FLARE_GROUP_E2E_ACK_TIMEOUT_MS=120000 \
 FLARE_GROUP_E2E_RECEIVE_TIMEOUT_MS=180000 \
 FLARE_GROUP_E2E_SETTLE_MS=1000 \
-rtk cargo run --example group_latency_throughput --features lifecycle-sqlite,dev-test-token
+rtk cargo run --example group_latency_throughput --features lifecycle-sqlite
 ```
 
 Multi-message group convergence:
@@ -94,15 +94,15 @@ FLARE_GROUP_E2E_IN_FLIGHT=64 \
 FLARE_GROUP_E2E_ACK_TIMEOUT_MS=120000 \
 FLARE_GROUP_E2E_RECEIVE_TIMEOUT_MS=180000 \
 FLARE_GROUP_E2E_SETTLE_MS=1000 \
-rtk cargo run --example group_latency_throughput --features lifecycle-sqlite,dev-test-token
+rtk cargo run --example group_latency_throughput --features lifecycle-sqlite
 ```
 
 Collaboration-state convergence:
 
 ```bash
 cd ../flare-im-core-sdk
-rtk cargo run --example typing_relay_e2e --features lifecycle-sqlite,dev-test-token
-rtk cargo run --example read_receipt_e2e --features lifecycle-sqlite,dev-test-token
+rtk cargo run --example typing_relay_e2e --features lifecycle-sqlite
+rtk cargo run --example read_receipt_e2e --features lifecycle-sqlite
 ```
 
 2026-06-30 local baseline:

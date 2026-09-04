@@ -180,7 +180,6 @@ web / uni / tauri 三列数值相同，因为它们共享同一套 Vue UI。三�
 | session.create | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | session.currentUserId | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | session.dispose | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| session.generateCoreToken | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | session.hardReset | ✓ | ✓ | ✓ | · | · | · |
 | session.heartbeatEffectiveInterval | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | session.init | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
