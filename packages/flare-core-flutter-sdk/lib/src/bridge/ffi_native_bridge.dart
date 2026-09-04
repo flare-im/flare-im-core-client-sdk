@@ -270,8 +270,8 @@ final class FfiNativeBridge implements NativeBridge {
     return using((arena) {
       final userId =
           stringField(request, 'userId').toNativeUtf8(allocator: arena);
-      final token =
-          stringField(request, 'token').toNativeUtf8(allocator: arena);
+      // token 可选：留空由核心按 sdkConfig.auth.tokenEndpoint 向网关签发（SDK 托管）。
+      final token = (request['token']?.toString() ?? '').toNativeUtf8(allocator: arena);
       final storeConfigJson = request['storeConfigJson']?.toString();
       final storeConfig = (storeConfigJson != null && storeConfigJson.isNotEmpty
               ? storeConfigJson
@@ -315,8 +315,8 @@ final class FfiNativeBridge implements NativeBridge {
     return using((arena) {
       final userId =
           stringField(request, 'userId').toNativeUtf8(allocator: arena);
-      final token =
-          stringField(request, 'token').toNativeUtf8(allocator: arena);
+      // token 可选：留空由核心按 sdkConfig.auth.tokenEndpoint 向网关签发（SDK 托管）。
+      final token = (request['token']?.toString() ?? '').toNativeUtf8(allocator: arena);
       return _enqueue('sdk.connect', (context) {
         return _bindings.sdkConnect(
           _requireHandle(),
