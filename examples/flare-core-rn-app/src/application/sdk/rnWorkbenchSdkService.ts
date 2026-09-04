@@ -145,11 +145,6 @@ export const defaultSdkLabInputs: SdkLabInputs = {
   jsonParams: '{}',
 };
 
-const devTokenDefaults = {
-  issuer: 'flare-im-core',
-  ttlSecs: 3600,
-};
-
 const sdkEventSources = [
   'lifecycle',
   'connection',
@@ -169,16 +164,19 @@ export function createRnWorkbenchSdkService(client: FlareImClient): RnWorkbenchS
 
     async initializeAndLogin(form) {
       const identity = normalizeLoginIdentity(form);
+      // 应用托管：登录表单粘贴了现成 token 就原样用；SDK 托管：留空，核心向网关签发并自动刷新。
+      // 客户端不再本地签发（那等于把签名密钥打进 App）。
+      const explicitToken = form.token.trim();
       await client.init({
         ...buildNativeTransportConfig(form),
         httpUrl: form.httpUrl,
         dataUrl: form.dataUrl,
         tenantId: identity.tenantId,
         resourceProfile: 'mobile',
+        ...(explicitToken ? {} : { auth: { tokenEndpoint: form.httpUrl } }),
       });
-      const token = await generateCoreLoginToken(client, form, identity);
       await client.events.subscribeEvents({ sources: [...sdkEventSources] });
-      await client.login({ userId: identity.userId, token });
+      await client.login(explicitToken ? { userId: identity.userId, token: explicitToken } : { userId: identity.userId });
       const [diagnostics, catalog] = await Promise.all([
         refreshDiagnostics(client),
         client.messageBuilder.listSupportedBuildOperations(),
@@ -401,8 +399,13 @@ export function createRnWorkbenchSdkService(client: FlareImClient): RnWorkbenchS
         return compactJson(await client.heartbeatEffectiveInterval());
       }
       if (op === 'update_access_token') {
+        // 客户端不再签发：只把登录表单里粘贴的 token 应用到核心（应用托管形态）。
+        // SDK 托管形态下核心自己到期前刷新，这里无事可做。
         const identity = normalizeLoginIdentity(form);
-        const accessToken = await generateCoreLoginToken(client, form, identity, input.tokenTtlSecs);
+        const accessToken = form.token.trim();
+        if (!accessToken) {
+          throw new Error('SDK-managed token is refreshed by the core; paste a backend-issued token on the login form to apply one manually');
+        }
         await client.updateAccessToken({ accessToken, tenantId: identity.tenantId });
         return compactJson({ updated: true, tokenLength: accessToken.length });
       }
@@ -500,34 +503,6 @@ function normalizeLoginIdentity(form: LoginFormState): { userId: string; tenantI
     userId,
     tenantId: form.tenantId.trim() || '0',
   };
-}
-
-async function generateCoreLoginToken(
-  client: FlareImClient,
-  form: LoginFormState,
-  identity: { userId: string; tenantId: string },
-  ttlSecs = devTokenDefaults.ttlSecs,
-): Promise<string> {
-  const explicitToken = form.token.trim();
-  if (explicitToken) return explicitToken;
-  const secret = rnDevTokenSecret();
-  if (!secret) {
-    throw new Error('missing RN dev token secret: start flare-im-core first or run npm run sync:dev-token-secret after setting FLARE_RN_DEV_TOKEN_SECRET');
-  }
-  const response = await client.generateCoreToken({
-    userId: identity.userId,
-    tenantId: identity.tenantId,
-    secret,
-    issuer: devTokenDefaults.issuer,
-    ttlSecs: ttlSecs > 0 ? ttlSecs : devTokenDefaults.ttlSecs,
-    deviceId: `rn-${identity.userId}`,
-  });
-  return requiredText(response.token, 'generated token');
-}
-
-function rnDevTokenSecret(): string {
-  const value = (globalThis as { __FLARE_RN_DEV_TOKEN_SECRET__?: unknown }).__FLARE_RN_DEV_TOKEN_SECRET__;
-  return typeof value === 'string' ? value.trim() : '';
 }
 
 async function buildTypedMessage(
