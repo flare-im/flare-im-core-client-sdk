@@ -146,15 +146,6 @@
       "request": "Unit",
       "response": "BooleanResponse",
       "stability": "stable"
-    },
-    {
-      "name": "generateCoreToken",
-      "operation": "sdk.generate_core_token",
-      "transport": "contract-invoke-json",
-      "cApi": "flare_sdk_invoke_json",
-      "request": "CoreTokenRequest",
-      "response": "CoreTokenResponse",
-      "stability": "stable"
     }
   ]
 }

@@ -107,8 +107,4 @@ public final class DefaultFlareImClient: FlareImClientProtocol {
     public func sessionActive() async throws -> Bool {
         return try await invokeBool(bridge, descriptor: NativeCallMap.sdkSessionActive, request: nil)
     }
-    public func generateCoreToken(_ request: CoreTokenRequest) async throws -> CoreTokenResponse {
-        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.sdkGenerateCoreToken, request: unwrapRequest(AnySendable(coreTokenRequestToMap(request))))
-        return try coreTokenResponseFromJson(raw)
-    }
 }

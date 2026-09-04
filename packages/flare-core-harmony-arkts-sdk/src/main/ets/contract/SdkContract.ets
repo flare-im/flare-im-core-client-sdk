@@ -18,7 +18,6 @@ export const SdkOperations = {
   sdkCurrentUserId: 'sdk.current_user_id',
   sdkIsConnected: 'sdk.is_connected',
   sdkSessionActive: 'sdk.session_active',
-  sdkGenerateCoreToken: 'sdk.generate_core_token',
   connectionGetState: 'connection.get_state',
   connectionDisconnect: 'connection.disconnect',
   conversationList: 'conversation.list',

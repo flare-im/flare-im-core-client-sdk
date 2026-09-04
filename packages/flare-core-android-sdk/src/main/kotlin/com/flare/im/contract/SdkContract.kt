@@ -22,7 +22,6 @@ object SdkOperations {
     const val SDK_CURRENT_USER_ID: String = "sdk.current_user_id"
     const val SDK_IS_CONNECTED: String = "sdk.is_connected"
     const val SDK_SESSION_ACTIVE: String = "sdk.session_active"
-    const val SDK_GENERATE_CORE_TOKEN: String = "sdk.generate_core_token"
     const val CONNECTION_GET_STATE: String = "connection.get_state"
     const val CONNECTION_DISCONNECT: String = "connection.disconnect"
     const val CONVERSATION_LIST: String = "conversation.list"

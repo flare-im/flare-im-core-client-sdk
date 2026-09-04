@@ -26,7 +26,6 @@ SDK lifecycle, authenticated session and process-level utilities.
 | `currentUserId` | `Unit` | `CurrentUserIdResponse` | `ffi-symbol` | `flare_sdk_current_user_id` |
 | `isConnected` | `Unit` | `BooleanResponse` | `ffi-symbol` | `flare_sdk_is_connected` |
 | `sessionActive` | `Unit` | `BooleanResponse` | `ffi-symbol` | `flare_sdk_session_active` |
-| `generateCoreToken` | `CoreTokenRequest` | `CoreTokenResponse` | `contract-invoke-json` | `flare_sdk_invoke_json` |
 
 ## client.connection
 

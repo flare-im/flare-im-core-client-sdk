@@ -241,19 +241,6 @@ abstract final class NativeCallMap {
       returnMode: "sync",
       handlePolicy: "client-handle");
 
-  /// generateCoreToken maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `sdk.generate_core_token`.
-  static const sdkGenerateCoreToken = NativeCallDescriptor(
-      module: "session",
-      method: "generateCoreToken",
-      operation: "sdk.generate_core_token",
-      transport: "contract-invoke-json",
-      cApi: "flare_sdk_invoke_json",
-      requestEncoding: "json",
-      responseEncoding: "json-object",
-      returnMode: "callback",
-      handlePolicy: "client-handle",
-      callback: "FlareResultCallback");
-
   /// getConnectionState maps to `flare_sdk_state` via `ffi-symbol`. Operation: `connection.get_state`.
   static const connectionGetState = NativeCallDescriptor(
       module: "connection",

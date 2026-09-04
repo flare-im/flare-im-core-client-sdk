@@ -32,7 +32,6 @@ public class SdkOperations {
     public static let sdkCurrentUserId: String = "sdk.current_user_id"
     public static let sdkIsConnected: String = "sdk.is_connected"
     public static let sdkSessionActive: String = "sdk.session_active"
-    public static let sdkGenerateCoreToken: String = "sdk.generate_core_token"
     public static let connectionGetState: String = "connection.get_state"
     public static let connectionDisconnect: String = "connection.disconnect"
     public static let conversationList: String = "conversation.list"

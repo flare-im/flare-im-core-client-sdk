@@ -40,7 +40,7 @@ export interface SdkConfig {
 }
 export interface CreateClientRequest { config: SdkConfig; }
 export interface CreateClientResponse { handle: bigint | number; }
-export interface LoginRequest { userId: string; token: string; storeConfigJson?: string; }
+export interface LoginRequest { userId: string; token?: string; storeConfigJson?: string; }
 export interface MessageDispatchRequest { op: string; params: Record<string, unknown>; }
 export interface Subscription { id: bigint | number; }
 export type FlareJsonObject = Record<string, unknown>;

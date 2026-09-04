@@ -36,6 +36,4 @@ abstract interface class SessionApi {
   Future<bool> isConnected();
   /// sessionActive maps to `flare_sdk_session_active` via `ffi-symbol`. Operation: `sdk.session_active`.
   Future<bool> sessionActive();
-  /// generateCoreToken maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `sdk.generate_core_token`.
-  Future<CoreTokenResponse> generateCoreToken(CoreTokenRequest request);
 }

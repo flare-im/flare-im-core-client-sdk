@@ -57,8 +57,6 @@ export const NativeCallMap = {
   sdkIsConnected: { module: "session", method: "isConnected", operation: "sdk.is_connected", transport: "ffi-symbol", cApi: "flare_sdk_is_connected", requestEncoding: "typed-ffi", responseEncoding: "boolean", returnMode: "sync", callback: null, handlePolicy: "client-handle" },
   /** sessionActive maps to `flare_sdk_session_active` via `ffi-symbol`. Operation: `sdk.session_active`. */
   sdkSessionActive: { module: "session", method: "sessionActive", operation: "sdk.session_active", transport: "ffi-symbol", cApi: "flare_sdk_session_active", requestEncoding: "typed-ffi", responseEncoding: "boolean", returnMode: "sync", callback: null, handlePolicy: "client-handle" },
-  /** generateCoreToken maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `sdk.generate_core_token`. */
-  sdkGenerateCoreToken: { module: "session", method: "generateCoreToken", operation: "sdk.generate_core_token", transport: "contract-invoke-json", cApi: "flare_sdk_invoke_json", requestEncoding: "json", responseEncoding: "json-object", returnMode: "callback", callback: "FlareResultCallback", handlePolicy: "client-handle" },
   /** getConnectionState maps to `flare_sdk_state` via `ffi-symbol`. Operation: `connection.get_state`. */
   connectionGetState: { module: "connection", method: "getConnectionState", operation: "connection.get_state", transport: "ffi-symbol", cApi: "flare_sdk_state", requestEncoding: "typed-ffi", responseEncoding: "enum", returnMode: "sync", callback: null, handlePolicy: "client-handle" },
   /** disconnect maps to `flare_sdk_disconnect` via `ffi-symbol`. Operation: `connection.disconnect`. */

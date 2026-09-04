@@ -35,8 +35,6 @@ export * from './startup_home_sync_response';
 export * from './set_heartbeat_app_state_request';
 export * from './set_heartbeat_nat_timeout_request';
 export * from './heartbeat_effective_interval_response';
-export * from './core_token_request';
-export * from './core_token_response';
 export * from './network_change_request';
 export * from './network_change_response';
 export * from './runtime_health_response';

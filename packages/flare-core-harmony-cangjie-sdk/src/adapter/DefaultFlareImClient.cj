@@ -160,9 +160,4 @@ public class DefaultFlareImClient <: flare_core_harmony_cangjie_sdk.api.FlareImC
         return booleanResponseFromWire(bridge.invoke(descriptor: NativeCallMap.sdkSessionActive, requestJson: wireEncodeRequest("{}")))
     }
 
-    public func generateCoreToken(request: CoreTokenRequest): CoreTokenResponse {
-        let raw = bridge.invoke(descriptor: NativeCallMap.sdkGenerateCoreToken, requestJson: wireEncodeRequest(coreTokenRequestToJson(request)))
-        return coreTokenResponseFromJson(raw)
-    }
-
 }

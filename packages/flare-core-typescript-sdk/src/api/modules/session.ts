@@ -3,7 +3,7 @@
  *
  * Module API: `session` — SDK lifecycle, authenticated session and process-level utilities.
  */
-import type { CoreTokenRequest, CoreTokenResponse, HeartbeatEffectiveIntervalResponse, SetHeartbeatAppStateRequest, SetHeartbeatNatTimeoutRequest } from '../../model';
+import type { HeartbeatEffectiveIntervalResponse, SetHeartbeatAppStateRequest, SetHeartbeatNatTimeoutRequest } from '../../model';
 import type { CreateClientRequest, CreateClientResponse, CurrentUserIdResponse, LoginRequest, SdkConfig, UpdateAccessTokenRequest } from '../types';
 
 /** SDK lifecycle, authenticated session and process-level utilities. */
@@ -40,6 +40,4 @@ export interface SessionApi {
   isConnected(): Promise<boolean>;
   /** sessionActive maps to `flare_sdk_session_active` via `ffi-symbol`. Operation: `sdk.session_active`. */
   sessionActive(): Promise<boolean>;
-  /** generateCoreToken maps to `flare_sdk_invoke_json`. Operation: `sdk.generate_core_token`. */
-  generateCoreToken(request: CoreTokenRequest): Promise<CoreTokenResponse>;
 }

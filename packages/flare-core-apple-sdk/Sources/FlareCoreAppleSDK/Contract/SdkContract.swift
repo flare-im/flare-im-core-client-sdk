@@ -22,7 +22,6 @@ public enum SdkOperations {
     public static let sdkCurrentUserId = "sdk.current_user_id"
     public static let sdkIsConnected = "sdk.is_connected"
     public static let sdkSessionActive = "sdk.session_active"
-    public static let sdkGenerateCoreToken = "sdk.generate_core_token"
     public static let connectionGetState = "connection.get_state"
     public static let connectionDisconnect = "connection.disconnect"
     public static let conversationList = "conversation.list"

@@ -14,10 +14,10 @@ import type { ViewsApi } from '../api/modules/views';
 import type { EventsApi } from '../api/modules/events';
 import type { DiagnosticsApi } from '../api/modules/diagnostics';
 import type { CreateClientRequest, CreateClientResponse, CurrentUserIdResponse, LoginRequest, SdkConfig, UpdateAccessTokenRequest } from '../api/types';
-import type { CoreTokenRequest, CoreTokenResponse, HeartbeatEffectiveIntervalResponse, SetHeartbeatAppStateRequest, SetHeartbeatNatTimeoutRequest } from '../model';
+import type { HeartbeatEffectiveIntervalResponse, SetHeartbeatAppStateRequest, SetHeartbeatNatTimeoutRequest } from '../model';
 import { LifecycleEventName } from '../model';
 import { emitLifecycleEvent, invokeBool, invokeMap, invokeVoid, sdkErrorPayloadFromError, userIdFromRequest } from './codec/nativeInvoke';
-import { coreTokenRequestToMap, setHeartbeatAppStateRequestToMap, setHeartbeatNatTimeoutRequestToMap } from './codec/wireCodec';
+import { setHeartbeatAppStateRequestToMap, setHeartbeatNatTimeoutRequestToMap } from './codec/wireCodec';
 import { DefaultEventsApi } from './module/DefaultEventsApi';
 import { DefaultConnectionApi } from './module/DefaultConnectionApi';
 import { DefaultConversationsApi } from './module/DefaultConversationsApi';
@@ -138,8 +138,5 @@ export class DefaultFlareImClient implements FlareImClient {
   }
   async sessionActive(): Promise<boolean> {
     return await invokeBool(this.bridge, NativeCallMap.sdkSessionActive);
-  }
-  async generateCoreToken(request: CoreTokenRequest): Promise<CoreTokenResponse> {
-    return await invokeMap(this.bridge, NativeCallMap.sdkGenerateCoreToken, coreTokenRequestToMap(request)) as unknown as CoreTokenResponse;
   }
 }

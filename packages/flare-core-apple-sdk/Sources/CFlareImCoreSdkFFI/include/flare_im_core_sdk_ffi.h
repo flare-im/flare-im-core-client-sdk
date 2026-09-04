@@ -467,11 +467,4 @@ bool flare_sdk_session_active(FlareHandle handle);
 
 int32_t flare_sdk_current_user_id(FlareHandle handle, void *context, FlareResultCallback callback);
 
-struct FlareString flare_sdk_generate_core_token(const char *secret,
-                                                 const char *issuer,
-                                                 const char *user_id,
-                                                 const char *device_id,
-                                                 const char *tenant_id,
-                                                 uint64_t ttl_secs);
-
 #endif  /* FLARE_IM_CORE_SDK_FFI_H */

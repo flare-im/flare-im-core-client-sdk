@@ -147,7 +147,4 @@ class DefaultFlareImClient(
     override suspend fun sessionActive(): Boolean {
         return invokeBool(bridge, NativeCallMap.SDK_SESSION_ACTIVE)
     }
-    override suspend fun generateCoreToken(request: CoreTokenRequest): CoreTokenResponse {
-        return coreTokenResponseFromJson(invokeMap(bridge, NativeCallMap.SDK_GENERATE_CORE_TOKEN, coreTokenRequestToMap(request)))
-    }
 }

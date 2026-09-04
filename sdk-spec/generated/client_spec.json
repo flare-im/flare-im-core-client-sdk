@@ -2140,67 +2140,6 @@
             }
           ],
           "name": "HeartbeatEffectiveIntervalResponse"
-        },
-        {
-          "description": "Explicit configuration for generating a Flare IM Core gateway-compatible HS256 access token.",
-          "fields": [
-            {
-              "description": "Subject user id stored in the JWT sub claim.",
-              "name": "userId",
-              "required": true,
-              "type": "String",
-              "wireName": "userId"
-            },
-            {
-              "description": "HS256 signing secret configured on the gateway verifier.",
-              "name": "secret",
-              "required": true,
-              "type": "String",
-              "wireName": "secret"
-            },
-            {
-              "description": "JWT issuer expected by the gateway verifier.",
-              "name": "issuer",
-              "required": true,
-              "type": "String",
-              "wireName": "issuer"
-            },
-            {
-              "description": "Token lifetime in seconds.",
-              "name": "ttlSecs",
-              "required": true,
-              "type": "UInt64",
-              "wireName": "ttlSecs"
-            },
-            {
-              "description": "Optional device id claim.",
-              "name": "deviceId",
-              "required": false,
-              "type": "String",
-              "wireName": "deviceId"
-            },
-            {
-              "description": "Optional tenant id claim.",
-              "name": "tenantId",
-              "required": false,
-              "type": "String",
-              "wireName": "tenantId"
-            }
-          ],
-          "name": "CoreTokenRequest"
-        },
-        {
-          "description": "Generated core access token payload.",
-          "fields": [
-            {
-              "description": "Signed JWT access token.",
-              "name": "token",
-              "required": true,
-              "type": "String",
-              "wireName": "token"
-            }
-          ],
-          "name": "CoreTokenResponse"
         }
       ]
     },
@@ -5488,23 +5427,6 @@
           "response": "BooleanResponse",
           "stability": "stable",
           "transport": "ffi-symbol"
-        },
-        {
-          "cApi": "flare_sdk_invoke_json",
-          "name": "generateCoreToken",
-          "nativeBinding": {
-            "asyncReturn": "i32 immediate_submit_code",
-            "callback": "FlareResultCallback",
-            "handlePolicy": "client-handle",
-            "requestEncoding": "json",
-            "responseEncoding": "json-object",
-            "returnMode": "callback"
-          },
-          "operation": "sdk.generate_core_token",
-          "request": "CoreTokenRequest",
-          "response": "CoreTokenResponse",
-          "stability": "stable",
-          "transport": "contract-invoke-json"
         }
       ]
     },

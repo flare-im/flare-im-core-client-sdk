@@ -23,8 +23,6 @@ export 'entity/heartbeat_app_state.dart';
 export 'command/set_heartbeat_app_state_request.dart';
 export 'command/set_heartbeat_nat_timeout_request.dart';
 export 'response/heartbeat_effective_interval_response.dart';
-export 'command/core_token_request.dart';
-export 'response/core_token_response.dart';
 export 'entity/network_interface_kind.dart';
 export 'command/network_change_request.dart';
 export 'response/network_change_response.dart';

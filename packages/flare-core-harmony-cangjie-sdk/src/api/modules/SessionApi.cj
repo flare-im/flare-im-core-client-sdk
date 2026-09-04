@@ -21,5 +21,4 @@ public interface SessionApi {
     func currentUserId(): String
     func isConnected(): BooleanResponse
     func sessionActive(): BooleanResponse
-    func generateCoreToken(request: CoreTokenRequest): CoreTokenResponse
 }

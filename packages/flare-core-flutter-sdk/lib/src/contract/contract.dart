@@ -21,7 +21,6 @@ abstract final class SdkOperations {
   static const String sdkCurrentUserId = 'sdk.current_user_id';
   static const String sdkIsConnected = 'sdk.is_connected';
   static const String sdkSessionActive = 'sdk.session_active';
-  static const String sdkGenerateCoreToken = 'sdk.generate_core_token';
   static const String connectionGetState = 'connection.get_state';
   static const String connectionDisconnect = 'connection.disconnect';
   static const String conversationList = 'conversation.list';

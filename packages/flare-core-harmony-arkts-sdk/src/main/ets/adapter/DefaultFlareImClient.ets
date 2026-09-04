@@ -128,7 +128,4 @@ export class DefaultFlareImClient implements FlareImClient {
   async sessionActive(): Promise<boolean> {
     return await invokeBool(this.bridge, NativeCallMap.sdkSessionActive);
   }
-  async generateCoreToken(request: CoreTokenRequest): Promise<CoreTokenResponse> {
-    return await this.bridge.invoke<CoreTokenResponse>(NativeCallMap.sdkGenerateCoreToken, coreTokenRequestToMap(request));
-  }
 }

@@ -64,67 +64,6 @@
           "description": "Effective heartbeat interval in seconds when connected."
         }
       ]
-    },
-    {
-      "name": "CoreTokenRequest",
-      "description": "Explicit configuration for generating a Flare IM Core gateway-compatible HS256 access token.",
-      "fields": [
-        {
-          "name": "userId",
-          "wireName": "userId",
-          "type": "String",
-          "required": true,
-          "description": "Subject user id stored in the JWT sub claim."
-        },
-        {
-          "name": "secret",
-          "wireName": "secret",
-          "type": "String",
-          "required": true,
-          "description": "HS256 signing secret configured on the gateway verifier."
-        },
-        {
-          "name": "issuer",
-          "wireName": "issuer",
-          "type": "String",
-          "required": true,
-          "description": "JWT issuer expected by the gateway verifier."
-        },
-        {
-          "name": "ttlSecs",
-          "wireName": "ttlSecs",
-          "type": "UInt64",
-          "required": true,
-          "description": "Token lifetime in seconds."
-        },
-        {
-          "name": "deviceId",
-          "wireName": "deviceId",
-          "type": "String",
-          "required": false,
-          "description": "Optional device id claim."
-        },
-        {
-          "name": "tenantId",
-          "wireName": "tenantId",
-          "type": "String",
-          "required": false,
-          "description": "Optional tenant id claim."
-        }
-      ]
-    },
-    {
-      "name": "CoreTokenResponse",
-      "description": "Generated core access token payload.",
-      "fields": [
-        {
-          "name": "token",
-          "wireName": "token",
-          "type": "String",
-          "required": true,
-          "description": "Signed JWT access token."
-        }
-      ]
     }
   ]
 }

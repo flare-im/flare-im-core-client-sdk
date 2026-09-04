@@ -19,5 +19,4 @@ export interface SessionApi {
   currentUserId(): Promise<Record<string, Object>>;
   isConnected(): Promise<boolean>;
   sessionActive(): Promise<boolean>;
-  generateCoreToken(request: CoreTokenRequest): Promise<CoreTokenResponse>;
 }

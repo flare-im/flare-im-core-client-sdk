@@ -314,27 +314,6 @@ Currently effective heartbeat interval for diagnostics and platform observabilit
 | `intervalMs` | `intervalMs` | `UInt64` | no | Effective heartbeat interval in milliseconds when connected. |
 | `intervalSecs` | `intervalSecs` | `UInt64` | no | Effective heartbeat interval in seconds when connected. |
 
-### CoreTokenRequest
-
-Explicit configuration for generating a Flare IM Core gateway-compatible HS256 access token.
-
-| Field | Wire name | Type | Required | Description |
-|-------|-----------|------|----------|-------------|
-| `userId` | `userId` | `String` | yes | Subject user id stored in the JWT sub claim. |
-| `secret` | `secret` | `String` | yes | HS256 signing secret configured on the gateway verifier. |
-| `issuer` | `issuer` | `String` | yes | JWT issuer expected by the gateway verifier. |
-| `ttlSecs` | `ttlSecs` | `UInt64` | yes | Token lifetime in seconds. |
-| `deviceId` | `deviceId` | `String` | no | Optional device id claim. |
-| `tenantId` | `tenantId` | `String` | no | Optional tenant id claim. |
-
-### CoreTokenResponse
-
-Generated core access token payload.
-
-| Field | Wire name | Type | Required | Description |
-|-------|-----------|------|----------|-------------|
-| `token` | `token` | `String` | yes | Signed JWT access token. |
-
 ## Connection
 
 Connection lifecycle requests and responses.

@@ -23,8 +23,6 @@ export * from './entity/heartbeat_app_state';
 export * from './command/set_heartbeat_app_state_request';
 export * from './command/set_heartbeat_nat_timeout_request';
 export * from './response/heartbeat_effective_interval_response';
-export * from './command/core_token_request';
-export * from './response/core_token_response';
 export * from './entity/network_interface_kind';
 export * from './command/network_change_request';
 export * from './response/network_change_response';

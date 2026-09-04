@@ -59,6 +59,4 @@ interface SessionApi {
     suspend fun isConnected(): Boolean
     /** sessionActive maps to `flare_sdk_session_active` via `ffi-symbol`. Operation: `sdk.session_active`. */
     suspend fun sessionActive(): Boolean
-    /** generateCoreToken maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `sdk.generate_core_token`. */
-    suspend fun generateCoreToken(request: CoreTokenRequest): CoreTokenResponse
 }

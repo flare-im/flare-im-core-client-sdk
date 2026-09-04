@@ -103,26 +103,6 @@ describe.skipIf(!wasmPkgAvailable())("web login flow (wasm integration)", () => 
     expect(runtime).toBeTruthy();
   });
 
-  it("decodes wasm Map response for generated core token", async () => {
-    const bridge = new WasmNativeBridge({
-      runtime: {
-        invoke(operation) {
-          expect(operation).toBe("sdk.generate_core_token");
-          return new Map([["token", "wasm-generated-token"]]);
-        },
-        flareBindingContractVersion: () => ffiContractVersion,
-      },
-    });
-    const raw = new WebFlareImClient(bridge);
-
-    await expect(raw.generateCoreToken({
-      userId: "hugo",
-      tenantId: "default",
-      secret: "dev-secret-change-me",
-      issuer: "flare-im-core",
-      ttlSecs: 3600,
-    })).resolves.toEqual({ token: "wasm-generated-token" });
-  });
 
   it("wasm sdk.init accepts browser transport config through the SDK bridge", async () => {
     if (!wasmAvailable || !runtime) {

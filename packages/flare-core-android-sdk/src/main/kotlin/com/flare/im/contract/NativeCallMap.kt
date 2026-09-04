@@ -34,8 +34,6 @@ object NativeCallMap {
     val SDK_IS_CONNECTED = NativeCallDescriptor(module = "session", method = "isConnected", operation = "sdk.is_connected", transport = "ffi-symbol", cApi = "flare_sdk_is_connected", requestEncoding = "typed-ffi", responseEncoding = "boolean", returnMode = "sync", handlePolicy = "client-handle")
     /** sessionActive maps to `flare_sdk_session_active` via `ffi-symbol`. Operation: `sdk.session_active`. */
     val SDK_SESSION_ACTIVE = NativeCallDescriptor(module = "session", method = "sessionActive", operation = "sdk.session_active", transport = "ffi-symbol", cApi = "flare_sdk_session_active", requestEncoding = "typed-ffi", responseEncoding = "boolean", returnMode = "sync", handlePolicy = "client-handle")
-    /** generateCoreToken maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `sdk.generate_core_token`. */
-    val SDK_GENERATE_CORE_TOKEN = NativeCallDescriptor(module = "session", method = "generateCoreToken", operation = "sdk.generate_core_token", transport = "contract-invoke-json", cApi = "flare_sdk_invoke_json", requestEncoding = "json", responseEncoding = "json-object", returnMode = "callback", handlePolicy = "client-handle", callback = "FlareResultCallback")
     /** getConnectionState maps to `flare_sdk_state` via `ffi-symbol`. Operation: `connection.get_state`. */
     val CONNECTION_GET_STATE = NativeCallDescriptor(module = "connection", method = "getConnectionState", operation = "connection.get_state", transport = "ffi-symbol", cApi = "flare_sdk_state", requestEncoding = "typed-ffi", responseEncoding = "enum", returnMode = "sync", handlePolicy = "client-handle")
     /** disconnect maps to `flare_sdk_disconnect` via `ffi-symbol`. Operation: `connection.disconnect`. */

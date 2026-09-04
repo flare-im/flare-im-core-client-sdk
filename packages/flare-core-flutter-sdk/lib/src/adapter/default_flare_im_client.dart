@@ -178,21 +178,6 @@ final class DefaultFlareImClient implements FlareImClient {
   Future<bool> sessionActive() =>
       _bridge.invoke<bool>(NativeCallMap.sdkSessionActive);
 
-  @override
-  Future<CoreTokenResponse> generateCoreToken(CoreTokenRequest request) async {
-    final raw = await _bridge.invoke<Map<String, Object?>>(
-      NativeCallMap.sdkGenerateCoreToken,
-      {
-        'userId': request.userId,
-        'secret': request.secret,
-        'issuer': request.issuer,
-        'ttlSecs': request.ttlSecs,
-        if (request.deviceId != null) 'deviceId': request.deviceId!,
-        if (request.tenantId != null) 'tenantId': request.tenantId!,
-      },
-    );
-    return CoreTokenResponse(token: '${raw['token'] ?? ''}');
-  }
 }
 
 final class _DefaultConnectionApi implements ConnectionApi {

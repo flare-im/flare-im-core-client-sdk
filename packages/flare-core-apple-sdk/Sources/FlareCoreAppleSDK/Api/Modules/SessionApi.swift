@@ -19,5 +19,4 @@ public protocol SessionApiProtocol: AnyObject {
     func currentUserId() async throws -> [String: AnySendable]
     func isConnected() async throws -> Bool
     func sessionActive() async throws -> Bool
-    func generateCoreToken(_ request: CoreTokenRequest) async throws -> CoreTokenResponse
 }
