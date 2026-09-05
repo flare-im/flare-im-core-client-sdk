@@ -83,7 +83,7 @@ function isBackgroundBulkOperation(operation: string): boolean {
  */
 const RUNTIME_SETTLE_GRACE_MS = 5_000;
 
-function invokeTimeoutMs(operation: string): number {
+export function invokeTimeoutMs(operation: string): number {
   if (operation === "sdk.login") return 120_000;
   if (operation === "sdk.init") return 30_000;
   if (
@@ -92,6 +92,13 @@ function invokeTimeoutMs(operation: string): number {
     // build_and_send 内含本地媒体上传，超时必须与 send 同档，
     // 否则大文件会在默认 12s 就被判超时。
     || operation === "message.build_and_send"
+    // 发送前的消息构建（message_builder.*，含 dispatch/create_*）是发送路径的一部分。
+    // 单槽被巨型会话的历史回填（view.timeline.load_older）/history_repair/慢 settle 占住时，
+    // build 作为交互操作虽插到后台等待者之前，但正在运行的后台重活不被抢占，
+    // build 得排在其 settle 之后；12s 默认死线会抢在拿到槽之前把它误判超时
+    // （线上 "message_builder.dispatch timed out after 12000ms"）。与发送同档，
+    // 让 build 能等出运行中的后台重活而不误报。
+    || operation.startsWith("message_builder.")
   ) {
     return 30_000;
   }

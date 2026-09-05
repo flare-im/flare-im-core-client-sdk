@@ -1,6 +1,24 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { WebProductionBridge } from "./webProductionBridge";
+import { WebProductionBridge, invokeTimeoutMs } from "./webProductionBridge";
+
+describe("invokeTimeoutMs 发送路径超时", () => {
+  it("send 路径的消息构建 message_builder.* 与发送同档 30s，不落 12s 默认死线", () => {
+    // 线上缺陷：巨型会话历史回填占住单槽时，message_builder.dispatch(dispatchTypedBuild)
+    // 12s 就被误判超时；它是发送路径的一部分，应与 message.send 同档。
+    expect(invokeTimeoutMs("message_builder.dispatch")).toBe(30_000);
+    expect(invokeTimeoutMs("message_builder.create_text")).toBe(30_000);
+    expect(invokeTimeoutMs("message.send")).toBe(30_000);
+    expect(invokeTimeoutMs("message.build_and_send")).toBe(30_000);
+  });
+
+  it("其它操作超时不受影响", () => {
+    expect(invokeTimeoutMs("message.typing")).toBe(1_500);
+    expect(invokeTimeoutMs("conversation.update_draft")).toBe(5_000);
+    expect(invokeTimeoutMs("sync.messages")).toBe(8_000);
+    expect(invokeTimeoutMs("conversation.list")).toBe(12_000); // default 不变
+  });
+});
 
 function storageHostStub() {
   return {
