@@ -63,10 +63,14 @@ export const router = createRouter({
   ],
 });
 
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   if (to.meta.public) return true;
   const sdk = getFlareSdkSingleton();
-  const loggedIn = sdk?.loggedIn.value ?? false;
+  let loggedIn = sdk?.loggedIn.value ?? false;
+  if (!loggedIn && sdk?.hasSavedSession()) {
+    // 热启动：本地会话档案存在时先本地出图再后台建连,跳过登录页(与 web/tauri/electron 对齐)
+    loggedIn = await sdk.resumeSavedSession();
+  }
   if (!loggedIn) return { name: "login", replace: true };
   if (to.name === "sync") {
     return sdk?.homeSyncReady.value ? { name: "conversations", replace: true } : true;
