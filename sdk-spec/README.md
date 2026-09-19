@@ -101,6 +101,20 @@ toward derivation from `bindings/contract/apis.json`, `dispatch.json`,
 metadata only for platform-facing choices that the L1 contract intentionally does
 not own.
 
+## Contract tests
+
+`golden/` holds the request / response / event examples every platform package
+must encode, decode and map identically. The tests that consume them live next
+to each package, not in a shared directory:
+
+| Package | Tests |
+|---------|-------|
+| `packages/flare-core-typescript-sdk` | `test/wire_codec_contract.test.ts`, `test/events_api_contract.test.ts`, `test/capabilities_api_contract.test.ts` |
+| `packages/flare-core-flutter-sdk` | `test/wire_codec_message_test.dart`, `test/default_flare_im_client_direct_ffi_test.dart` |
+
+Adding a golden file without a consumer on every platform that has a runtime
+adapter is a contract gap; add the test in the same change.
+
 ## Commands
 
 ```bash

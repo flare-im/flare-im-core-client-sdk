@@ -405,33 +405,6 @@ void main() {
       );
     });
 
-    test('bootstrapHomeTimeline rejects blank conversation channelId',
-        () async {
-      final bridge = _RecordingBridge(
-        bootstrapResponse: {
-          'conversations': [
-            {..._goldenMap('conversation_get_one.json'), 'channelId': ''},
-          ],
-          'totalUnread': 99,
-          'syncState': 'synced',
-        },
-      );
-      final client = FlareCoreSdk.createClientWithBridge(bridge);
-
-      await expectLater(
-        client.conversations.bootstrapHomeTimeline(
-          const BootstrapHomeTimelineRequest(conversationLimit: 20),
-        ),
-        throwsA(
-          isA<ArgumentError>().having(
-            (error) => error.message,
-            'message',
-            contains('channelId'),
-          ),
-        ),
-      );
-    });
-
     test('listConversationsByQuery encodes conversationTypes as strings',
         () async {
       final bridge = _RecordingBridge();

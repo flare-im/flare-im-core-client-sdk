@@ -33,52 +33,66 @@ function storageHostStub() {
   };
 }
 
-describe("WebProductionBridge invoke chain", () => {
-  it("一次挂死的 WASM 调用不能永久堵住后续调用", async () => {
-    const errors: string[] = [];
-    const errorSpy = vi.spyOn(console, "error").mockImplementation((...args) => {
-      errors.push(args.map(String).join(" "));
-    });
+describe("WebProductionBridge session recovery", () => {
+  it("cancels a stuck operation and searches on the same authenticated runtime", async () => {
+    vi.useFakeTimers();
+    let cancel: (() => void) | undefined;
+    let loggedIn = false;
+    const runtime = {
+      invoke: vi.fn(async (op: string) => {
+        if (op === "sdk.login") { loggedIn = true; return "null"; }
+        if (op === "conversation.update_draft") {
+          return new Promise((_, reject) => { cancel = () => reject(new Error("cancelled")); });
+        }
+        if (!loggedIn) throw new Error("NOT_CONNECTED");
+        return { messages: [] };
+      }),
+      cancelPendingInvocations: vi.fn(() => { cancel?.(); return true; }),
+      dispose: vi.fn(), setEventCallback: vi.fn(), setStorageHost: vi.fn(),
+    };
+    const loadRuntime = vi.fn(async () => ({ runtime: runtime as never }));
+    const bridge = new WebProductionBridge({ loadRuntime, createStorageHost: () => storageHostStub() as never });
     try {
-      let loads = 0;
-      // 只有**全局第一次**调用永不 settle（模拟 WASM 挂死）；
-      // 计数器放在 runtime 外面，否则重建 runtime 会把"已经挂过一次"忘掉。
-      let calls = 0;
-      const makeRuntime = () => ({
-        invoke: vi.fn(async (_op: string, _payload: string) => {
-          calls += 1;
-          if (calls === 1) {
-            return await new Promise<never>(() => {});
-          }
-          return JSON.stringify({ ok: true });
-        }),
-        setEventCallback: vi.fn(),
-        setStorageHost: vi.fn(),
-      });
-      const bridge = new WebProductionBridge({
-        loadRuntime: async () => {
-          loads += 1;
-          return { runtime: makeRuntime() as never };
-        },
-        createStorageHost: () => storageHostStub() as never,
-      });
+      await bridge.invoke({ operation: "sdk.login" } as never, {});
+      const stuck = bridge.invoke({ operation: "conversation.update_draft" } as never, {}).catch(e => e.code);
+      await vi.advanceTimersByTimeAsync(5_001);
+      expect(await stuck).toBe("wasm.invoke_timeout");
+      const search = bridge.invoke({ operation: "message.search_in_conversation" } as never, {});
+      await vi.advanceTimersByTimeAsync(5_001);
+      await expect(search).resolves.toEqual({ messages: [] });
+      expect(loadRuntime).toHaveBeenCalledTimes(1);
+      expect(runtime.dispose).not.toHaveBeenCalled();
+      expect(runtime.cancelPendingInvocations).toHaveBeenCalledTimes(1);
+    } finally { vi.useRealTimers(); }
+  });
 
-      // conversation.update_draft 的外层超时是 5s，链条宽限期再加 5s
-      const stuck = bridge.invoke({ operation: "conversation.update_draft" } as never, {}).catch(
-        (error: unknown) => `失败:${(error as Error).message.slice(0, 20)}`,
-      );
-      expect(await stuck).toContain("失败:");   // 5s 外层超时
+  it("does not turn an authoritative false into true from cached ready state", async () => {
+    const runtime = { invoke: async (op: string) => op === "sdk.login" ? null : false };
+    const bridge = new WebProductionBridge({ loadRuntime: async () => ({ runtime: runtime as never }), createStorageHost: () => storageHostStub() as never });
+    await bridge.invoke({ operation: "sdk.login" } as never, {});
+    await expect(bridge.invoke({ operation: "sdk.session_active" } as never)).resolves.toBe(false);
+    await expect(bridge.invoke({ operation: "sdk.is_connected" } as never)).resolves.toBe(false);
+  });
 
-      // 关键断言：宽限期过后，后续调用必须能跑起来，而不是无限排队
-      // 修复前：这一句会永远挂着（invokeChain 被卡死），测试因超时失败
-      const next = bridge.invoke({ operation: "conversation.list" } as never, {});
-      await expect(next).resolves.toBeDefined();
-
-      expect(loads).toBeGreaterThan(1);   // 旧 runtime 被丢弃并重建
-      expect(errors.join(" ")).toContain("never settled");
-      expect(errors.join(" ")).toContain("conversation.update_draft");   // 日志要点名卡住的操作
-    } finally {
-      errorSpy.mockRestore();
-    }
-  }, 40_000);
+  it("blocks without replacing a lifecycle that cannot acknowledge cancellation, then recovers when it settles", async () => {
+    vi.useFakeTimers();
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    let finish!: (v: string) => void;
+    const runtime = {
+      invoke: vi.fn(async (op: string) => op === "sdk.connect" ? new Promise<string>(r => { finish = r; }) : { messages: [] }),
+      cancelPendingInvocations: vi.fn(() => false),
+    };
+    const loader = vi.fn(async () => ({ runtime: runtime as never }));
+    const bridge = new WebProductionBridge({ loadRuntime: loader, createStorageHost: () => storageHostStub() as never });
+    try {
+      const pending = bridge.invoke({ operation: "sdk.connect" } as never).catch(e => e.code);
+      await vi.advanceTimersByTimeAsync(22_001);
+      expect(await pending).toBe("wasm.invoke_timeout");
+      await expect(bridge.invoke({ operation: "message.search" } as never)).rejects.toMatchObject({ code: "wasm.recovery_pending" });
+      expect(loader).toHaveBeenCalledTimes(1);
+      finish("null");
+      await vi.advanceTimersByTimeAsync(1);
+      await expect(bridge.invoke({ operation: "message.search" } as never)).resolves.toEqual({ messages: [] });
+    } finally { log.mockRestore(); vi.useRealTimers(); }
+  });
 });

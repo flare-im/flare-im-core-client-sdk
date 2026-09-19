@@ -1,7 +1,10 @@
 CARGO ?= cargo
+# The sibling core repo. `.cargo/config.toml` forwards `cargo xtask` to the same
+# path; change both together if the checkout layout ever changes.
+CORE_DIR ?= $(CURDIR)/../flare-im-core-sdk
 # Single source of truth for built native artifacts: the core repo's dist/ folder.
-# Populate it from the core repo with:  cd ../flare-im-core-sdk && make dist
-CORE_DIST ?= $(CURDIR)/../flare-im-core-sdk/dist
+# Populate it from the core repo with:  cd $(CORE_DIR) && make dist
+CORE_DIST ?= $(CORE_DIR)/dist
 EXAMPLES_DIR ?= examples
 PACKAGES_DIR ?= packages
 
@@ -74,3 +77,12 @@ sync-flutter:
 
 check-wire: ## 跨端校验 wire 编码器与模型类型一致（防契约漂移只改一端）
 	node scripts/check-wire-encoder-consistency.mjs
+
+.PHONY: reference-app-public-api-check reference-app-no-duplicate-ui-check reference-app-style-ownership-check reference-app-ui-check
+reference-app-public-api-check:
+	node scripts/reference-app-public-api-check.mjs
+reference-app-no-duplicate-ui-check:
+	node scripts/reference-app-no-duplicate-ui-check.mjs
+reference-app-style-ownership-check:
+	node scripts/reference-app-style-ownership-check.mjs
+reference-app-ui-check: reference-app-public-api-check reference-app-no-duplicate-ui-check reference-app-style-ownership-check

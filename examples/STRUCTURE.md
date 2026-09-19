@@ -11,15 +11,31 @@ flare-core-{platform}-app
 | Platform   | Directory                 | SDK Package                         |
 |------------|---------------------------|-------------------------------------|
 | Flutter    | `flare-core-flutter-app`  | `packages/flare-core-flutter-sdk`   |
-| Web        | `flare-core-web-app`      | `packages/@flare-im/sdk` (web) |
-| React Native | `flare-core-rn-app`     | `packages/@flare-im/sdk` (react-native) |
+| Web        | `flare-core-web-app`      | `packages/flare-core-typescript-sdk` (`web` target) |
+| React Native | `flare-core-rn-app`     | `packages/flare-core-typescript-sdk` (`react-native` target) |
 | Android    | `flare-core-android-app`  | `packages/flare-core-android-sdk`   |
 | iOS        | `flare-core-ios-app`      | `packages/flare-core-apple-sdk`     |
 | HarmonyOS ArkTS | `flare-core-arkts-app` | `packages/flare-core-harmony-arkts-sdk` |
 | HarmonyOS Cangjie | `flare-core-cangjie-app` | `packages/flare-core-harmony-cangjie-sdk` |
-| uni-app    | `flare-core-uni-app`      | `packages/@flare-im/sdk` (uni-app) |
-| Electron   | `flare-core-electron-app` | `packages/@flare-im/sdk` (web) |
-| Tauri      | `flare-core-tauri-app`    | `packages/@flare-im/sdk` (`/tauri`) |
+| uni-app    | `flare-core-uni-app`      | `packages/flare-core-typescript-sdk` (`uni-app` target) |
+| Electron   | `flare-core-electron-app` | `packages/flare-core-typescript-sdk` (`web` target) |
+| Tauri      | `flare-core-tauri-app`    | `packages/flare-core-typescript-sdk` (`tauri` target) |
+
+Package paths follow `sdk-spec/platforms/targets.json`; the TypeScript package
+publishes as `@flare-im/sdk` with one entry per target.
+
+## Checkout
+
+Five apps (web, flutter, ios, android, tauri) are independent repositories and
+are excluded from this repository by `.gitignore`. `EXTERNAL-APPS.json` lists
+them; clone any subset with:
+
+```bash
+bash examples/bootstrap-external-apps.sh            # all five
+bash examples/bootstrap-external-apps.sh web tauri  # a subset
+```
+
+The other five (arkts, cangjie, electron, rn, uni) are tracked here.
 
 ## Canonical Application Layers
 

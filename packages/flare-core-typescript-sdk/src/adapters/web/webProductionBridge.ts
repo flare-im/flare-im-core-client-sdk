@@ -168,6 +168,7 @@ type WasmRuntimeWithHost = FlareWasmRuntime & {
 /** Browser production bridge: real WASM IMClient + WebSocket transport. */
 export class WebProductionBridge implements NativeBridge {
   private runtime: WasmRuntimeWithHost | null = null;
+  private runtimeBlocked: FlareSdkException | null = null;
   private eventsApi: EventEmitter | null = null;
   private eventsStarted = false;
   private lastConnectionState: BrowserConnectionState = "disconnected";
@@ -222,7 +223,7 @@ export class WebProductionBridge implements NativeBridge {
     );
     this.runtime = runtime;
     runtime.setEventCallback?.((raw: unknown) => {
-      this.handleWasmEvent(raw);
+      if (this.runtime === runtime) this.handleWasmEvent(raw);
     });
     return runtime;
   }
@@ -262,14 +263,8 @@ export class WebProductionBridge implements NativeBridge {
     return this.lastConnectionState === "connected" || this.lastConnectionState === "ready";
   }
 
-  private captureInvokeFailureState(operation: string, error: unknown): void {
-    const text = error instanceof Error ? error.message : String(error);
-    if (/NOT_CONNECTED|未连接|CLOSING|CLOSED|connection.*closed/i.test(text)) {
-      this.lastConnectionState = operation === "sdk.login" ? "disconnected" : "reconnecting";
-    }
-  }
-
   private async invokeRuntimeOperation<T>(operation: string, request?: unknown): Promise<T> {
+    if (this.runtimeBlocked) throw this.runtimeBlocked;
     const runtime = await this.ensureRuntime();
     const encodedRequest = request === undefined || typeof request === "string"
       ? request
@@ -316,7 +311,6 @@ export class WebProductionBridge implements NativeBridge {
     try {
       return await this.invokeRuntimeOperation<T>(operation, request);
     } catch (error) {
-      this.captureInvokeFailureState(operation, error);
       return undefined as T;
     } finally {
       this.bestEffortControlInFlight.delete(operation);
@@ -336,7 +330,7 @@ export class WebProductionBridge implements NativeBridge {
       }
       case "sdk.is_connected":
       case "sdk.session_active":
-        return (decoded === true || this.hasUsableConnection()) as T;
+        return (decoded === true) as T;
       case "sdk.logout":
       case "sdk.dispose":
       case "sdk.hard_reset":
@@ -348,48 +342,42 @@ export class WebProductionBridge implements NativeBridge {
     }
   }
 
-  /**
-   * 有界地等待底层 WASM 调用结束。
-   *
-   * 线上缺陷：只要有一次 WASM 调用永不返回，`invokeChain` 就被**永久**卡住，
-   * 之后每一个 SDK 操作都排在它后面出不来。实测表现是"打开会话后只有第一条
-   * 消息能发出，之后每条都 30s 超时且从未到达服务端，连切换会话也没有反应"
-   * （view_timeline_open 25 秒都不发生），只能刷新页面。
-   * 外层超时只是回复了调用方，链条本身还锁着。
-   *
-   * 超过宽限期就不再等：丢掉这个 runtime 实例。`ensureRuntime` 会重建一个新的，
-   * 挂住的那次调用留在被抛弃的旧实例里，不会与后续调用共享，
-   * 因此不存在 block_on 重入的风险。
+  /** Wait for acknowledged cancellation without replacing the user's session.
+   * A timeout cannot prove a write did not commit; never replay the operation.
+   * Lifecycle futures cannot be dropped while they own the Rust engine. If they
+   * do not settle, fail subsequent requests explicitly until they finish.
    */
   private async awaitRuntimeSettledBounded(
     operation: string,
     settled: Promise<void>,
   ): Promise<void> {
-    const graceMs = invokeTimeoutMs(operation) + RUNTIME_SETTLE_GRACE_MS;
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    let timedOut = false;
-    await Promise.race([
-      settled,
-      new Promise<void>((resolve) => {
-        timer = setTimeout(() => {
-          timedOut = true;
-          resolve();
-        }, graceMs);
-      }),
-    ]);
-    if (timer) {
-      clearTimeout(timer);
-    }
-    if (!timedOut) {
-      return;
-    }
-    console.error(
-      `[flare-core] WASM operation "${operation}" never settled after ${graceMs}ms; `
-      + "dropping the runtime so later calls are not blocked forever",
+    const wait = async (): Promise<boolean> => {
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      try {
+        return await Promise.race([
+          settled.then(() => true),
+          new Promise<boolean>((resolve) => {
+            timer = setTimeout(() => resolve(false), RUNTIME_SETTLE_GRACE_MS);
+          }),
+        ]);
+      } finally { if (timer) clearTimeout(timer); }
+    };
+    if (await wait()) return;
+    const runtime = this.runtime;
+    runtime?.cancelPendingInvocations?.();
+    if (await wait()) return;
+    const failure = new FlareSdkException(
+      "wasm.recovery_pending",
+      `WASM operation ${operation} has not acknowledged cancellation; session retained`,
+      operation,
     );
-    this.eventsStarted = false;
-    this.runtime = null;
-    this.lastConnectionState = "disconnected";
+    this.runtimeBlocked = failure;
+    console.error(failure.message);
+    void settled.then(() => {
+      if (this.runtime === runtime && this.runtimeBlocked === failure) {
+        this.runtimeBlocked = null;
+      }
+    });
   }
 
   async invoke<T>(descriptor: NativeCallDescriptor, request?: unknown): Promise<T> {
@@ -400,6 +388,7 @@ export class WebProductionBridge implements NativeBridge {
     let runtimeInvokeSettled: Promise<void> = Promise.resolve();
     const run = async (): Promise<T> => {
       try {
+        if (this.runtimeBlocked) throw this.runtimeBlocked;
         const runtime = await this.ensureRuntime();
         if (operation === "sdk.create") {
           return { handle: 1 } as T;
@@ -412,8 +401,10 @@ export class WebProductionBridge implements NativeBridge {
           return undefined as T;
         }
         if (operation === "sdk.dispose" || operation === "sdk.hard_reset") {
-          this.eventsStarted = false;
           await runtime.dispose?.();
+          runtime.setEventCallback?.(null);
+          this.eventsStarted = false;
+          this.runtime = null;
           this.lastConnectionState = "disconnected";
           return undefined as T;
         }
@@ -428,16 +419,6 @@ export class WebProductionBridge implements NativeBridge {
         );
         return await this.withInvokeTimeout(operation, runtimeInvoke);
       } catch (error) {
-        this.captureInvokeFailureState(operation, error);
-        if (error instanceof FlareSdkException && error.code === "wasm.invoke_timeout") {
-          this.lastConnectionState = operation === "sdk.login" || operation === "sdk.init"
-            ? "disconnected"
-            : "reconnecting";
-          if (operation === "sdk.login" || operation === "sdk.init") {
-            this.eventsStarted = false;
-            this.runtime = null;
-          }
-        }
         if (operation === "sdk.login") {
           this.lastConnectionState = "disconnected";
         }

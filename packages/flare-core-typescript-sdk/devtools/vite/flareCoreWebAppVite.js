@@ -218,7 +218,7 @@ function createFlareCoreWebAppViteConfig(options) {
   const repoRoot = path.resolve(appDir, "../../..");
   const wasmBindingRoot = path.resolve(repoRoot, "flare-im-core-sdk/bindings/wasm/pkg");
   const typeScriptSdkRoot = path.resolve(appDir, "../../packages/flare-core-typescript-sdk/src");
-  const vueImUiRoot = path.resolve(repoRoot, "flare-im-design/vue-im-ui/src");
+  const vueImUiRoot = path.resolve(repoRoot, "flare-im-design/packages/vue-im-ui/src");
   // Emoji/sticker resources are centralized at the flare-im-design top level
   // (single cross-platform source), served here at /flare-im-ui-assets/.
   const vueImUiAssetRoot = path.resolve(repoRoot, "flare-im-design/assets/emoji-sticker");
@@ -272,20 +272,8 @@ function createFlareCoreWebAppViteConfig(options) {
         replacement: path.join(vueImUiRoot, "shared/contracts/index.ts")
       },
       {
-        find: "@flare-im/vue-ui/sdk-lab",
-        replacement: path.join(vueImUiRoot, "app/components/FlareSdkLabPanel.vue")
-      },
-      {
-        find: "@flare-im/vue-ui/app/style.css",
-        replacement: path.join(vueImUiRoot, "app/styles/index.css")
-      },
-      {
-        find: /^@flare-im\/vue-ui\/app\/components\/(.+)$/,
-        replacement: path.join(vueImUiRoot, "app/components/$1")
-      },
-      {
-        find: "@flare-im/vue-ui/app",
-        replacement: path.join(vueImUiRoot, "app/index.ts")
+        find: "@flare-im/vue-ui/icon-glyphs",
+        replacement: path.join(vueImUiRoot, "shared/icon-glyphs.ts")
       },
       {
         find: "@flare-im/vue-ui",
@@ -329,7 +317,7 @@ function createFlareCoreWebAppViteConfig(options) {
             replacement: path.join(typeScriptSdkRoot, "index.ts")
           }
         ],
-        dedupe: ["vue"]
+        dedupe: ["vue", "vue-router", "naive-ui", "@vicons/ionicons5", "markdown-it", "protobufjs"]
       },
       server: {
         port: options.serverPort,

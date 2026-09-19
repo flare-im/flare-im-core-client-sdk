@@ -4,6 +4,7 @@
 # 若不显式排除，git 会把它们记成 mode 160000 的 gitlink，而本仓没有
 # .gitmodules —— 克隆方只会拿到 5 个空目录且无从获取内容。
 # 要改成真 submodule 是独立决策，不要靠默认行为滑进去。
+# 清单与拉取脚本：examples/EXTERNAL-APPS.json、examples/bootstrap-external-apps.sh
 examples/flare-core-web-app/
 examples/flare-core-flutter-app/
 examples/flare-core-ios-app/

@@ -103,10 +103,8 @@ jobs:
           # 两个独立仓的示例 app（本仓 gitignore 刻意排除，避免 gitlink）。
           # tauri 的 parity 测试是**横向比对**：它要同时读 web / electron / uni 三个
           # app 的入口，以及核心 SDK 的 tauri 绑定——所以 web 那个也得拉。
-          clone https://github.com/flare-im/flare-core-tauri-demo.git \
-            "examples/flare-core-tauri-app"
-          clone https://github.com/flare-im/flare-core-web-demo.git \
-            "examples/flare-core-web-app"
+          # 仓库地址只在 examples/EXTERNAL-APPS.json 维护一份。
+          BRANCH="$BR" bash examples/bootstrap-external-apps.sh tauri web
           # 同级仓：uni 的 parity 测试读 flare-im-design 的组合式源码，
           # tauri 的测试读 flare-im-core-sdk 的 bindings/tauri/Cargo.toml（验 QUIC feature 链）。
           clone https://github.com/flare-im/flare-im-design.git "../flare-im-design"
@@ -154,4 +152,42 @@ jobs:
         run: npm i --no-save @vue/compiler-sfc
 
       - name: 编译全部 SFC
-        run: node scripts/check-sfc.mjs
+        run: node packages/flare-core-typescript-sdk/scripts/check-sfc.mjs
+
+  flutter-sdk:
+    name: Flutter SDK（分析 / 单测）
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/flare-core-flutter-sdk
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: 安装依赖
+        run: dart pub get
+
+      # 与 typescript-sdk 同级的门禁：此前 Dart 包在 CI 里是盲区，
+      # `make check` 声称会查 Dart 但没有任何 job 真的跑它。
+      - name: 静态分析
+        run: dart analyze --fatal-infos
+
+      - name: 单元测试（含 sdk-spec/golden 契约用例）
+        run: dart test
+
+  apple-sdk:
+    name: Apple SDK（swift build）
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: packages/flare-core-apple-sdk
+    steps:
+      - uses: actions/checkout@v4
+
+      # 该包只依赖生成的 C 头文件，不需要原生产物即可编译，
+      # 足以抓住契约重生成后 Swift 侧的类型漂移。
+      - name: 编译
+        run: swift build

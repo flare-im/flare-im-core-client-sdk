@@ -8,6 +8,7 @@ const sdkRoot = resolve(scriptDir, "../../..");
 const repoRoot = resolve(sdkRoot, "..");
 
 const scanRoots = [
+  "examples/shared/vue-reference",
   "packages/flare-core-apple-sdk/Sources/FlareCoreAppleSDK/Bridge",
   "packages/flare-core-flutter-sdk/lib/src/bridge",
   "examples/flare-core-web-app/src",
@@ -223,12 +224,12 @@ const forbiddenAssetPatterns = new Map([
 const sharedAssetSources = new Map([
   [
     "emoji-locales.json",
-    new Set(["shared/assets/i18n/emoji-locales.json"]),
+    new Set(["examples/shared/assets/i18n/emoji-locales.json"]),
   ],
   [
     "app_defaults.json",
     new Set([
-      "shared/assets/config/app_defaults.json",
+      "examples/shared/assets/config/app_defaults.json",
       "examples/flare-core-flutter-app/assets/config/app_defaults.json",
     ]),
   ],
@@ -337,13 +338,19 @@ function collectStructuralViewViolations(relFile, source) {
   return found;
 }
 
+// 构建产物不是源码：Xcode 派生数据（.build-xcode / DerivedData）里会出现
+// kit 资源包的副本，扫到它们会把「共享资源必须走正源」误报成缺陷。
+const SKIPPED_DIRECTORIES = new Set([
+  "node_modules", "dist", "build", ".build", ".build-xcode", "DerivedData", ".dart_tool", ".cxx",
+]);
+
 async function walk(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
   const files = [];
   for (const entry of entries) {
     const path = join(directory, entry.name);
     if (entry.isDirectory()) {
-      if (entry.name === "node_modules" || entry.name === "dist" || entry.name === "build" || entry.name === ".cxx") continue;
+      if (SKIPPED_DIRECTORIES.has(entry.name)) continue;
       files.push(...await walk(path));
       continue;
     }
@@ -360,7 +367,7 @@ async function walkNamedFiles(directory, names) {
   for (const entry of entries) {
     const path = join(directory, entry.name);
     if (entry.isDirectory()) {
-      if (entry.name === "node_modules" || entry.name === "dist" || entry.name === "build" || entry.name === ".cxx") continue;
+      if (SKIPPED_DIRECTORIES.has(entry.name)) continue;
       files.push(...await walkNamedFiles(path, names));
       continue;
     }
