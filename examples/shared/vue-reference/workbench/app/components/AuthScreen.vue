@@ -117,11 +117,10 @@ function submit(): void {
           <p>{{ t("login.welcomeHint") }}</p>
         </header>
         <form class="auth-panel__form" :aria-busy="loading || undefined" @submit.prevent="submit">
-          <FlareFormField :label="t('login.userIdLabel')" v-slot="{ id }">
+          <FlareFormField :label="t('login.userIdLabel')">
             <FlareInput
               size="lg"
               class="auth-user-input"
-              :id="id"
               :model-value="userId"
               :placeholder="t('login.userIdPlaceholder')"
               :aria-label="t('login.userIdLabel')"
@@ -141,12 +140,9 @@ function submit(): void {
             class="auth-transport-field"
             :label="t('login.transport.label')"
             :hint="transportHint"
-            v-slot="{ id, describedBy }"
           >
             <FlareSelect
               class="auth-transport-select"
-              :id="id"
-              :aria-describedby="describedBy"
               size="lg"
               :model-value="transportMode"
               :options="transportOptions"
@@ -186,10 +182,9 @@ function submit(): void {
           <div class="auth-server-collapse" :class="{ 'is-open': serverOpen }">
             <div v-show="serverOpen" :id="serverPanelId" class="auth-server-fields">
               <p class="auth-server-fields__hint">{{ t("login.serverHint") }}</p>
-              <FlareFormField v-if="hasServerField('websocket')" :label="t('login.wsUrlLabel')" v-slot="{ id }">
+              <FlareFormField v-if="hasServerField('websocket')" :label="t('login.wsUrlLabel')">
                 <FlareInput
                   size="lg"
-                  :id="id"
                   :model-value="wsUrl"
                   :aria-label="t('login.wsUrlLabel')"
                   inputmode="url"
@@ -197,30 +192,27 @@ function submit(): void {
                   @update:model-value="emit('update:wsUrl', $event)"
                 />
               </FlareFormField>
-              <FlareFormField v-if="showTransportSelector && hasServerField('quic')" :label="t('login.quicUrlLabel')" v-slot="{ id }">
+              <FlareFormField v-if="showTransportSelector && hasServerField('quic')" :label="t('login.quicUrlLabel')">
                 <FlareInput
                   size="lg"
-                  :id="id"
                   :model-value="quicUrl"
                   :aria-label="t('login.quicUrlLabel')"
                   placeholder="quic://127.0.0.1:60052"
                   @update:model-value="emit('update:quicUrl', $event)"
                 />
               </FlareFormField>
-              <FlareFormField v-if="showTransportSelector && hasServerField('tls')" :label="t('login.tlsCaCertPathLabel')" v-slot="{ id }">
+              <FlareFormField v-if="showTransportSelector && hasServerField('tls')" :label="t('login.tlsCaCertPathLabel')">
                 <FlareInput
                   size="lg"
-                  :id="id"
                   :model-value="tlsCaCertPath"
                   :aria-label="t('login.tlsCaCertPathLabel')"
                   placeholder="/path/to/flare-im-core/certs/server.crt"
                   @update:model-value="emit('update:tlsCaCertPath', $event)"
                 />
               </FlareFormField>
-              <FlareFormField v-if="hasServerField('http')" :label="t('login.httpUrlLabel')" v-slot="{ id }">
+              <FlareFormField v-if="hasServerField('http')" :label="t('login.httpUrlLabel')">
                 <FlareInput
                   size="lg"
-                  :id="id"
                   :model-value="httpUrl"
                   :aria-label="t('login.httpUrlLabel')"
                   placeholder="https://example.com/api"
@@ -229,28 +221,25 @@ function submit(): void {
                   @update:model-value="emit('update:httpUrl', $event)"
                 />
               </FlareFormField>
-              <FlareFormField v-if="hasServerField('tenant')" :label="t('login.tenantLabel')" v-slot="{ id }">
+              <FlareFormField v-if="hasServerField('tenant')" :label="t('login.tenantLabel')">
                 <FlareInput
                   size="lg"
-                  :id="id"
                   :model-value="tenantId"
                   :aria-label="t('login.tenantLabel')"
                   @update:model-value="emit('update:tenantId', $event)"
                 />
               </FlareFormField>
-              <FlareFormField v-if="hasServerField('data')" :label="t('login.dataUrlLabel')" v-slot="{ id }">
+              <FlareFormField v-if="hasServerField('data')" :label="t('login.dataUrlLabel')">
                 <FlareInput
                   size="lg"
-                  :id="id"
                   :model-value="dataUrl"
                   :aria-label="t('login.dataUrlLabel')"
                   @update:model-value="emit('update:dataUrl', $event)"
                 />
               </FlareFormField>
-              <FlareFormField v-if="hasServerField('token') && !hideToken" :label="t('login.tokenLabel')" v-slot="{ id }">
+              <FlareFormField v-if="hasServerField('token') && !hideToken" :label="t('login.tokenLabel')">
                 <FlareInput
                   size="lg"
-                  :id="id"
                   :model-value="token"
                   :aria-label="t('login.tokenLabel')"
                   secure

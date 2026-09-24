@@ -39,10 +39,6 @@ async function onFilterChange(filter: string): Promise<void> {
 }
 
 async function runConversationAction(action: FlareConversationAction, id: string): Promise<void> {
-  if (action === "open") {
-    await selectConversation(id);
-    return;
-  }
   await sdk.runConversationOperation(action, id);
   if (action === "delete" && sdk.activeConversationId.value === id) {
     await router.replace({ name: "conversations" });

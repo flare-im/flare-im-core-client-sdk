@@ -33,7 +33,12 @@ import {
 import type { MessageMenuConfig } from "@flare-im/vue-ui/utils";
 import { useFlarePlatform } from "@flare-im/vue-ui/composables";
 import { callPlatform } from "@flare-im/vue-ui/contracts";
-import type { FlareConversationHeaderAction, MessageLike } from "@flare-im/vue-ui/contracts";
+import type {
+  FlareConversationHeaderAction,
+  MessageBatchAction,
+  MessageBatchCapabilities,
+  MessageLike,
+} from "@flare-im/vue-ui/contracts";
 import { useFlareWorkbenchUi } from "../../composables/useFlareWorkbenchUi";
 import { useFlareSdk } from "../sdk/flareSdkContext";
 import { getMessageText } from "@flare-im/vue-ui/utils";
@@ -163,6 +168,13 @@ const forwardMode = interactions.forwardMode;
 const composerActionOpen = interactions.composerActionOpen;
 const activeComposerOp = interactions.activeComposerOp;
 const operationBusy = computed(() => sending.value || operations.busyKeys.value.size > 0);
+const batchCapabilities: MessageBatchCapabilities = {
+  forwardEach: true,
+  forwardMerged: true,
+  pin: true,
+  pinSelf: true,
+  delete: true,
+};
 const activeMediaAction = ref<ComposerActionDefinition | null>(null);
 const mediaPreviewOpen = ref(false);
 const mediaPreviewItems = ref<MediaComposerPreviewItem[]>([]);
@@ -846,6 +858,16 @@ async function pinSelectedForSelf(): Promise<void> {
   const result = await operations.setMessagesPinned(selectedMessageIds.value, true, "self");
   showBatchResult(t("toast.batchAction.pinSelf"), result);
   if (!result.failed.length) exitMultiSelect();
+}
+
+function handleBatchAction(payload: { action: MessageBatchAction; ids: string[] }): void {
+  switch (payload.action) {
+    case "forwardEach": forwardSelected(false); break;
+    case "forwardMerged": forwardSelected(true); break;
+    case "pin": void pinSelected(); break;
+    case "pinSelf": void pinSelectedForSelf(); break;
+    case "delete": void deleteSelectedForSelf(); break;
+  }
 }
 
 function showBatchResult(action: string, result: BatchOperationResult): void {
@@ -1732,20 +1754,14 @@ function handleHeaderAction(action: { id: string }): void {
       </template>
       <MessageBatchToolbar
         v-if="multiSelectMode"
-        :count="selectedMessageIds.length"
+        :selected-ids="selectedMessageIds"
         :total="selectableMessageIds.length"
+        :capabilities="batchCapabilities"
         :busy="operationBusy"
         floating
-        show-clear
-        show-pin
-        show-pin-self
         @select-all="interactions.selectAll"
-        @clear="interactions.clearSelection"
-        @forward-each="forwardSelected(false)"
-        @forward-merged="forwardSelected(true)"
-        @pin="pinSelected"
-        @pin-self="pinSelectedForSelf"
-        @delete="deleteSelectedForSelf"
+        @clear-selection="interactions.clearSelection"
+        @action="handleBatchAction"
         @exit="exitMultiSelect"
       />
     </template>
