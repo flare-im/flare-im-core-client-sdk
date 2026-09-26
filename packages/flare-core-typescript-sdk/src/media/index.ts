@@ -1,5 +1,7 @@
 import type { MediaApi } from "../api/modules/media";
+import type { MessageBuilderApi } from "../api/modules/message_builder";
 import type { MediaUploadResponse } from "../api/types";
+import type { Message } from "../model";
 
 export type MediaUploadOptions = Record<string, unknown> | null;
 
@@ -102,5 +104,90 @@ export async function uploadMediaInput(
     mimeType,
     kind,
     options: input.options ?? null,
+  });
+}
+
+/** The media message a local file goes out as. */
+export type LocalMediaKind = "image" | "video" | "audio" | "file";
+
+/** By MIME type: pictures, videos and sound as themselves, anything else as a file. */
+export function mediaKindForMime(mimeType: string | undefined): LocalMediaKind {
+  const type = String(mimeType ?? "").trim().toLowerCase();
+  if (type.startsWith("image/")) return "image";
+  if (type.startsWith("video/")) return "video";
+  if (type.startsWith("audio/")) return "audio";
+  return "file";
+}
+
+/**
+ * A local file as a source the core sends from:
+ * `data:<mime>;name=<encoded name>;size=<bytes>;base64,<bytes>`.
+ *
+ * Put it where a media message takes its uploaded id (`imageId`, `videoId`, `audioId`, `fileId`, an album's
+ * `imageId`s) and `message.send` does the rest: the message is in the timeline at once with the file's name and size,
+ * `localState.uploadProgress` rises while the core uploads, and the same message goes out when the upload is done — or
+ * turns failed, and resendable, when it is not. Native hosts need no encoding: a file path works the same way.
+ */
+export async function localMediaSource(file: MediaUploadFileLike): Promise<string> {
+  const mimeType = mimeTypeOrDefault(file.type);
+  const name = encodeURIComponent(String(file.name ?? ""));
+  return `data:${mimeType};name=${name};size=${file.size};base64,${await base64Of(file)}`;
+}
+
+async function base64Of(file: MediaUploadFileLike): Promise<string> {
+  // The browser encodes natively; building the string in script is the fallback for runtimes without FileReader.
+  if (typeof FileReader !== "undefined" && typeof Blob !== "undefined" && file instanceof Blob) {
+    const blob: Blob = file;
+    const dataUrl = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result ?? ""));
+      reader.onerror = () => reject(reader.error ?? new Error("could not read the file"));
+      reader.readAsDataURL(blob);
+    });
+    return dataUrl.slice(dataUrl.indexOf(",") + 1);
+  }
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  let binary = "";
+  for (let start = 0; start < bytes.length; start += 0x8000) {
+    binary += String.fromCharCode(...bytes.subarray(start, start + 0x8000));
+  }
+  return btoa(binary);
+}
+
+export type LocalMediaMessageBuilder = Pick<
+  MessageBuilderApi,
+  "buildImage" | "buildVideo" | "buildAudio" | "buildFile" | "buildImageGroup"
+>;
+
+/** A media message built straight from a local file (see {@link localMediaSource}); send it with `message.send`. */
+export async function buildLocalMediaMessage(
+  builder: LocalMediaMessageBuilder,
+  conversationId: string,
+  file: MediaUploadFileLike,
+  kind: LocalMediaKind = mediaKindForMime(file.type),
+): Promise<Message> {
+  const source = await localMediaSource(file);
+  switch (kind) {
+    case "image":
+      return await builder.buildImage({ conversationId, imageId: source });
+    case "video":
+      return await builder.buildVideo({ conversationId, videoId: source });
+    case "audio":
+      return await builder.buildAudio({ conversationId, audioId: source });
+    default:
+      return await builder.buildFile({ conversationId, fileId: source });
+  }
+}
+
+/** An album built straight from local pictures, in the order they are shown; sent like {@link buildLocalMediaMessage}. */
+export async function buildLocalImageGroupMessage(
+  builder: LocalMediaMessageBuilder,
+  conversationId: string,
+  files: readonly MediaUploadFileLike[],
+): Promise<Message> {
+  const sources = await Promise.all(files.map((file) => localMediaSource(file)));
+  return await builder.buildImageGroup({
+    conversationId,
+    payload: { images: sources.map((imageId) => ({ imageId })) },
   });
 }
