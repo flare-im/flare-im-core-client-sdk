@@ -101,6 +101,18 @@ class DefaultMediaApi(
         invokeUnit(bridge, NativeCallMap.MEDIA_USER_DOWNLOAD_DELETE_RECORD, request)
     }
 
+    override suspend fun getUserDownloadDirectory(): Map<String, Any?> {
+        return invokeMap(bridge, NativeCallMap.MEDIA_USER_DOWNLOAD_GET_DIRECTORY)
+    }
+
+    override suspend fun setUserDownloadDirectory(request: Map<String, Any?>): Map<String, Any?> {
+        return invokeMap(bridge, NativeCallMap.MEDIA_USER_DOWNLOAD_SET_DIRECTORY, request)
+    }
+
+    override suspend fun downloadToUserDirectory(request: Map<String, Any?>): Map<String, Any?> {
+        return invokeMap(bridge, NativeCallMap.MEDIA_DOWNLOAD_TO_USER_DIRECTORY, request)
+    }
+
     override suspend fun cancelUserFileDownload(request: Map<String, Any?>): Boolean {
         return invokeBool(bridge, NativeCallMap.MEDIA_CANCEL_USER_FILE_DOWNLOAD, request)
     }

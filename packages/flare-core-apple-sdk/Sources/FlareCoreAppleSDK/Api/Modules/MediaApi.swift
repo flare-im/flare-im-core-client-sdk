@@ -20,6 +20,9 @@ public protocol MediaApiProtocol: AnyObject {
     func setUserDownloadSubfolder(_ request: [String: AnySendable]) async throws -> Void
     func getUserDownloadSavedPath(_ request: [String: AnySendable]) async throws -> [String: AnySendable]
     func deleteUserDownloadRecord(_ request: [String: AnySendable]) async throws -> Void
+    func getUserDownloadDirectory() async throws -> [String: AnySendable]
+    func setUserDownloadDirectory(_ request: [String: AnySendable]) async throws -> [String: AnySendable]
+    func downloadToUserDirectory(_ request: [String: AnySendable]) async throws -> [String: AnySendable]
     func cancelUserFileDownload(_ request: [String: AnySendable]) async throws -> Bool
     func downloadFileToDownloads(_ request: [String: AnySendable]) async throws -> [String: AnySendable]
 }

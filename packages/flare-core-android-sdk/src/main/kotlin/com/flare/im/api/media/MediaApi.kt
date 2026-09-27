@@ -61,6 +61,12 @@ interface MediaApi {
     suspend fun getUserDownloadSavedPath(request: Map<String, Any?>): Map<String, Any?>
     /** deleteUserDownloadRecord maps to `flare_media_dispatch_json` via `media-dispatch-json`, dispatch op `user_download_delete_record`. Operation: `media.user_download_delete_record`. */
     suspend fun deleteUserDownloadRecord(request: Map<String, Any?>): Unit
+    /** getUserDownloadDirectory maps to `flare_media_dispatch_json` via `media-dispatch-json`, dispatch op `user_download_get_directory`. Operation: `media.user_download_get_directory`. */
+    suspend fun getUserDownloadDirectory(): Map<String, Any?>
+    /** setUserDownloadDirectory maps to `flare_media_dispatch_json` via `media-dispatch-json`, dispatch op `user_download_set_directory`. Operation: `media.user_download_set_directory`. */
+    suspend fun setUserDownloadDirectory(request: Map<String, Any?>): Map<String, Any?>
+    /** downloadToUserDirectory maps to `flare_media_dispatch_json` via `media-dispatch-json`, dispatch op `download_to_user_directory`. Operation: `media.download_to_user_directory`. */
+    suspend fun downloadToUserDirectory(request: Map<String, Any?>): Map<String, Any?>
     /** cancelUserFileDownload maps to `flare_media_cancel_user_file_download` via `ffi-symbol`. Operation: `media.cancel_user_file_download`. */
     suspend fun cancelUserFileDownload(request: Map<String, Any?>): Boolean
     /** downloadFileToDownloads maps to `flare_media_download_file_to_downloads` via `ffi-symbol`. Operation: `media.download_file_to_downloads`. */

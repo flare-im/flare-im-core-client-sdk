@@ -3,7 +3,7 @@
  *
  * Module API: `media` — Media access URL and local cache operations.
  */
-import type { CacheRemoteMediaRequest, CancelUserFileDownloadRequest, DeleteMediaFileRequest, DeleteMediaFileResponse, DeleteUserDownloadRecordRequest, DownloadFileToDownloadsRequest, GetMediaUrlRequest, GetUserDownloadSavedPathRequest, MediaAccessUrl, MediaCacheEntry, MediaCacheStats, MediaResolvedAccess, MediaUploadResponse, ResolveMediaAccessRequest, SetMediaCacheMaxBytesRequest, SetMediaCacheRootRequest, SetUserDownloadSubfolderRequest, TempDownloadUrlRequest, UploadBytesRequest, UploadFileRequest, UserDownloadSavedPathResponse, UserDownloadSubfolderResponse } from '../types';
+import type { CacheRemoteMediaRequest, CancelUserFileDownloadRequest, DeleteMediaFileRequest, DeleteMediaFileResponse, DeleteUserDownloadRecordRequest, DownloadFileToDownloadsRequest, DownloadToUserDirectoryRequest, GetMediaUrlRequest, GetUserDownloadSavedPathRequest, MediaAccessUrl, MediaCacheEntry, MediaCacheStats, MediaResolvedAccess, MediaUploadResponse, ResolveMediaAccessRequest, SetMediaCacheMaxBytesRequest, SetMediaCacheRootRequest, SetUserDownloadDirectoryRequest, SetUserDownloadSubfolderRequest, TempDownloadUrlRequest, UploadBytesRequest, UploadFileRequest, UserDownloadDirectory, UserDownloadSavedPathResponse, UserDownloadSubfolderResponse, UserFileDownloadResult } from '../types';
 
 /** Media access URL and local cache operations. */
 export interface MediaApi {
@@ -43,6 +43,12 @@ export interface MediaApi {
   getUserDownloadSavedPath(request: GetUserDownloadSavedPathRequest): Promise<UserDownloadSavedPathResponse>;
   /** deleteUserDownloadRecord maps to `flare_media_dispatch_json`, dispatch op `user_download_delete_record`. Operation: `media.user_download_delete_record`. */
   deleteUserDownloadRecord(request: DeleteUserDownloadRecordRequest): Promise<void>;
+  /** getUserDownloadDirectory maps to `flare_media_dispatch_json`, dispatch op `user_download_get_directory`. Operation: `media.user_download_get_directory`. */
+  getUserDownloadDirectory(): Promise<UserDownloadDirectory>;
+  /** setUserDownloadDirectory maps to `flare_media_dispatch_json`, dispatch op `user_download_set_directory`. Operation: `media.user_download_set_directory`. */
+  setUserDownloadDirectory(request: SetUserDownloadDirectoryRequest): Promise<UserDownloadDirectory>;
+  /** downloadToUserDirectory maps to `flare_media_dispatch_json`, dispatch op `download_to_user_directory`. Operation: `media.download_to_user_directory`. */
+  downloadToUserDirectory(request: DownloadToUserDirectoryRequest): Promise<UserFileDownloadResult>;
   /** cancelUserFileDownload maps to `flare_media_cancel_user_file_download` via `ffi-symbol`. Operation: `media.cancel_user_file_download`. */
   cancelUserFileDownload(request: CancelUserFileDownloadRequest): Promise<boolean>;
   /** downloadFileToDownloads maps to `flare_media_download_file_to_downloads` via `ffi-symbol`. Operation: `media.download_file_to_downloads`. */

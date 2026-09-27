@@ -76,6 +76,18 @@ public final class DefaultMediaApi: MediaApiProtocol {
         try await invokeVoid(bridge, descriptor: NativeCallMap.mediaUserDownloadDeleteRecord, request: AnySendable(request))
     }
 
+    public func getUserDownloadDirectory() async throws -> [String: AnySendable] {
+        return try await invokeMap(bridge, descriptor: NativeCallMap.mediaUserDownloadGetDirectory, request: nil)
+    }
+
+    public func setUserDownloadDirectory(_ request: [String: AnySendable]) async throws -> [String: AnySendable] {
+        return try await invokeMap(bridge, descriptor: NativeCallMap.mediaUserDownloadSetDirectory, request: unwrapRequest(AnySendable(request)))
+    }
+
+    public func downloadToUserDirectory(_ request: [String: AnySendable]) async throws -> [String: AnySendable] {
+        return try await invokeMap(bridge, descriptor: NativeCallMap.mediaDownloadToUserDirectory, request: unwrapRequest(AnySendable(request)))
+    }
+
     public func cancelUserFileDownload(_ request: [String: AnySendable]) async throws -> Bool {
         return try await invokeBool(bridge, descriptor: NativeCallMap.mediaCancelUserFileDownload, request: AnySendable(request))
     }

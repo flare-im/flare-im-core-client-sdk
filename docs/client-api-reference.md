@@ -189,6 +189,9 @@ Media access URL and local cache operations.
 | `setUserDownloadSubfolder` | `SetUserDownloadSubfolderRequest` | `Unit` | `media-dispatch-json` | `flare_media_dispatch_json` |
 | `getUserDownloadSavedPath` | `GetUserDownloadSavedPathRequest` | `UserDownloadSavedPathResponse` | `media-dispatch-json` | `flare_media_dispatch_json` |
 | `deleteUserDownloadRecord` | `DeleteUserDownloadRecordRequest` | `Unit` | `media-dispatch-json` | `flare_media_dispatch_json` |
+| `getUserDownloadDirectory` | `Unit` | `UserDownloadDirectory` | `media-dispatch-json` | `flare_media_dispatch_json` |
+| `setUserDownloadDirectory` | `SetUserDownloadDirectoryRequest` | `UserDownloadDirectory` | `media-dispatch-json` | `flare_media_dispatch_json` |
+| `downloadToUserDirectory` | `DownloadToUserDirectoryRequest` | `UserFileDownloadResult` | `media-dispatch-json` | `flare_media_dispatch_json` |
 | `cancelUserFileDownload` | `CancelUserFileDownloadRequest` | `BooleanResponse` | `ffi-symbol` | `flare_media_cancel_user_file_download` |
 | `downloadFileToDownloads` | `DownloadFileToDownloadsRequest` | `UserDownloadSavedPathResponse` | `ffi-symbol` | `flare_media_download_file_to_downloads` |
 

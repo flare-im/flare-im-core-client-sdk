@@ -20,6 +20,9 @@ export interface MediaApi {
   setUserDownloadSubfolder(request: Record<string, Object>): Promise<void>;
   getUserDownloadSavedPath(request: Record<string, Object>): Promise<Record<string, Object>>;
   deleteUserDownloadRecord(request: Record<string, Object>): Promise<void>;
+  getUserDownloadDirectory(): Promise<Record<string, Object>>;
+  setUserDownloadDirectory(request: Record<string, Object>): Promise<Record<string, Object>>;
+  downloadToUserDirectory(request: Record<string, Object>): Promise<Record<string, Object>>;
   cancelUserFileDownload(request: Record<string, Object>): Promise<boolean>;
   downloadFileToDownloads(request: Record<string, Object>): Promise<Record<string, Object>>;
 }

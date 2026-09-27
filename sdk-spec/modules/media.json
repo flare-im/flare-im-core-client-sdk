@@ -169,6 +169,36 @@
       "stability": "stable"
     },
     {
+      "name": "getUserDownloadDirectory",
+      "operation": "media.user_download_get_directory",
+      "transport": "media-dispatch-json",
+      "cApi": "flare_media_dispatch_json",
+      "dispatchOp": "user_download_get_directory",
+      "request": "Unit",
+      "response": "UserDownloadDirectory",
+      "stability": "stable"
+    },
+    {
+      "name": "setUserDownloadDirectory",
+      "operation": "media.user_download_set_directory",
+      "transport": "media-dispatch-json",
+      "cApi": "flare_media_dispatch_json",
+      "dispatchOp": "user_download_set_directory",
+      "request": "SetUserDownloadDirectoryRequest",
+      "response": "UserDownloadDirectory",
+      "stability": "stable"
+    },
+    {
+      "name": "downloadToUserDirectory",
+      "operation": "media.download_to_user_directory",
+      "transport": "media-dispatch-json",
+      "cApi": "flare_media_dispatch_json",
+      "dispatchOp": "download_to_user_directory",
+      "request": "DownloadToUserDirectoryRequest",
+      "response": "UserFileDownloadResult",
+      "stability": "stable"
+    },
+    {
       "name": "cancelUserFileDownload",
       "operation": "media.cancel_user_file_download",
       "transport": "ffi-symbol",

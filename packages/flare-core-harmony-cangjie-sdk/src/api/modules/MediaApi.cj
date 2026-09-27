@@ -22,6 +22,9 @@ public interface MediaApi {
     func setUserDownloadSubfolder(requestJson: String): Unit
     func getUserDownloadSavedPath(requestJson: String): String
     func deleteUserDownloadRecord(requestJson: String): Unit
+    func getUserDownloadDirectory(): String
+    func setUserDownloadDirectory(requestJson: String): String
+    func downloadToUserDirectory(requestJson: String): String
     func cancelUserFileDownload(requestJson: String): BooleanResponse
     func downloadFileToDownloads(requestJson: String): String
 }

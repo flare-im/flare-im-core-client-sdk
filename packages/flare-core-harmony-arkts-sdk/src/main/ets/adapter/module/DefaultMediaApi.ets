@@ -74,6 +74,18 @@ export class DefaultMediaApi implements MediaApi {
     await invokeVoid(this.bridge, NativeCallMap.mediaUserDownloadDeleteRecord, request);
   }
 
+  async getUserDownloadDirectory(): Promise<Record<string, Object>> {
+    return await invokeMap(this.bridge, NativeCallMap.mediaUserDownloadGetDirectory);
+  }
+
+  async setUserDownloadDirectory(request: Record<string, Object>): Promise<Record<string, Object>> {
+    return await invokeMap(this.bridge, NativeCallMap.mediaUserDownloadSetDirectory, request);
+  }
+
+  async downloadToUserDirectory(request: Record<string, Object>): Promise<Record<string, Object>> {
+    return await invokeMap(this.bridge, NativeCallMap.mediaDownloadToUserDirectory, request);
+  }
+
   async cancelUserFileDownload(request: Record<string, Object>): Promise<boolean> {
     return await invokeBool(this.bridge, NativeCallMap.mediaCancelUserFileDownload, request);
   }

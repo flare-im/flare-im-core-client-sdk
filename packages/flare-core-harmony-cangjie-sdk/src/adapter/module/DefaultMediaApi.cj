@@ -80,6 +80,18 @@ public class DefaultMediaApi <: MediaApi {
         let _ignored = bridge.invoke(descriptor: NativeCallMap.mediaUserDownloadDeleteRecord, requestJson: wireEncodeRequest(requestJson))
     }
 
+    public func getUserDownloadDirectory(): String {
+        return bridge.invoke(descriptor: NativeCallMap.mediaUserDownloadGetDirectory, requestJson: wireEncodeRequest("{}"))
+    }
+
+    public func setUserDownloadDirectory(requestJson: String): String {
+        return bridge.invoke(descriptor: NativeCallMap.mediaUserDownloadSetDirectory, requestJson: wireEncodeRequest(requestJson))
+    }
+
+    public func downloadToUserDirectory(requestJson: String): String {
+        return bridge.invoke(descriptor: NativeCallMap.mediaDownloadToUserDirectory, requestJson: wireEncodeRequest(requestJson))
+    }
+
     public func cancelUserFileDownload(requestJson: String): BooleanResponse {
         return booleanResponseFromWire(bridge.invoke(descriptor: NativeCallMap.mediaCancelUserFileDownload, requestJson: wireEncodeRequest(requestJson)))
     }

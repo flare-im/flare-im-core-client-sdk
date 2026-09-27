@@ -9,7 +9,11 @@ export function isBrowserMediaCacheAvailable(): boolean {
   return typeof globalThis.caches !== 'undefined';
 }
 
-export async function cacheBrowserMedia(fileId: string, url: string): Promise<boolean> {
+/**
+ * Fetches [url] into the cache under [fileId]. With [maxBytes], a response declaring a larger
+ * size is not cached (returns false).
+ */
+export async function cacheBrowserMedia(fileId: string, url: string, maxBytes?: number): Promise<boolean> {
   const fid = fileId.trim();
   const target = url.trim();
   if (!fid || !target || !isBrowserMediaCacheAvailable()) {
@@ -19,6 +23,11 @@ export async function cacheBrowserMedia(fileId: string, url: string): Promise<bo
   const response = await fetch(target, { mode: 'cors', credentials: 'omit' });
   if (!response.ok) {
     throw new Error(`cache remote media failed: HTTP ${response.status}`);
+  }
+  const declared = Number(response.headers.get('content-length'));
+  if (maxBytes !== undefined && Number.isFinite(declared) && declared > maxBytes) {
+    await response.body?.cancel().catch(() => undefined);
+    return false;
   }
   await cache.put(cacheKey(fid), response.clone());
   return true;
@@ -106,4 +115,34 @@ export async function browserMediaCacheStats(): Promise<{
     entryCount: mediaKeys.length,
     cacheApiAvailable: true,
   };
+}
+
+/** The cached bytes for [fileId], if any. */
+export async function readBrowserMediaBlob(fileId: string): Promise<Blob | undefined> {
+  const fid = fileId.trim();
+  if (!fid || !isBrowserMediaCacheAvailable()) {
+    return undefined;
+  }
+  const cache = await caches.open(CACHE_NAME);
+  const hit = await cache.match(cacheKey(fid));
+  return hit ? hit.blob() : undefined;
+}
+
+/** Stores bytes already in hand (a download that just finished) under [fileId]. */
+export async function cacheBrowserMediaBlob(fileId: string, blob: Blob): Promise<boolean> {
+  const fid = fileId.trim();
+  if (!fid || !isBrowserMediaCacheAvailable()) {
+    return false;
+  }
+  const cache = await caches.open(CACHE_NAME);
+  await cache.put(
+    cacheKey(fid),
+    new Response(blob, {
+      headers: {
+        'content-type': blob.type || 'application/octet-stream',
+        'content-length': String(blob.size),
+      },
+    }),
+  );
+  return true;
 }

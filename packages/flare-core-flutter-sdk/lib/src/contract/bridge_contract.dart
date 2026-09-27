@@ -1692,6 +1692,48 @@ abstract final class NativeCallMap {
       dispatchOp: "user_download_delete_record",
       callback: "FlareResultCallback");
 
+  /// getUserDownloadDirectory maps to `flare_media_dispatch_json` via `media-dispatch-json`, dispatch op `user_download_get_directory`. Operation: `media.user_download_get_directory`.
+  static const mediaUserDownloadGetDirectory = NativeCallDescriptor(
+      module: "media",
+      method: "getUserDownloadDirectory",
+      operation: "media.user_download_get_directory",
+      transport: "media-dispatch-json",
+      cApi: "flare_media_dispatch_json",
+      requestEncoding: "typed-ffi",
+      responseEncoding: "json-object",
+      returnMode: "callback",
+      handlePolicy: "client-handle",
+      dispatchOp: "user_download_get_directory",
+      callback: "FlareResultCallback");
+
+  /// setUserDownloadDirectory maps to `flare_media_dispatch_json` via `media-dispatch-json`, dispatch op `user_download_set_directory`. Operation: `media.user_download_set_directory`.
+  static const mediaUserDownloadSetDirectory = NativeCallDescriptor(
+      module: "media",
+      method: "setUserDownloadDirectory",
+      operation: "media.user_download_set_directory",
+      transport: "media-dispatch-json",
+      cApi: "flare_media_dispatch_json",
+      requestEncoding: "typed-ffi",
+      responseEncoding: "json-object",
+      returnMode: "callback",
+      handlePolicy: "client-handle",
+      dispatchOp: "user_download_set_directory",
+      callback: "FlareResultCallback");
+
+  /// downloadToUserDirectory maps to `flare_media_dispatch_json` via `media-dispatch-json`, dispatch op `download_to_user_directory`. Operation: `media.download_to_user_directory`.
+  static const mediaDownloadToUserDirectory = NativeCallDescriptor(
+      module: "media",
+      method: "downloadToUserDirectory",
+      operation: "media.download_to_user_directory",
+      transport: "media-dispatch-json",
+      cApi: "flare_media_dispatch_json",
+      requestEncoding: "typed-ffi",
+      responseEncoding: "json-object",
+      returnMode: "callback",
+      handlePolicy: "client-handle",
+      dispatchOp: "download_to_user_directory",
+      callback: "FlareResultCallback");
+
   /// cancelUserFileDownload maps to `flare_media_cancel_user_file_download` via `ffi-symbol`. Operation: `media.cancel_user_file_download`.
   static const mediaCancelUserFileDownload = NativeCallDescriptor(
       module: "media",

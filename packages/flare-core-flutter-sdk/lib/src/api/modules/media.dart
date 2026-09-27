@@ -37,6 +37,12 @@ abstract interface class MediaApi {
   Future<Map<String, Object?>> getUserDownloadSavedPath(Map<String, Object?> request);
   /// deleteUserDownloadRecord maps to `flare_media_dispatch_json` via `media-dispatch-json`, dispatch op `user_download_delete_record`. Operation: `media.user_download_delete_record`.
   Future<void> deleteUserDownloadRecord(Map<String, Object?> request);
+  /// getUserDownloadDirectory maps to `flare_media_dispatch_json` via `media-dispatch-json`, dispatch op `user_download_get_directory`. Operation: `media.user_download_get_directory`.
+  Future<Map<String, Object?>> getUserDownloadDirectory();
+  /// setUserDownloadDirectory maps to `flare_media_dispatch_json` via `media-dispatch-json`, dispatch op `user_download_set_directory`. Operation: `media.user_download_set_directory`.
+  Future<Map<String, Object?>> setUserDownloadDirectory(Map<String, Object?> request);
+  /// downloadToUserDirectory maps to `flare_media_dispatch_json` via `media-dispatch-json`, dispatch op `download_to_user_directory`. Operation: `media.download_to_user_directory`.
+  Future<Map<String, Object?>> downloadToUserDirectory(Map<String, Object?> request);
   /// cancelUserFileDownload maps to `flare_media_cancel_user_file_download` via `ffi-symbol`. Operation: `media.cancel_user_file_download`.
   Future<bool> cancelUserFileDownload(Map<String, Object?> request);
   /// downloadFileToDownloads maps to `flare_media_download_file_to_downloads` via `ffi-symbol`. Operation: `media.download_file_to_downloads`.

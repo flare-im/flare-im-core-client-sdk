@@ -810,6 +810,26 @@ final class _DefaultMediaApi implements MediaApi {
   }
 
   @override
+  Future<Map<String, Object?>> getUserDownloadDirectory() {
+    return _bridge.invoke<Map<String, Object?>>(
+        NativeCallMap.mediaUserDownloadGetDirectory);
+  }
+
+  @override
+  Future<Map<String, Object?>> setUserDownloadDirectory(
+      Map<String, Object?> request) {
+    return _bridge.invoke<Map<String, Object?>>(
+        NativeCallMap.mediaUserDownloadSetDirectory, request);
+  }
+
+  @override
+  Future<Map<String, Object?>> downloadToUserDirectory(
+      Map<String, Object?> request) {
+    return _bridge.invoke<Map<String, Object?>>(
+        NativeCallMap.mediaDownloadToUserDirectory, request);
+  }
+
+  @override
   Future<bool> cancelUserFileDownload(Map<String, Object?> request) {
     return _bridge.invoke<bool>(
         NativeCallMap.mediaCancelUserFileDownload, request);

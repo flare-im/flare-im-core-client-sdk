@@ -18,7 +18,7 @@
 | `sync` | `client.sync` | `syncConversationSummaries`, `syncConversationSummariesWithVersions`, `bootstrapStartupHome`, `backfillConversationHistory`, `syncConversation`, `syncMessages` |
 | `user` | `client.user` | `upsertUserProfiles` |
 | `presence` | `client.presence` | `getUserPresence`, `batchGetUserPresence`, `subscribeUserPresence` |
-| `media` | `client.media` | `uploadFile`, `uploadImage`, `uploadVideo`, `uploadBytes`, `deleteFile`, `getMediaUrl`, `getTempDownloadUrl`, `resolveMediaAccess`, `cacheRemoteMedia`, `getMediaCacheStats`, `setMediaCacheMaxBytes`, `setMediaCacheRoot`, `clearMediaCache`, `getUserDownloadSubfolder`, `setUserDownloadSubfolder`, `getUserDownloadSavedPath`, `deleteUserDownloadRecord`, `cancelUserFileDownload`, `downloadFileToDownloads` |
+| `media` | `client.media` | `uploadFile`, `uploadImage`, `uploadVideo`, `uploadBytes`, `deleteFile`, `getMediaUrl`, `getTempDownloadUrl`, `resolveMediaAccess`, `cacheRemoteMedia`, `getMediaCacheStats`, `setMediaCacheMaxBytes`, `setMediaCacheRoot`, `clearMediaCache`, `getUserDownloadSubfolder`, `setUserDownloadSubfolder`, `getUserDownloadSavedPath`, `deleteUserDownloadRecord`, `getUserDownloadDirectory`, `setUserDownloadDirectory`, `downloadToUserDirectory`, `cancelUserFileDownload`, `downloadFileToDownloads` |
 | `capabilities` | `client.capabilities` | `listCapabilities`, `listUserCapabilities`, `dispatchCapability`, `grantCapability`, `revokeCapability`, `sendCallSignal` |
 | `views` | `client.views` | `openTimeline`, `loadOlderTimeline`, `openConversationList`, `close` |
 | `events` | `client.events` | `subscribeEvents`, `subscribeEventsBatch`, `unsubscribe`, `unsubscribeAll` |

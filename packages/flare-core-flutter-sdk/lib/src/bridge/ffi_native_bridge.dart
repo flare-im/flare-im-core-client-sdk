@@ -196,7 +196,7 @@ final class FfiNativeBridge implements NativeBridge {
       case 'media.delete_file':
         return _mediaDeleteFile(asMap(request)).then(asResponseMap);
       case 'media.cancel_user_file_download':
-        return Future.value(_mediaCancelUserFileDownload(asMap(request)));
+        return _mediaCancelUserFileDownload(asMap(request));
       case 'media.download_file_to_downloads':
         return _callWithJson(_bindings.mediaDownloadFileToDownloads, request)
             .then(asResponseMap);
@@ -484,15 +484,13 @@ final class FfiNativeBridge implements NativeBridge {
     });
   }
 
-  bool _mediaCancelUserFileDownload(Map<String, Object?> request) {
-    return using((arena) {
-      final downloadKey =
-          stringField(request, 'downloadKey').toNativeUtf8(allocator: arena);
-      return _bindings.mediaCancelUserFileDownload(
-        _requireHandle(),
-        downloadKey,
-      );
-    });
+  /// The C function answers through the result callback with `{cancelled: bool}`.
+  Future<bool> _mediaCancelUserFileDownload(Map<String, Object?> request) {
+    return _callWithString(_bindings.mediaCancelUserFileDownload,
+            stringField(request, 'downloadKey'))
+        .then((result) => result is Map
+            ? result['cancelled'] == true
+            : result == true);
   }
 
   Future<Object?> _call0(_Async0Fn fn) {
@@ -1146,11 +1144,11 @@ final class _NativeBindings {
       Int32 Function(Uint64, Pointer<Utf8>, Bool, Pointer<Void>,
           Pointer<NativeFunction<_NativeResultCallback>>),
       _AsyncStringBoolFn>('flare_media_delete_file');
-  late final bool Function(int, Pointer<Utf8>) mediaCancelUserFileDownload =
-      library.lookupFunction<Bool Function(Uint64, Pointer<Utf8>),
-          bool Function(int, Pointer<Utf8>)>(
-    'flare_media_cancel_user_file_download',
-  );
+  late final _AsyncStringFn mediaCancelUserFileDownload =
+      library.lookupFunction<
+          Int32 Function(Uint64, Pointer<Utf8>, Pointer<Void>,
+              Pointer<NativeFunction<_NativeResultCallback>>),
+          _AsyncStringFn>('flare_media_cancel_user_file_download');
   late final _AsyncStringFn mediaDownloadFileToDownloads =
       library.lookupFunction<
           Int32 Function(Uint64, Pointer<Utf8>, Pointer<Void>,

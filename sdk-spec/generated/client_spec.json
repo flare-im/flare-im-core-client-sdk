@@ -7462,6 +7462,60 @@
           "transport": "media-dispatch-json"
         },
         {
+          "cApi": "flare_media_dispatch_json",
+          "dispatchOp": "user_download_get_directory",
+          "name": "getUserDownloadDirectory",
+          "nativeBinding": {
+            "asyncReturn": "i32 immediate_submit_code",
+            "callback": "FlareResultCallback",
+            "handlePolicy": "client-handle",
+            "requestEncoding": "typed-ffi",
+            "responseEncoding": "json-object",
+            "returnMode": "callback"
+          },
+          "operation": "media.user_download_get_directory",
+          "request": "Unit",
+          "response": "UserDownloadDirectory",
+          "stability": "stable",
+          "transport": "media-dispatch-json"
+        },
+        {
+          "cApi": "flare_media_dispatch_json",
+          "dispatchOp": "user_download_set_directory",
+          "name": "setUserDownloadDirectory",
+          "nativeBinding": {
+            "asyncReturn": "i32 immediate_submit_code",
+            "callback": "FlareResultCallback",
+            "handlePolicy": "client-handle",
+            "requestEncoding": "typed-ffi",
+            "responseEncoding": "json-object",
+            "returnMode": "callback"
+          },
+          "operation": "media.user_download_set_directory",
+          "request": "SetUserDownloadDirectoryRequest",
+          "response": "UserDownloadDirectory",
+          "stability": "stable",
+          "transport": "media-dispatch-json"
+        },
+        {
+          "cApi": "flare_media_dispatch_json",
+          "dispatchOp": "download_to_user_directory",
+          "name": "downloadToUserDirectory",
+          "nativeBinding": {
+            "asyncReturn": "i32 immediate_submit_code",
+            "callback": "FlareResultCallback",
+            "handlePolicy": "client-handle",
+            "requestEncoding": "typed-ffi",
+            "responseEncoding": "json-object",
+            "returnMode": "callback"
+          },
+          "operation": "media.download_to_user_directory",
+          "request": "DownloadToUserDirectoryRequest",
+          "response": "UserFileDownloadResult",
+          "stability": "stable",
+          "transport": "media-dispatch-json"
+        },
+        {
           "cApi": "flare_media_cancel_user_file_download",
           "name": "cancelUserFileDownload",
           "nativeBinding": {
