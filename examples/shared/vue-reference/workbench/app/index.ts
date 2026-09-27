@@ -68,9 +68,19 @@ export {
 export { configureAppPlatform, appPlatformOptions } from "./infrastructure/platform/appPlatform";
 export {
   canRevealDownloadedMedia,
+  configureNativeMediaActions,
   revealDownloadedMediaFile,
   startBrowserDownload,
 } from "./infrastructure/media/downloadedMediaActions";
+export {
+  configureDownloadDirectoryPicker,
+  loadDownloadLocation,
+  mediaCacheBytes,
+  pickDownloadLocation,
+  resetDownloadLocation,
+  type DownloadDirectoryPicker,
+  type DownloadLocation,
+} from "./infrastructure/media/downloadLocation";
 export {
   configureDesktopNotifications,
   emitDesktopNotification,

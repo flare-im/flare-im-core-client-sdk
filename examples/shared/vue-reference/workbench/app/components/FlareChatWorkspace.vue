@@ -957,8 +957,18 @@ async function downloadMediaSource(source: MessageMediaDownloadSource): Promise<
     const response = await sdk.client.media.downloadFileToDownloads(mediaDownloadRequest(source));
     const savedPath = savedPathFromResponse(response);
     if (savedPath) {
-      setMediaDownloadState(source, "downloaded");
-      message.success(t("toast.downloaded"));
+      const record = (response ?? {}) as Record<string, unknown>;
+      // web：交给浏览器下载的文件，页面看不到它落在哪，也打不开所在文件夹。
+      const byBrowser = record.savedVia === "browser";
+      setMediaDownloadState(source, byBrowser ? "notDownloaded" : "downloaded");
+      const location = String(record.directory ?? "").trim();
+      message.success(
+        byBrowser
+          ? t("toast.downloadStarted")
+          : location
+            ? t("toast.savedTo", { location })
+            : t("toast.downloaded"),
+      );
       return;
     }
   } catch (error) {

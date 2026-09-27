@@ -71,6 +71,26 @@ function cacheKey(request: FlareMediaResolveRequest, fileId: string): string {
   ].join("|");
 }
 
+const PICTURE_KINDS = new Set(["image", "imageThumbnail", "imageGroupItem"]);
+
+/** One `blob:` URL per cached picture for the session, so re-renders do not mint new ones. */
+const webPictureUrls = new Map<string, string>();
+
+async function webPictureUrl(
+  media: { resolveDisplayUrl(request: Record<string, unknown>): Promise<string> },
+  fileId: string,
+  mediaUrl: string,
+): Promise<string> {
+  const known = webPictureUrls.get(fileId);
+  if (known) return known;
+  const url = await media.resolveDisplayUrl({ fileId, mediaUrl, autoCache: true });
+  if (url.startsWith("blob:")) {
+    webPictureUrls.set(fileId, url);
+    return url;
+  }
+  return proxiedMediaUrl(url);
+}
+
 export function createAppMediaResolver(sdk: FlareSdkContext): FlareMediaResolver {
   // Coalesce concurrent requests only. The SDK owns signed URL lifetime and caching.
   const cache = new Map<string, Promise<string>>();
@@ -91,20 +111,26 @@ export function createAppMediaResolver(sdk: FlareSdkContext): FlareMediaResolver
     const cached = cache.get(key);
     if (cached) return cached;
 
-    const task = sdk.client.media
-      .resolveMediaAccess({
-        fileId,
-        mediaUrl: directUrl ?? "",
-      })
-      .then((resolved) => {
+    // Pictures are cached by the SDK as they are shown (`autoCache`): a picture seen once is read
+    // from this device afterwards — the local copy wins over the signed URL.
+    const picture = PICTURE_KINDS.has(request.kind);
+    const media = sdk.client.media as typeof sdk.client.media & { revokeDisplayUrl?: (url: string) => void };
+    const task = (
+      picture && !localPathResolver && typeof media.revokeDisplayUrl === "function"
+        ? // Web: the SDK hands out its cached copy as a `blob:` URL, one per file for the session.
+          webPictureUrl(media, fileId, directUrl ?? "")
+        : media
+            .resolveMediaAccess({ fileId, mediaUrl: directUrl ?? "", autoCache: picture })
+            .then((resolved) => {
+              const resolvedLocalPath = pickLocalPath(resolved);
+              if (resolvedLocalPath && localPathResolver) return localPathResolver(resolvedLocalPath);
+              const remoteUrl = pickRemoteUrl(resolved);
+              return remoteUrl ? proxiedMediaUrl(remoteUrl) : "";
+            })
+    )
+      .then((url) => {
         if (owner !== scope()) throw new Error('媒体会话已切换，请重新打开');
-        const remoteUrl = pickRemoteUrl(resolved);
-        if (remoteUrl) return proxiedMediaUrl(remoteUrl);
-        const resolvedLocalPath = pickLocalPath(resolved);
-        if (resolvedLocalPath && localPathResolver) {
-          return localPathResolver(resolvedLocalPath);
-        }
-        return "";
+        return url;
       })
       .finally(() => {
         if (cache.get(key) === task) cache.delete(key);

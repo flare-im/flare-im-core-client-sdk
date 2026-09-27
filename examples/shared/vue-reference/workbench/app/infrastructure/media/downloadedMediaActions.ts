@@ -10,6 +10,11 @@ declare global {
   }
 }
 
+/** 原生宿主（Tauri、Electron）提供「在文件夹中显示」。 */
+export function configureNativeMediaActions(actions: NativeDownloadedMediaActions): void {
+  if (typeof window !== "undefined") window.flareNativeMediaActions = actions;
+}
+
 export function canRevealDownloadedMedia(): boolean {
   return (
     typeof window !== "undefined" &&

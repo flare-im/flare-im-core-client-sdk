@@ -27,6 +27,7 @@ import { useRoute, useRouter } from "vue-router";
 import {
   FlareConversationDetails as ConversationDetails,
   FlareDangerConfirm,
+  FlareButton,
   FlareFormSheet,
   FlareFormField,
   FlareSelect,
@@ -43,7 +44,14 @@ import MessagePreviewModal from "./MessagePreviewModal.vue";
 import DeveloperConsole from "./DeveloperConsole.vue";
 import WorkbenchShell from "./WorkbenchShell.vue";
 import type { WorkbenchShellMode } from "./workbenchShell";
-import { toneFromLegacyConnectionTone, type FlareTone, type FlareSearchResultGroup, type FlareSearchResultItem } from "@flare-im/vue-ui/contracts";
+import { formatBytes, toneFromLegacyConnectionTone, type FlareTone, type FlareSearchResultGroup, type FlareSearchResultItem } from "@flare-im/vue-ui/contracts";
+import {
+  loadDownloadLocation,
+  mediaCacheBytes,
+  pickDownloadLocation,
+  resetDownloadLocation,
+  type DownloadLocation,
+} from "../infrastructure/media/downloadLocation";
 import { provideFlareWorkbenchUi } from "../../composables/useFlareWorkbenchUi";
 import { useFlareTheme, type FlareThemeMode, type FlareThemeVariant } from "@flare-im/vue-ui/theme";
 import {
@@ -82,6 +90,65 @@ const { mode: themeMode, variant: themeVariant, setMode: setThemeMode, setVarian
   useFlareTheme();
 
 const settingsOpen = ref(false);
+
+// ── 下载位置与本地媒体缓存（核心 SDK）：设置面板打开时读一次 ──────────────────────
+const downloadLocation = ref<DownloadLocation | null>(null);
+const mediaCacheSize = ref<number | null>(null);
+const clearCacheOpen = ref(false);
+const clearingCache = ref(false);
+const downloadLocationText = computed(() => {
+  const current = downloadLocation.value;
+  if (!current) return "";
+  return current.managedByBrowser ? t("workbench.downloadLocationBrowser") : current.directory;
+});
+const mediaCacheText = computed(() => formatBytes(mediaCacheSize.value, locale.value) ?? t("workbench.notMeasured"));
+
+async function refreshStorageSettings(): Promise<void> {
+  try {
+    downloadLocation.value = await loadDownloadLocation(sdk.client.media);
+  } catch {
+    downloadLocation.value = null;
+  }
+  mediaCacheSize.value = await mediaCacheBytes(sdk.client.media).catch(() => null);
+}
+
+async function chooseDownloadLocation(): Promise<void> {
+  try {
+    if (await pickDownloadLocation(sdk.client.media, downloadLocation.value?.directory ?? "")) {
+      await refreshStorageSettings();
+      message.success(downloadLocationText.value);
+    }
+  } catch (error) {
+    message.error(describeSdkError(error) || t("workbench.downloadLocationUnwritable"));
+  }
+}
+
+async function useDefaultDownloadLocation(): Promise<void> {
+  try {
+    await resetDownloadLocation(sdk.client.media);
+    await refreshStorageSettings();
+  } catch (error) {
+    message.error(describeSdkError(error) || t("workbench.downloadLocationUnwritable"));
+  }
+}
+
+async function confirmClearCache(): Promise<void> {
+  clearingCache.value = true;
+  try {
+    await sdk.client.media.clearMediaCache();
+    clearCacheOpen.value = false;
+    message.success(t("workbench.cacheCleared"));
+    await refreshStorageSettings();
+  } catch (error) {
+    message.error(describeSdkError(error) || t("workbench.clearCacheFailed"));
+  } finally {
+    clearingCache.value = false;
+  }
+}
+
+watch(settingsOpen, (open) => {
+  if (open) void refreshStorageSettings();
+});
 const startChatOpen = ref(false);
 const moreOpen = ref(false);
 const sdkBuildOpen = ref(false);
@@ -642,7 +709,51 @@ async function buildFromAction(op: string): Promise<void> {
           ]"
         />
       </FlareFormField>
+      <FlareFormField :label="t('workbench.downloadLocation')">
+        <div class="workbench-storage-row">
+          <span class="workbench-storage-value">{{ downloadLocationText }}</span>
+          <FlareButton v-if="downloadLocation?.canPick" size="sm" variant="secondary" @click="chooseDownloadLocation">
+            {{ t("workbench.downloadLocationChange") }}
+          </FlareButton>
+          <FlareButton v-if="downloadLocation?.isCustom" size="sm" variant="ghost" @click="useDefaultDownloadLocation">
+            {{ t("workbench.downloadLocationReset") }}
+          </FlareButton>
+        </div>
+      </FlareFormField>
+      <FlareFormField :label="t('workbench.mediaCache')">
+        <div class="workbench-storage-row">
+          <span class="workbench-storage-value">{{ mediaCacheText }}</span>
+          <FlareButton size="sm" variant="secondary" :disabled="!mediaCacheSize" @click="clearCacheOpen = true">
+            {{ t("workbench.clearCache") }}
+          </FlareButton>
+        </div>
+      </FlareFormField>
   </FlareFormSheet>
+  <FlareDangerConfirm
+    :open="clearCacheOpen"
+    :title="t('workbench.clearCache')"
+    :description="t('workbench.clearCacheConfirm')"
+    :target="t('workbench.mediaCache')"
+    :confirm-text="t('workbench.clearCache')"
+    :busy="clearingCache"
+    @confirm="confirmClearCache"
+    @cancel="clearCacheOpen = false"
+  />
 </template>
 
 <style scoped src="../styles/chat-search.css"></style>
+<style scoped>
+.workbench-storage-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--flare-size-spacing-sm);
+}
+
+.workbench-storage-value {
+  flex: 1 1 12rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--flare-color-text-secondary);
+}
+</style>
