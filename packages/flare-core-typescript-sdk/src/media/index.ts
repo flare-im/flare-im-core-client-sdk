@@ -2,6 +2,7 @@ import type { MediaApi } from "../api/modules/media";
 import type { MessageBuilderApi } from "../api/modules/message_builder";
 import type { MediaUploadResponse } from "../api/types";
 import type { Message } from "../model";
+import { WebMediaApi } from "../adapters/web/media/WebMediaApi";
 
 export type MediaUploadOptions = Record<string, unknown> | null;
 
@@ -190,4 +191,24 @@ export async function buildLocalImageGroupMessage(
     conversationId,
     payload: { images: sources.map((imageId) => ({ imageId })) },
   });
+}
+
+export { WebMediaApi, type WebDownloadProgress } from "../adapters/web/media/WebMediaApi";
+export { supportsDownloadDirectoryPicker } from "../adapters/web/media/browserDownload";
+
+/** The core op call a web app already has (a social SDK bridge, a worker): `op` like `media.resolve_access`. */
+export type CoreMediaInvoke = (op: string, params: Record<string, unknown>) => Promise<unknown>;
+
+/**
+ * Browser "save to device" and display caching for a web app that reaches the core through its own
+ * bridge: saves go to the folder the user picked (File System Access API) or the browser's download
+ * flow, and pictures shown with `resolveDisplayUrl({ fileId, autoCache: true })` are kept in Cache
+ * Storage. Only `media.temp_download_url` and `media.resolve_access` are called through [invoke].
+ */
+export function browserMediaFor(invoke: CoreMediaInvoke): WebMediaApi {
+  const inner = {
+    getTempDownloadUrl: (request: Record<string, unknown>) => invoke("media.temp_download_url", request),
+    resolveMediaAccess: (request: Record<string, unknown>) => invoke("media.resolve_access", request),
+  };
+  return WebMediaApi.fromInner(inner as unknown as MediaApi);
 }
