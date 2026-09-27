@@ -890,8 +890,15 @@ function findMessageByActionId(id: string): Message | undefined {
   return sdk.messages.value.find((row) => mediaMessageId(row as unknown as Message) === id) as Message | undefined;
 }
 
+/** Save sources of [row]; a file path on this device counts only in the user's own messages. */
+function mediaDownloadSources(row: unknown): MessageMediaDownloadSource[] {
+  return listMessageMediaDownloadSources(row as unknown as Parameters<typeof listMessageMediaDownloadSources>[0], {
+    currentUserId: (sdk.currentUserId.value || sdk.form.userId).trim(),
+  });
+}
+
 function firstMediaDownloadSource(row: unknown): MessageMediaDownloadSource | null {
-  const sources = listMessageMediaDownloadSources(row as unknown as Parameters<typeof listMessageMediaDownloadSources>[0]);
+  const sources = mediaDownloadSources(row);
   return sources[0] ?? null;
 }
 
@@ -1026,7 +1033,7 @@ async function openDownloadedMediaFolder(source: MessageMediaDownloadSource): Pr
 async function handleMediaAction(id: string, action: MediaDownloadAction): Promise<void> {
   const row = findMessageByActionId(id);
   if (!row) return;
-  const sources = listMessageMediaDownloadSources(row as unknown as Parameters<typeof listMessageMediaDownloadSources>[0]);
+  const sources = mediaDownloadSources(row);
   if (!sources.length) return;
   try {
     if (action === "openFolder") {
@@ -1046,7 +1053,7 @@ async function refreshVisibleMediaDownloadStates(): Promise<void> {
   if (!canRevealDownloadedMedia() || mediaDownloadRefreshInFlight.value) return;
   const sourcesByKey = new Map<string, MessageMediaDownloadSource>();
   for (const row of sdk.messages.value) {
-    for (const source of listMessageMediaDownloadSources(row as unknown as Parameters<typeof listMessageMediaDownloadSources>[0])) {
+    for (const source of mediaDownloadSources(row)) {
       sourcesByKey.set(source.downloadKey, source);
     }
   }
