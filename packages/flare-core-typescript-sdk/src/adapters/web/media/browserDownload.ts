@@ -24,8 +24,8 @@ export interface DirectoryHandleLike {
   readonly kind: 'directory';
   readonly name: string;
   getFileHandle(name: string, options?: { create?: boolean }): Promise<FileHandleLike>;
-  queryPermission?(descriptor: { mode: 'readwrite' }): Promise<PermissionState>;
-  requestPermission?(descriptor: { mode: 'readwrite' }): Promise<PermissionState>;
+  queryPermission?(descriptor: { mode: 'read' | 'readwrite' }): Promise<PermissionState>;
+  requestPermission?(descriptor: { mode: 'read' | 'readwrite' }): Promise<PermissionState>;
 }
 type ShowDirectoryPicker = (options?: {
   id?: string;
@@ -96,6 +96,61 @@ export async function pickDownloadDirectory(): Promise<DirectoryHandleLike> {
   const handle = await picker({ id: 'flare-downloads', mode: 'readwrite', startIn: 'downloads' });
   await settingsTx('readwrite', (store) => store.put(handle, DIRECTORY_KEY));
   return handle;
+}
+
+/** A file saved into the picked folder, remembered by its download key. */
+export interface SavedDownloadRecord {
+  directory: string;
+  fileName: string;
+}
+
+const savedDownloadKey = (downloadKey: string) => `download:${downloadKey}`;
+
+/** Remembers that [downloadKey] was saved as [record] in the picked folder. */
+export async function recordSavedDownload(downloadKey: string, record: SavedDownloadRecord): Promise<void> {
+  if (typeof indexedDB === 'undefined' || !downloadKey) return;
+  await settingsTx('readwrite', (store) => store.put({ ...record }, savedDownloadKey(downloadKey)));
+}
+
+export async function savedDownloadRecord(downloadKey: string): Promise<SavedDownloadRecord | undefined> {
+  if (typeof indexedDB === 'undefined' || !downloadKey) return undefined;
+  try {
+    const value = (await settingsTx('readonly', (store) => store.get(savedDownloadKey(downloadKey)))) as
+      | Partial<SavedDownloadRecord>
+      | undefined;
+    return value && typeof value.fileName === 'string' && value.fileName
+      ? { directory: String(value.directory ?? ''), fileName: value.fileName }
+      : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+export async function forgetSavedDownload(downloadKey: string): Promise<void> {
+  if (typeof indexedDB === 'undefined' || !downloadKey) return;
+  await settingsTx('readwrite', (store) => store.delete(savedDownloadKey(downloadKey))).catch(() => undefined);
+}
+
+/**
+ * Whether [record] is still in the picked folder: `present`, `missing`, or `unknown` when the browser will not let
+ * this page look (no folder, another folder picked since, or no read permission — [interactive] asks for it, which
+ * needs a user gesture).
+ */
+export async function savedDownloadPresence(
+  record: SavedDownloadRecord,
+  interactive: boolean,
+): Promise<'present' | 'missing' | 'unknown'> {
+  const dir = await storedDownloadDirectory();
+  if (!dir || dir.name !== record.directory) return 'unknown';
+  try {
+    const descriptor = { mode: 'read' as const };
+    let state = await dir.queryPermission?.(descriptor);
+    if (state !== 'granted' && interactive) state = await dir.requestPermission?.(descriptor);
+    if (state !== 'granted') return 'unknown';
+  } catch {
+    return 'unknown';
+  }
+  return (await fileExists(dir, record.fileName)) ? 'present' : 'missing';
 }
 
 export async function forgetDownloadDirectory(): Promise<void> {

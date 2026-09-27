@@ -6,6 +6,8 @@ import { WebMediaApi } from "./WebMediaApi";
 
 const pickedSave = vi.hoisted(() => ({
   result: undefined as { directory: string; fileName: string } | undefined,
+  records: new Map<string, { directory: string; fileName: string }>(),
+  presence: "present" as "present" | "missing" | "unknown",
 }));
 
 vi.mock("./browserDownload", async (importOriginal) => {
@@ -13,6 +15,14 @@ vi.mock("./browserDownload", async (importOriginal) => {
   return {
     ...actual,
     saveBlobToPickedDirectory: vi.fn(async () => pickedSave.result),
+    recordSavedDownload: vi.fn(async (key: string, record: { directory: string; fileName: string }) => {
+      pickedSave.records.set(key, record);
+    }),
+    savedDownloadRecord: vi.fn(async (key: string) => pickedSave.records.get(key)),
+    forgetSavedDownload: vi.fn(async (key: string) => {
+      pickedSave.records.delete(key);
+    }),
+    savedDownloadPresence: vi.fn(async () => pickedSave.presence),
   };
 });
 
@@ -54,6 +64,8 @@ describe("WebMediaApi downloads", () => {
 
   beforeEach(() => {
     pickedSave.result = undefined;
+    pickedSave.records.clear();
+    pickedSave.presence = "present";
     cache = new MockCache();
     anchors = [];
     vi.stubGlobal("caches", { open: vi.fn(async () => cache), delete: vi.fn(async () => true) });
@@ -113,6 +125,35 @@ describe("WebMediaApi downloads", () => {
       path: "Flare 下载/报告 (1).pdf",
     });
     expect(anchors).toHaveLength(0);
+  });
+
+  it("remembers a file saved into the picked folder until it is gone", async () => {
+    pickedSave.result = { directory: "Flare 下载", fileName: "报告.pdf" };
+    const api = WebMediaApi.fromInner(innerApi());
+    await api.downloadToUserDirectory({ fileId: "f4", fileName: "报告.pdf" });
+
+    expect(await api.getUserDownloadSavedPath({ downloadKey: "f4" })).toMatchObject({
+      path: "Flare 下载/报告.pdf",
+      fileName: "报告.pdf",
+      verified: true,
+    });
+
+    // The browser will not let the page look: the record stands, unverified.
+    pickedSave.presence = "unknown";
+    expect(await api.getUserDownloadSavedPath({ downloadKey: "f4" })).toMatchObject({ path: "Flare 下载/报告.pdf", verified: false });
+
+    // The user deleted it: the record goes, and the next lookup finds nothing either.
+    pickedSave.presence = "missing";
+    expect(await api.getUserDownloadSavedPath({ downloadKey: "f4" })).toEqual({ path: null });
+    pickedSave.presence = "present";
+    expect(await api.getUserDownloadSavedPath({ downloadKey: "f4" })).toEqual({ path: null });
+  });
+
+  it("does not track a file the browser saved through its own download flow", async () => {
+    pickedSave.records.set("f5", { directory: "Flare 下载", fileName: "old.png" });
+    const api = WebMediaApi.fromInner(innerApi());
+    await api.downloadToUserDirectory({ fileId: "f5", fileName: "新.png" });
+    expect(await api.getUserDownloadSavedPath({ downloadKey: "f5" })).toEqual({ path: null });
   });
 
   it("falls back to the browser downloading the attachment URL when it cannot be read (CORS)", async () => {

@@ -42,9 +42,13 @@ import {
 import {
   fetchBlob,
   forgetDownloadDirectory,
+  forgetSavedDownload,
   pickDownloadDirectory,
+  recordSavedDownload,
   sanitizeDownloadFileName,
   saveBlobToPickedDirectory,
+  savedDownloadPresence,
+  savedDownloadRecord,
   withExtensionFor,
   saveThroughBrowser,
   storedDownloadDirectory,
@@ -207,12 +211,32 @@ export class WebMediaApi implements MediaApi {
     unsupported('media.user_download_set_subfolder');
   }
 
-  async getUserDownloadSavedPath(_request: GetUserDownloadSavedPathRequest): Promise<UserDownloadSavedPathResponse> {
-    unsupported('media.user_download_get_saved_path');
+  /**
+   * Where [downloadKey] was saved in the picked folder: `{path, directory, fileName, verified}`, or `{path: null}` when
+   * it was never saved there or the file is gone (its record is dropped then, as the native core does). A file the
+   * browser saved through its own download flow is not tracked. `interactive: true` (from a click) lets the check ask
+   * for read access to the folder; without access the answer is the record, `verified: false`.
+   */
+  async getUserDownloadSavedPath(request: GetUserDownloadSavedPathRequest): Promise<UserDownloadSavedPathResponse> {
+    const key = stringField(request, 'downloadKey');
+    const record = await savedDownloadRecord(key);
+    if (!record) return { path: null };
+    const presence = await savedDownloadPresence(record, request.interactive === true);
+    if (presence === 'missing') {
+      await forgetSavedDownload(key);
+      return { path: null };
+    }
+    return {
+      path: record.directory ? `${record.directory}/${record.fileName}` : record.fileName,
+      directory: record.directory,
+      fileName: record.fileName,
+      savedVia: 'directory',
+      verified: presence === 'present',
+    };
   }
 
-  async deleteUserDownloadRecord(_request: DeleteUserDownloadRecordRequest): Promise<void> {
-    unsupported('media.user_download_delete_record');
+  async deleteUserDownloadRecord(request: DeleteUserDownloadRecordRequest): Promise<void> {
+    await forgetSavedDownload(stringField(request, 'downloadKey'));
   }
 
   async cancelUserFileDownload(request: CancelUserFileDownloadRequest): Promise<boolean> {
@@ -320,6 +344,7 @@ export class WebMediaApi implements MediaApi {
           if (controller.signal.aborted) throw error;
           // The storage does not allow this origin to read it (CORS): the browser can still
           // download the attachment URL itself.
+          await forgetSavedDownload(key);
           saveThroughBrowser(url, wanted);
           return this.savedResult(key, '', wanted, 0, false, 'browser');
         }
@@ -332,8 +357,10 @@ export class WebMediaApi implements MediaApi {
       const named = withExtensionFor(wanted, blob.type);
       const saved = await saveBlobToPickedDirectory(blob, named).catch(() => undefined);
       if (saved) {
+        await recordSavedDownload(key, saved).catch(() => undefined);
         return this.savedResult(key, saved.directory, saved.fileName, blob.size, fromCache, 'directory');
       }
+      await forgetSavedDownload(key);
       saveThroughBrowser(blob, named);
       return this.savedResult(key, '', named, blob.size, fromCache, 'browser');
     } finally {
