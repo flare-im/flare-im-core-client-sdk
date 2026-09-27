@@ -139,6 +139,37 @@ export async function uniqueDownloadName(dir: DirectoryHandleLike, fileName: str
   return `${stem}_${Date.now()}${ext}`;
 }
 
+const EXTENSION_FOR_MIME: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/gif": "gif",
+  "image/webp": "webp",
+  "image/heic": "heic",
+  "image/bmp": "bmp",
+  "image/svg+xml": "svg",
+  "video/mp4": "mp4",
+  "video/quicktime": "mov",
+  "video/webm": "webm",
+  "audio/mpeg": "mp3",
+  "audio/mp4": "m4a",
+  "audio/aac": "aac",
+  "audio/ogg": "ogg",
+  "audio/wav": "wav",
+  "application/pdf": "pdf",
+  "application/zip": "zip",
+  "text/plain": "txt",
+};
+
+/**
+ * [fileName] with an extension from [mimeType] when it has none — pictures and videos usually
+ * carry no file name, and a saved file without an extension does not open. Same rule as the core.
+ */
+export function withExtensionFor(fileName: string, mimeType: string): string {
+  if (/\.[A-Za-z0-9]{1,8}$/.test(fileName)) return fileName;
+  const ext = EXTENSION_FOR_MIME[mimeType.split(";")[0]?.trim().toLowerCase() ?? ""];
+  return ext ? `${fileName}.${ext}` : fileName;
+}
+
 /** Characters no file system accepts, and path separators, become `_`. */
 export function sanitizeDownloadFileName(raw: string): string {
   const base = raw.trim().split(/[\\/]/).filter(Boolean).pop() ?? '';

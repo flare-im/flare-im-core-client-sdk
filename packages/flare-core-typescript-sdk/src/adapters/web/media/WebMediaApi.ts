@@ -45,6 +45,7 @@ import {
   pickDownloadDirectory,
   sanitizeDownloadFileName,
   saveBlobToPickedDirectory,
+  withExtensionFor,
   saveThroughBrowser,
   storedDownloadDirectory,
   supportsDownloadDirectoryPicker,
@@ -328,12 +329,13 @@ export class WebMediaApi implements MediaApi {
       } else {
         onProgress?.(blob.size, blob.size);
       }
-      const saved = await saveBlobToPickedDirectory(blob, wanted).catch(() => undefined);
+      const named = withExtensionFor(wanted, blob.type);
+      const saved = await saveBlobToPickedDirectory(blob, named).catch(() => undefined);
       if (saved) {
         return this.savedResult(key, saved.directory, saved.fileName, blob.size, fromCache, 'directory');
       }
-      saveThroughBrowser(blob, wanted);
-      return this.savedResult(key, '', wanted, blob.size, fromCache, 'browser');
+      saveThroughBrowser(blob, named);
+      return this.savedResult(key, '', named, blob.size, fromCache, 'browser');
     } finally {
       this.downloads.delete(key);
     }

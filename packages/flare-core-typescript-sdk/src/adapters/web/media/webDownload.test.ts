@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { MediaApi } from "../../../api/modules/media";
-import { sanitizeDownloadFileName, uniqueDownloadName, type DirectoryHandleLike } from "./browserDownload";
+import { sanitizeDownloadFileName, uniqueDownloadName, withExtensionFor, type DirectoryHandleLike } from "./browserDownload";
 import { WebMediaApi } from "./WebMediaApi";
 
 const pickedSave = vi.hoisted(() => ({
@@ -96,6 +96,8 @@ describe("WebMediaApi downloads", () => {
     // Caching the finished download happens right after; let it land.
     await new Promise((resolve) => setTimeout(resolve, 0));
     const second = await api.downloadToUserDirectory({ fileId: "f1", fileName: "截图.png" });
+    const unnamed = await api.downloadToUserDirectory({ fileId: "f1", fileName: "IMG_1" });
+    expect(unnamed.fileName).toBe("IMG_1.png");
     expect(second.fromCache).toBe(true);
     expect(globalThis.fetch).toHaveBeenCalledTimes(1);
   });
@@ -169,6 +171,12 @@ describe("WebMediaApi downloads", () => {
 });
 
 describe("browser download names", () => {
+  it("adds an extension from the type when the name has none", () => {
+    expect(withExtensionFor("IMG_20260927", "image/png")).toBe("IMG_20260927.png");
+    expect(withExtensionFor("报告.pdf", "application/octet-stream")).toBe("报告.pdf");
+    expect(withExtensionFor("blob", "application/octet-stream")).toBe("blob");
+  });
+
   it("sanitizes like the native core", () => {
     expect(sanitizeDownloadFileName("../../etc/passwd")).toBe("passwd");
     expect(sanitizeDownloadFileName("a?b:c.txt")).toBe("a_b_c.txt");
