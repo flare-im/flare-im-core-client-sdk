@@ -326,6 +326,47 @@ Java_com_flare_im_bridge_JniNativeBridge_nativeSdkLogin(
     );
 }
 
+// 登录拆成两半（热启动）：prepare 只开本地库、不连网；connect 再做网络握手与首次同步。
+extern "C" JNIEXPORT jint JNICALL
+Java_com_flare_im_bridge_JniNativeBridge_nativeSdkPrepare(
+    JNIEnv *env,
+    jobject /*self*/,
+    jlong handle,
+    jstring user_id,
+    jstring store_config_json,
+    jlong context_id
+) {
+    std::string user = to_std_string(env, user_id);
+    std::string store_config = to_std_string(env, store_config_json);
+    return flare_sdk_prepare(
+        static_cast<FlareHandle>(handle),
+        user.c_str(),
+        store_config.c_str(),
+        context_from_id(context_id),
+        result_callback
+    );
+}
+
+extern "C" JNIEXPORT jint JNICALL
+Java_com_flare_im_bridge_JniNativeBridge_nativeSdkConnect(
+    JNIEnv *env,
+    jobject /*self*/,
+    jlong handle,
+    jstring user_id,
+    jstring token,
+    jlong context_id
+) {
+    std::string user = to_std_string(env, user_id);
+    std::string access_token = to_std_string(env, token);
+    return flare_sdk_connect(
+        static_cast<FlareHandle>(handle),
+        user.c_str(),
+        access_token.c_str(),
+        context_from_id(context_id),
+        result_callback
+    );
+}
+
 extern "C" JNIEXPORT jint JNICALL
 Java_com_flare_im_bridge_JniNativeBridge_nativeSdkLogout(JNIEnv * /*env*/, jobject /*self*/, jlong handle, jlong context_id) {
     return flare_sdk_logout(static_cast<FlareHandle>(handle), context_from_id(context_id), result_callback);
