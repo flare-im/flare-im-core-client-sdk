@@ -31,6 +31,7 @@ import {
   BuildWithContentMessageRequest,
   CapabilityEvent,
   CapabilityEventName,
+  ClearPushTokenRequest,
   CloseViewRequest,
   CloseViewResponse,
   ConnectionEvent,
@@ -91,6 +92,8 @@ import {
   PresenceChangedEvent,
   ProgressEvent,
   ProgressEventName,
+  PushLifecycleStatus,
+  PushTokenInput,
   ReactionChangedEvent,
   ReactionEntry,
   ReadReceiptEvent,
@@ -104,6 +107,7 @@ import {
   SendMessageResponse,
   SetHeartbeatAppStateRequest,
   SetHeartbeatNatTimeoutRequest,
+  SetPushPermissionRequest,
   StartupHomeSyncRequest,
   StartupHomeSyncResponse,
   StickerContentPayload,
@@ -281,6 +285,36 @@ export function messageSearchQueryToMap(request: MessageSearchQuery): Record<str
   limit: request.limit,
   ...(request.senderId !== undefined ? { senderId: request.senderId } : {}),
   ...(request.toTime !== undefined ? { toTime: request.toTime } : {}),
+  };
+}
+
+export function pushTokenInputToMap(request: PushTokenInput): Record<string, unknown> {
+  return {
+  platform: request.platform,
+  provider: request.provider,
+  token: request.token,
+  };
+}
+
+export function clearPushTokenRequestToMap(request: ClearPushTokenRequest): Record<string, unknown> {
+  return {
+  provider: request.provider,
+  };
+}
+
+export function setPushPermissionRequestToMap(request: SetPushPermissionRequest): Record<string, unknown> {
+  return {
+  allowed: request.allowed,
+  };
+}
+
+export function pushLifecycleStatusToMap(request: PushLifecycleStatus): Record<string, unknown> {
+  return {
+  configuredProviders: request.configuredProviders,
+  ...(request.lastError !== undefined ? { lastError: request.lastError } : {}),
+  pendingRevocations: request.pendingRevocations,
+  registeredProviders: request.registeredProviders,
+  state: request.state,
   };
 }
 

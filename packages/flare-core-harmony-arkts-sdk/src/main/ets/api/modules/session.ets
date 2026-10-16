@@ -19,4 +19,9 @@ export interface SessionApi {
   currentUserId(): Promise<Record<string, Object>>;
   isConnected(): Promise<boolean>;
   sessionActive(): Promise<boolean>;
+  updatePushToken(request: PushTokenInput): Promise<PushLifecycleStatus>;
+  clearPushToken(request: ClearPushTokenRequest): Promise<PushLifecycleStatus>;
+  setPushPermission(request: SetPushPermissionRequest): Promise<PushLifecycleStatus>;
+  reconcilePush(): Promise<PushLifecycleStatus>;
+  pushStatus(): Promise<PushLifecycleStatus>;
 }

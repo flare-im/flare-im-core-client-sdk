@@ -136,6 +136,51 @@ public class DefaultFlareImClient <: flare_core_harmony_cangjie_sdk.api.FlareImC
         return heartbeatEffectiveIntervalResponseFromJson(raw)
     }
 
+    public func updatePushToken(request: PushTokenInput): PushLifecycleStatus {
+        let body = jsonObjectFromRaw("{}")
+        jsonPutString(body, "provider", request.provider)
+        jsonPutString(body, "platform", request.platform)
+        jsonPutString(body, "token", request.token)
+        let raw = bridge.invoke(descriptor: NativeCallMap.sdkUpdatePushToken, requestJson: wireEncodeRequest(body.toString()))
+        let value = wireDecodeResponseObject(jsonObjectFromRaw(raw))
+        let error = match (value.get("lastError")) { case Some(v) => if (v.toString() == "null") { None } else { Some(v.asString().getValue()) }; case None => None }
+        return PushLifecycleStatus(configuredProviders: UInt32(jsonIntField(value, "configuredProviders", 0)), lastError: error, pendingRevocations: UInt32(jsonIntField(value, "pendingRevocations", 0)), registeredProviders: UInt32(jsonIntField(value, "registeredProviders", 0)), state: jsonStringField(value, "state", ""))
+    }
+
+    public func clearPushToken(request: ClearPushTokenRequest): PushLifecycleStatus {
+        let body = jsonObjectFromRaw("{}")
+        jsonPutString(body, "provider", request.provider)
+        let raw = bridge.invoke(descriptor: NativeCallMap.sdkClearPushToken, requestJson: wireEncodeRequest(body.toString()))
+        let value = wireDecodeResponseObject(jsonObjectFromRaw(raw))
+        let error = match (value.get("lastError")) { case Some(v) => if (v.toString() == "null") { None } else { Some(v.asString().getValue()) }; case None => None }
+        return PushLifecycleStatus(configuredProviders: UInt32(jsonIntField(value, "configuredProviders", 0)), lastError: error, pendingRevocations: UInt32(jsonIntField(value, "pendingRevocations", 0)), registeredProviders: UInt32(jsonIntField(value, "registeredProviders", 0)), state: jsonStringField(value, "state", ""))
+    }
+
+    public func setPushPermission(request: SetPushPermissionRequest): PushLifecycleStatus {
+        let body = jsonObjectFromRaw("{}")
+        jsonPutBool(body, "allowed", request.allowed)
+        let raw = bridge.invoke(descriptor: NativeCallMap.sdkSetPushPermission, requestJson: wireEncodeRequest(body.toString()))
+        let value = wireDecodeResponseObject(jsonObjectFromRaw(raw))
+        let error = match (value.get("lastError")) { case Some(v) => if (v.toString() == "null") { None } else { Some(v.asString().getValue()) }; case None => None }
+        return PushLifecycleStatus(configuredProviders: UInt32(jsonIntField(value, "configuredProviders", 0)), lastError: error, pendingRevocations: UInt32(jsonIntField(value, "pendingRevocations", 0)), registeredProviders: UInt32(jsonIntField(value, "registeredProviders", 0)), state: jsonStringField(value, "state", ""))
+    }
+
+    public func reconcilePush(): PushLifecycleStatus {
+        let body = jsonObjectFromRaw("{}")
+        let raw = bridge.invoke(descriptor: NativeCallMap.sdkReconcilePush, requestJson: wireEncodeRequest(body.toString()))
+        let value = wireDecodeResponseObject(jsonObjectFromRaw(raw))
+        let error = match (value.get("lastError")) { case Some(v) => if (v.toString() == "null") { None } else { Some(v.asString().getValue()) }; case None => None }
+        return PushLifecycleStatus(configuredProviders: UInt32(jsonIntField(value, "configuredProviders", 0)), lastError: error, pendingRevocations: UInt32(jsonIntField(value, "pendingRevocations", 0)), registeredProviders: UInt32(jsonIntField(value, "registeredProviders", 0)), state: jsonStringField(value, "state", ""))
+    }
+
+    public func pushStatus(): PushLifecycleStatus {
+        let body = jsonObjectFromRaw("{}")
+        let raw = bridge.invoke(descriptor: NativeCallMap.sdkPushStatus, requestJson: wireEncodeRequest(body.toString()))
+        let value = wireDecodeResponseObject(jsonObjectFromRaw(raw))
+        let error = match (value.get("lastError")) { case Some(v) => if (v.toString() == "null") { None } else { Some(v.asString().getValue()) }; case None => None }
+        return PushLifecycleStatus(configuredProviders: UInt32(jsonIntField(value, "configuredProviders", 0)), lastError: error, pendingRevocations: UInt32(jsonIntField(value, "pendingRevocations", 0)), registeredProviders: UInt32(jsonIntField(value, "registeredProviders", 0)), state: jsonStringField(value, "state", ""))
+    }
+
     public func logout(): Unit {
         let _ignored = bridge.invoke(descriptor: NativeCallMap.sdkLogout, requestJson: wireEncodeRequest("{}"))
     }

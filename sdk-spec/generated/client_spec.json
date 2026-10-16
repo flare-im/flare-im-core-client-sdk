@@ -32,7 +32,9 @@
       {
         "code": 4,
         "coreCodes": [
-          "OperationTimeout"
+          "OperationTimeout",
+          "ConnectionTimeout",
+          "NetworkTimeout"
         ],
         "meaning": "operation timed out",
         "name": "FLARE_ERR_OPERATION_TIMEOUT"
@@ -40,7 +42,13 @@
       {
         "code": 5,
         "coreCodes": [
-          "NetworkError"
+          "NetworkError",
+          "ConnectionFailed",
+          "ConnectionClosed",
+          "NetworkConnectionLost",
+          "ConnectionRefused",
+          "NetworkUnreachable",
+          "ConnectionReconnecting"
         ],
         "meaning": "transport or network failure",
         "name": "FLARE_ERR_NETWORK_ERROR"
@@ -1901,6 +1909,128 @@
             "file": "message_search_query.schema.json",
             "kind": "rust-json-schema",
             "rustType": "MessageSearchQuery"
+          }
+        }
+      ],
+      "source": "../flare-im-core-sdk/bindings/contract/generated/model_schemas"
+    },
+    {
+      "description": "Core-owned DTOs derived from Rust JsonSchema.",
+      "enums": [],
+      "group": "session",
+      "models": [
+        {
+          "description": "PushTokenInput",
+          "fields": [
+            {
+              "description": "Native platform: android, ios or harmony.",
+              "name": "platform",
+              "required": true,
+              "type": "String",
+              "wireName": "platform"
+            },
+            {
+              "description": "OS delivery provider: fcm, apns or getui.",
+              "name": "provider",
+              "required": true,
+              "type": "String",
+              "wireName": "provider"
+            },
+            {
+              "description": "OS-issued token. Never log or persist outside protected native storage.",
+              "name": "token",
+              "required": true,
+              "type": "String",
+              "wireName": "token"
+            }
+          ],
+          "name": "PushTokenInput",
+          "source": {
+            "file": "push_token_input.schema.json",
+            "kind": "rust-json-schema",
+            "rustType": "PushTokenInput"
+          }
+        },
+        {
+          "description": "ClearPushTokenRequest",
+          "fields": [
+            {
+              "description": "Provider whose current desired OS token is invalidated.",
+              "name": "provider",
+              "required": true,
+              "type": "String",
+              "wireName": "provider"
+            }
+          ],
+          "name": "ClearPushTokenRequest",
+          "source": {
+            "file": "clear_push_token_request.schema.json",
+            "kind": "rust-json-schema",
+            "rustType": "ClearPushTokenRequest"
+          }
+        },
+        {
+          "description": "SetPushPermissionRequest",
+          "fields": [
+            {
+              "description": "Current OS permission, including explicit denial or revocation.",
+              "name": "allowed",
+              "required": true,
+              "type": "Boolean",
+              "wireName": "allowed"
+            }
+          ],
+          "name": "SetPushPermissionRequest",
+          "source": {
+            "file": "set_push_permission_request.schema.json",
+            "kind": "rust-json-schema",
+            "rustType": "SetPushPermissionRequest"
+          }
+        },
+        {
+          "description": "PushLifecycleStatus",
+          "fields": [
+            {
+              "description": "Number of OS providers configured in memory.",
+              "name": "configuredProviders",
+              "required": true,
+              "type": "UInt32",
+              "wireName": "configuredProviders"
+            },
+            {
+              "description": "Fixed safe error category; no token, URL, bearer or driver detail.",
+              "name": "lastError",
+              "required": false,
+              "type": "String",
+              "wireName": "lastError"
+            },
+            {
+              "description": "Unresolved revoke intents, including writes with an unknown result.",
+              "name": "pendingRevocations",
+              "required": true,
+              "type": "UInt32",
+              "wireName": "pendingRevocations"
+            },
+            {
+              "description": "Providers confirmed for the current session, not vendor delivery.",
+              "name": "registeredProviders",
+              "required": true,
+              "type": "UInt32",
+              "wireName": "registeredProviders"
+            },
+            {
+              "description": "disabled, waitingForSession, waitingForToken, pending or registered.",
+              "name": "state",
+              "required": true,
+              "type": "String",
+              "wireName": "state"
+            }
+          ],
+          "name": "PushLifecycleStatus",
+          "source": {
+            "file": "push_lifecycle_status.schema.json",
+            "kind": "rust-json-schema",
+            "rustType": "PushLifecycleStatus"
           }
         }
       ],
@@ -5427,6 +5557,91 @@
           "response": "BooleanResponse",
           "stability": "stable",
           "transport": "ffi-symbol"
+        },
+        {
+          "cApi": "flare_sdk_invoke_json",
+          "name": "updatePushToken",
+          "nativeBinding": {
+            "asyncReturn": "i32 immediate_submit_code",
+            "callback": "FlareResultCallback",
+            "handlePolicy": "client-handle",
+            "requestEncoding": "json",
+            "responseEncoding": "json-object",
+            "returnMode": "callback"
+          },
+          "operation": "sdk.update_push_token",
+          "request": "PushTokenInput",
+          "response": "PushLifecycleStatus",
+          "stability": "stable",
+          "transport": "contract-invoke-json"
+        },
+        {
+          "cApi": "flare_sdk_invoke_json",
+          "name": "clearPushToken",
+          "nativeBinding": {
+            "asyncReturn": "i32 immediate_submit_code",
+            "callback": "FlareResultCallback",
+            "handlePolicy": "client-handle",
+            "requestEncoding": "json",
+            "responseEncoding": "json-object",
+            "returnMode": "callback"
+          },
+          "operation": "sdk.clear_push_token",
+          "request": "ClearPushTokenRequest",
+          "response": "PushLifecycleStatus",
+          "stability": "stable",
+          "transport": "contract-invoke-json"
+        },
+        {
+          "cApi": "flare_sdk_invoke_json",
+          "name": "setPushPermission",
+          "nativeBinding": {
+            "asyncReturn": "i32 immediate_submit_code",
+            "callback": "FlareResultCallback",
+            "handlePolicy": "client-handle",
+            "requestEncoding": "json",
+            "responseEncoding": "json-object",
+            "returnMode": "callback"
+          },
+          "operation": "sdk.set_push_permission",
+          "request": "SetPushPermissionRequest",
+          "response": "PushLifecycleStatus",
+          "stability": "stable",
+          "transport": "contract-invoke-json"
+        },
+        {
+          "cApi": "flare_sdk_invoke_json",
+          "name": "reconcilePush",
+          "nativeBinding": {
+            "asyncReturn": "i32 immediate_submit_code",
+            "callback": "FlareResultCallback",
+            "handlePolicy": "client-handle",
+            "requestEncoding": "json",
+            "responseEncoding": "json-object",
+            "returnMode": "callback"
+          },
+          "operation": "sdk.reconcile_push",
+          "request": "Unit",
+          "response": "PushLifecycleStatus",
+          "stability": "stable",
+          "transport": "contract-invoke-json"
+        },
+        {
+          "cApi": "flare_sdk_invoke_json",
+          "name": "pushStatus",
+          "nativeBinding": {
+            "asyncReturn": "i32 immediate_submit_code",
+            "callback": "FlareResultCallback",
+            "handlePolicy": "client-handle",
+            "requestEncoding": "json",
+            "responseEncoding": "json-object",
+            "returnMode": "callback"
+          },
+          "operation": "sdk.push_status",
+          "request": "Unit",
+          "response": "PushLifecycleStatus",
+          "stability": "stable",
+          "transport": "contract-invoke-json"
         }
       ]
     },

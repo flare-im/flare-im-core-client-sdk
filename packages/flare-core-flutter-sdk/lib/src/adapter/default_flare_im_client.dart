@@ -144,6 +144,36 @@ final class DefaultFlareImClient implements FlareImClient {
   }
 
   @override
+  Future<PushLifecycleStatus> updatePushToken(PushTokenInput request) async {
+    final raw = mapValue(await _bridge.invoke<Object?>(NativeCallMap.sdkUpdatePushToken, {'provider': request.provider, 'platform': request.platform, 'token': request.token}));
+    return PushLifecycleStatus(configuredProviders: intValue(raw['configuredProviders']), pendingRevocations: intValue(raw['pendingRevocations']), registeredProviders: intValue(raw['registeredProviders']), state: raw['state'] as String, lastError: raw['lastError'] as String?);
+  }
+
+  @override
+  Future<PushLifecycleStatus> clearPushToken(ClearPushTokenRequest request) async {
+    final raw = mapValue(await _bridge.invoke<Object?>(NativeCallMap.sdkClearPushToken, {'provider': request.provider}));
+    return PushLifecycleStatus(configuredProviders: intValue(raw['configuredProviders']), pendingRevocations: intValue(raw['pendingRevocations']), registeredProviders: intValue(raw['registeredProviders']), state: raw['state'] as String, lastError: raw['lastError'] as String?);
+  }
+
+  @override
+  Future<PushLifecycleStatus> setPushPermission(SetPushPermissionRequest request) async {
+    final raw = mapValue(await _bridge.invoke<Object?>(NativeCallMap.sdkSetPushPermission, {'allowed': request.allowed}));
+    return PushLifecycleStatus(configuredProviders: intValue(raw['configuredProviders']), pendingRevocations: intValue(raw['pendingRevocations']), registeredProviders: intValue(raw['registeredProviders']), state: raw['state'] as String, lastError: raw['lastError'] as String?);
+  }
+
+  @override
+  Future<PushLifecycleStatus> reconcilePush() async {
+    final raw = mapValue(await _bridge.invoke<Object?>(NativeCallMap.sdkReconcilePush));
+    return PushLifecycleStatus(configuredProviders: intValue(raw['configuredProviders']), pendingRevocations: intValue(raw['pendingRevocations']), registeredProviders: intValue(raw['registeredProviders']), state: raw['state'] as String, lastError: raw['lastError'] as String?);
+  }
+
+  @override
+  Future<PushLifecycleStatus> pushStatus() async {
+    final raw = mapValue(await _bridge.invoke<Object?>(NativeCallMap.sdkPushStatus));
+    return PushLifecycleStatus(configuredProviders: intValue(raw['configuredProviders']), pendingRevocations: intValue(raw['pendingRevocations']), registeredProviders: intValue(raw['registeredProviders']), state: raw['state'] as String, lastError: raw['lastError'] as String?);
+  }
+
+  @override
   Future<void> logout() async {
     await _bridge.invoke<void>(NativeCallMap.sdkLogout);
     events.emitLifecycle(const LifecycleEvent(

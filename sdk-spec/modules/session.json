@@ -146,6 +146,51 @@
       "request": "Unit",
       "response": "BooleanResponse",
       "stability": "stable"
+    },
+    {
+      "name": "updatePushToken",
+      "operation": "sdk.update_push_token",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "PushTokenInput",
+      "response": "PushLifecycleStatus",
+      "stability": "stable"
+    },
+    {
+      "name": "clearPushToken",
+      "operation": "sdk.clear_push_token",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "ClearPushTokenRequest",
+      "response": "PushLifecycleStatus",
+      "stability": "stable"
+    },
+    {
+      "name": "setPushPermission",
+      "operation": "sdk.set_push_permission",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "SetPushPermissionRequest",
+      "response": "PushLifecycleStatus",
+      "stability": "stable"
+    },
+    {
+      "name": "reconcilePush",
+      "operation": "sdk.reconcile_push",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "Unit",
+      "response": "PushLifecycleStatus",
+      "stability": "stable"
+    },
+    {
+      "name": "pushStatus",
+      "operation": "sdk.push_status",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "Unit",
+      "response": "PushLifecycleStatus",
+      "stability": "stable"
     }
   ]
 }

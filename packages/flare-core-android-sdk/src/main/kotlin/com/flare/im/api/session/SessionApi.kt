@@ -59,4 +59,14 @@ interface SessionApi {
     suspend fun isConnected(): Boolean
     /** sessionActive maps to `flare_sdk_session_active` via `ffi-symbol`. Operation: `sdk.session_active`. */
     suspend fun sessionActive(): Boolean
+    /** updatePushToken maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `sdk.update_push_token`. */
+    suspend fun updatePushToken(request: PushTokenInput): PushLifecycleStatus
+    /** clearPushToken maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `sdk.clear_push_token`. */
+    suspend fun clearPushToken(request: ClearPushTokenRequest): PushLifecycleStatus
+    /** setPushPermission maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `sdk.set_push_permission`. */
+    suspend fun setPushPermission(request: SetPushPermissionRequest): PushLifecycleStatus
+    /** reconcilePush maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `sdk.reconcile_push`. */
+    suspend fun reconcilePush(): PushLifecycleStatus
+    /** pushStatus maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `sdk.push_status`. */
+    suspend fun pushStatus(): PushLifecycleStatus
 }

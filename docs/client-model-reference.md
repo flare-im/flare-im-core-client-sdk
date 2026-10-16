@@ -226,6 +226,48 @@ MessageSearchQuery
 | `senderId` | `senderId` | `String` | no |  |
 | `toTime` | `toTime` | `UInt64` | no | 截止消息时间（毫秒，含）。 |
 
+## Session
+
+Core-owned DTOs derived from Rust JsonSchema.
+
+### PushTokenInput
+
+PushTokenInput
+
+| Field | Wire name | Type | Required | Description |
+|-------|-----------|------|----------|-------------|
+| `platform` | `platform` | `String` | yes | Native platform: android, ios or harmony. |
+| `provider` | `provider` | `String` | yes | OS delivery provider: fcm, apns or getui. |
+| `token` | `token` | `String` | yes | OS-issued token. Never log or persist outside protected native storage. |
+
+### ClearPushTokenRequest
+
+ClearPushTokenRequest
+
+| Field | Wire name | Type | Required | Description |
+|-------|-----------|------|----------|-------------|
+| `provider` | `provider` | `String` | yes | Provider whose current desired OS token is invalidated. |
+
+### SetPushPermissionRequest
+
+SetPushPermissionRequest
+
+| Field | Wire name | Type | Required | Description |
+|-------|-----------|------|----------|-------------|
+| `allowed` | `allowed` | `Boolean` | yes | Current OS permission, including explicit denial or revocation. |
+
+### PushLifecycleStatus
+
+PushLifecycleStatus
+
+| Field | Wire name | Type | Required | Description |
+|-------|-----------|------|----------|-------------|
+| `configuredProviders` | `configuredProviders` | `UInt32` | yes | Number of OS providers configured in memory. |
+| `lastError` | `lastError` | `String` | no | Fixed safe error category; no token, URL, bearer or driver detail. |
+| `pendingRevocations` | `pendingRevocations` | `UInt32` | yes | Unresolved revoke intents, including writes with an unknown result. |
+| `registeredProviders` | `registeredProviders` | `UInt32` | yes | Providers confirmed for the current session, not vendor delivery. |
+| `state` | `state` | `String` | yes | disabled, waitingForSession, waitingForToken, pending or registered. |
+
 ## Sync
 
 Core-owned sync DTOs derived from Rust JsonSchema.

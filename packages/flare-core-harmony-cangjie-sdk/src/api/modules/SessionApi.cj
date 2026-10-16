@@ -21,4 +21,9 @@ public interface SessionApi {
     func currentUserId(): String
     func isConnected(): BooleanResponse
     func sessionActive(): BooleanResponse
+    func updatePushToken(request: PushTokenInput): PushLifecycleStatus
+    func clearPushToken(request: ClearPushTokenRequest): PushLifecycleStatus
+    func setPushPermission(request: SetPushPermissionRequest): PushLifecycleStatus
+    func reconcilePush(): PushLifecycleStatus
+    func pushStatus(): PushLifecycleStatus
 }

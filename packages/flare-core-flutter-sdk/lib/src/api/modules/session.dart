@@ -36,4 +36,14 @@ abstract interface class SessionApi {
   Future<bool> isConnected();
   /// sessionActive maps to `flare_sdk_session_active` via `ffi-symbol`. Operation: `sdk.session_active`.
   Future<bool> sessionActive();
+  /// updatePushToken maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `sdk.update_push_token`.
+  Future<PushLifecycleStatus> updatePushToken(PushTokenInput request);
+  /// clearPushToken maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `sdk.clear_push_token`.
+  Future<PushLifecycleStatus> clearPushToken(ClearPushTokenRequest request);
+  /// setPushPermission maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `sdk.set_push_permission`.
+  Future<PushLifecycleStatus> setPushPermission(SetPushPermissionRequest request);
+  /// reconcilePush maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `sdk.reconcile_push`.
+  Future<PushLifecycleStatus> reconcilePush();
+  /// pushStatus maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `sdk.push_status`.
+  Future<PushLifecycleStatus> pushStatus();
 }

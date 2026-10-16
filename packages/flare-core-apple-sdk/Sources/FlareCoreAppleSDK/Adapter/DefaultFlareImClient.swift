@@ -86,6 +86,31 @@ public final class DefaultFlareImClient: FlareImClientProtocol {
         let raw = try await invokeMap(bridge, descriptor: NativeCallMap.sdkHeartbeatEffectiveInterval, request: nil)
         return try heartbeatEffectiveIntervalResponseFromJson(raw)
     }
+    public func updatePushToken(_ request: PushTokenInput) async throws -> PushLifecycleStatus {
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.sdkUpdatePushToken, request: ["provider": wrapSendable(request.provider), "platform": wrapSendable(request.platform), "token": wrapSendable(request.token)])
+        return try JSONDecoder().decode(PushLifecycleStatus.self, from: JSONSerialization.data(withJSONObject: plainMap(raw)))
+    }
+
+    public func clearPushToken(_ request: ClearPushTokenRequest) async throws -> PushLifecycleStatus {
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.sdkClearPushToken, request: ["provider": wrapSendable(request.provider)])
+        return try JSONDecoder().decode(PushLifecycleStatus.self, from: JSONSerialization.data(withJSONObject: plainMap(raw)))
+    }
+
+    public func setPushPermission(_ request: SetPushPermissionRequest) async throws -> PushLifecycleStatus {
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.sdkSetPushPermission, request: ["allowed": wrapSendable(request.allowed)])
+        return try JSONDecoder().decode(PushLifecycleStatus.self, from: JSONSerialization.data(withJSONObject: plainMap(raw)))
+    }
+
+    public func reconcilePush() async throws -> PushLifecycleStatus {
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.sdkReconcilePush, request: nil)
+        return try JSONDecoder().decode(PushLifecycleStatus.self, from: JSONSerialization.data(withJSONObject: plainMap(raw)))
+    }
+
+    public func pushStatus() async throws -> PushLifecycleStatus {
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.sdkPushStatus, request: nil)
+        return try JSONDecoder().decode(PushLifecycleStatus.self, from: JSONSerialization.data(withJSONObject: plainMap(raw)))
+    }
+
     public func logout() async throws -> Void {
         try await invokeVoid(bridge, descriptor: NativeCallMap.sdkLogout, request: nil)
         (events as? DefaultEventsApi)?.emit(LifecycleEvent(name: .loggedOut, operation: "sdk.logout"))

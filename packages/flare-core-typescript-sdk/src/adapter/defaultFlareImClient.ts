@@ -14,10 +14,10 @@ import type { ViewsApi } from '../api/modules/views';
 import type { EventsApi } from '../api/modules/events';
 import type { DiagnosticsApi } from '../api/modules/diagnostics';
 import type { CreateClientRequest, CreateClientResponse, CurrentUserIdResponse, LoginRequest, SdkConfig, UpdateAccessTokenRequest } from '../api/types';
-import type { HeartbeatEffectiveIntervalResponse, SetHeartbeatAppStateRequest, SetHeartbeatNatTimeoutRequest } from '../model';
+import type { ClearPushTokenRequest, HeartbeatEffectiveIntervalResponse, PushLifecycleStatus, PushTokenInput, SetHeartbeatAppStateRequest, SetHeartbeatNatTimeoutRequest, SetPushPermissionRequest } from '../model';
 import { LifecycleEventName } from '../model';
 import { emitLifecycleEvent, invokeBool, invokeMap, invokeVoid, sdkErrorPayloadFromError, userIdFromRequest } from './codec/nativeInvoke';
-import { setHeartbeatAppStateRequestToMap, setHeartbeatNatTimeoutRequestToMap } from './codec/wireCodec';
+import { clearPushTokenRequestToMap, pushTokenInputToMap, setHeartbeatAppStateRequestToMap, setHeartbeatNatTimeoutRequestToMap, setPushPermissionRequestToMap } from './codec/wireCodec';
 import { DefaultEventsApi } from './module/DefaultEventsApi';
 import { DefaultConnectionApi } from './module/DefaultConnectionApi';
 import { DefaultConversationsApi } from './module/DefaultConversationsApi';
@@ -138,5 +138,20 @@ export class DefaultFlareImClient implements FlareImClient {
   }
   async sessionActive(): Promise<boolean> {
     return await invokeBool(this.bridge, NativeCallMap.sdkSessionActive);
+  }
+  async updatePushToken(request: PushTokenInput): Promise<PushLifecycleStatus> {
+    return await invokeMap(this.bridge, NativeCallMap.sdkUpdatePushToken, pushTokenInputToMap(request)) as unknown as PushLifecycleStatus;
+  }
+  async clearPushToken(request: ClearPushTokenRequest): Promise<PushLifecycleStatus> {
+    return await invokeMap(this.bridge, NativeCallMap.sdkClearPushToken, clearPushTokenRequestToMap(request)) as unknown as PushLifecycleStatus;
+  }
+  async setPushPermission(request: SetPushPermissionRequest): Promise<PushLifecycleStatus> {
+    return await invokeMap(this.bridge, NativeCallMap.sdkSetPushPermission, setPushPermissionRequestToMap(request)) as unknown as PushLifecycleStatus;
+  }
+  async reconcilePush(): Promise<PushLifecycleStatus> {
+    return await invokeMap(this.bridge, NativeCallMap.sdkReconcilePush) as unknown as PushLifecycleStatus;
+  }
+  async pushStatus(): Promise<PushLifecycleStatus> {
+    return await invokeMap(this.bridge, NativeCallMap.sdkPushStatus) as unknown as PushLifecycleStatus;
   }
 }

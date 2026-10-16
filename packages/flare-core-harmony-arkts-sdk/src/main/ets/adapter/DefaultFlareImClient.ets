@@ -24,6 +24,8 @@ import { DefaultCapabilitiesApi } from './DefaultCapabilitiesApi';
 import { DefaultDiagnosticsApi } from './DefaultDiagnosticsApi';
 import { DefaultMessageBuilderApi } from './DefaultMessageBuilderApi';
 
+import { PushLifecycleStatus, PushTokenInput, ClearPushTokenRequest, SetPushPermissionRequest } from '../model';
+
 export class DefaultFlareImClient implements FlareImClient {
   readonly connection: ConnectionApi;
   readonly conversations: ConversationsApi;
@@ -107,6 +109,31 @@ export class DefaultFlareImClient implements FlareImClient {
   async heartbeatEffectiveInterval(): Promise<HeartbeatEffectiveIntervalResponse> {
     return await this.bridge.invoke<HeartbeatEffectiveIntervalResponse>(NativeCallMap.sdkHeartbeatEffectiveInterval);
   }
+  async updatePushToken(request: PushTokenInput): Promise<PushLifecycleStatus> {
+    const raw = await invokeMap(this.bridge, NativeCallMap.sdkUpdatePushToken, { provider: request.provider, platform: request.platform, token: request.token });
+    return { configuredProviders: raw['configuredProviders'] as number, pendingRevocations: raw['pendingRevocations'] as number, registeredProviders: raw['registeredProviders'] as number, state: raw['state'] as string, lastError: raw['lastError'] as string | undefined };
+  }
+
+  async clearPushToken(request: ClearPushTokenRequest): Promise<PushLifecycleStatus> {
+    const raw = await invokeMap(this.bridge, NativeCallMap.sdkClearPushToken, { provider: request.provider });
+    return { configuredProviders: raw['configuredProviders'] as number, pendingRevocations: raw['pendingRevocations'] as number, registeredProviders: raw['registeredProviders'] as number, state: raw['state'] as string, lastError: raw['lastError'] as string | undefined };
+  }
+
+  async setPushPermission(request: SetPushPermissionRequest): Promise<PushLifecycleStatus> {
+    const raw = await invokeMap(this.bridge, NativeCallMap.sdkSetPushPermission, { allowed: request.allowed });
+    return { configuredProviders: raw['configuredProviders'] as number, pendingRevocations: raw['pendingRevocations'] as number, registeredProviders: raw['registeredProviders'] as number, state: raw['state'] as string, lastError: raw['lastError'] as string | undefined };
+  }
+
+  async reconcilePush(): Promise<PushLifecycleStatus> {
+    const raw = await invokeMap(this.bridge, NativeCallMap.sdkReconcilePush);
+    return { configuredProviders: raw['configuredProviders'] as number, pendingRevocations: raw['pendingRevocations'] as number, registeredProviders: raw['registeredProviders'] as number, state: raw['state'] as string, lastError: raw['lastError'] as string | undefined };
+  }
+
+  async pushStatus(): Promise<PushLifecycleStatus> {
+    const raw = await invokeMap(this.bridge, NativeCallMap.sdkPushStatus);
+    return { configuredProviders: raw['configuredProviders'] as number, pendingRevocations: raw['pendingRevocations'] as number, registeredProviders: raw['registeredProviders'] as number, state: raw['state'] as string, lastError: raw['lastError'] as string | undefined };
+  }
+
   async logout(): Promise<void> {
     await invokeVoid(this.bridge, NativeCallMap.sdkLogout);
     emitLifecycleEvent(this.events as DefaultEventsApi, LifecycleEventName.LoggedOut, "sdk.logout");

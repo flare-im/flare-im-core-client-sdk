@@ -3,7 +3,7 @@
  *
  * Module API: `session` — SDK lifecycle, authenticated session and process-level utilities.
  */
-import type { HeartbeatEffectiveIntervalResponse, SetHeartbeatAppStateRequest, SetHeartbeatNatTimeoutRequest } from '../../model';
+import type { ClearPushTokenRequest, HeartbeatEffectiveIntervalResponse, PushLifecycleStatus, PushTokenInput, SetHeartbeatAppStateRequest, SetHeartbeatNatTimeoutRequest, SetPushPermissionRequest } from '../../model';
 import type { CreateClientRequest, CreateClientResponse, CurrentUserIdResponse, LoginRequest, SdkConfig, UpdateAccessTokenRequest } from '../types';
 
 /** SDK lifecycle, authenticated session and process-level utilities. */
@@ -40,4 +40,14 @@ export interface SessionApi {
   isConnected(): Promise<boolean>;
   /** sessionActive maps to `flare_sdk_session_active` via `ffi-symbol`. Operation: `sdk.session_active`. */
   sessionActive(): Promise<boolean>;
+  /** updatePushToken maps to `flare_sdk_invoke_json`. Operation: `sdk.update_push_token`. */
+  updatePushToken(request: PushTokenInput): Promise<PushLifecycleStatus>;
+  /** clearPushToken maps to `flare_sdk_invoke_json`. Operation: `sdk.clear_push_token`. */
+  clearPushToken(request: ClearPushTokenRequest): Promise<PushLifecycleStatus>;
+  /** setPushPermission maps to `flare_sdk_invoke_json`. Operation: `sdk.set_push_permission`. */
+  setPushPermission(request: SetPushPermissionRequest): Promise<PushLifecycleStatus>;
+  /** reconcilePush maps to `flare_sdk_invoke_json`. Operation: `sdk.reconcile_push`. */
+  reconcilePush(): Promise<PushLifecycleStatus>;
+  /** pushStatus maps to `flare_sdk_invoke_json`. Operation: `sdk.push_status`. */
+  pushStatus(): Promise<PushLifecycleStatus>;
 }

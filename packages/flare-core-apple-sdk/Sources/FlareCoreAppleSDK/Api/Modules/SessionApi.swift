@@ -19,4 +19,9 @@ public protocol SessionApiProtocol: AnyObject {
     func currentUserId() async throws -> [String: AnySendable]
     func isConnected() async throws -> Bool
     func sessionActive() async throws -> Bool
+    func updatePushToken(_ request: PushTokenInput) async throws -> PushLifecycleStatus
+    func clearPushToken(_ request: ClearPushTokenRequest) async throws -> PushLifecycleStatus
+    func setPushPermission(_ request: SetPushPermissionRequest) async throws -> PushLifecycleStatus
+    func reconcilePush() async throws -> PushLifecycleStatus
+    func pushStatus() async throws -> PushLifecycleStatus
 }

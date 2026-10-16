@@ -241,6 +241,71 @@ abstract final class NativeCallMap {
       returnMode: "sync",
       handlePolicy: "client-handle");
 
+  /// updatePushToken maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `sdk.update_push_token`.
+  static const sdkUpdatePushToken = NativeCallDescriptor(
+      module: "session",
+      method: "updatePushToken",
+      operation: "sdk.update_push_token",
+      transport: "contract-invoke-json",
+      cApi: "flare_sdk_invoke_json",
+      requestEncoding: "json",
+      responseEncoding: "json-object",
+      returnMode: "callback",
+      handlePolicy: "client-handle",
+      callback: "FlareResultCallback");
+
+  /// clearPushToken maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `sdk.clear_push_token`.
+  static const sdkClearPushToken = NativeCallDescriptor(
+      module: "session",
+      method: "clearPushToken",
+      operation: "sdk.clear_push_token",
+      transport: "contract-invoke-json",
+      cApi: "flare_sdk_invoke_json",
+      requestEncoding: "json",
+      responseEncoding: "json-object",
+      returnMode: "callback",
+      handlePolicy: "client-handle",
+      callback: "FlareResultCallback");
+
+  /// setPushPermission maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `sdk.set_push_permission`.
+  static const sdkSetPushPermission = NativeCallDescriptor(
+      module: "session",
+      method: "setPushPermission",
+      operation: "sdk.set_push_permission",
+      transport: "contract-invoke-json",
+      cApi: "flare_sdk_invoke_json",
+      requestEncoding: "json",
+      responseEncoding: "json-object",
+      returnMode: "callback",
+      handlePolicy: "client-handle",
+      callback: "FlareResultCallback");
+
+  /// reconcilePush maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `sdk.reconcile_push`.
+  static const sdkReconcilePush = NativeCallDescriptor(
+      module: "session",
+      method: "reconcilePush",
+      operation: "sdk.reconcile_push",
+      transport: "contract-invoke-json",
+      cApi: "flare_sdk_invoke_json",
+      requestEncoding: "json",
+      responseEncoding: "json-object",
+      returnMode: "callback",
+      handlePolicy: "client-handle",
+      callback: "FlareResultCallback");
+
+  /// pushStatus maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `sdk.push_status`.
+  static const sdkPushStatus = NativeCallDescriptor(
+      module: "session",
+      method: "pushStatus",
+      operation: "sdk.push_status",
+      transport: "contract-invoke-json",
+      cApi: "flare_sdk_invoke_json",
+      requestEncoding: "json",
+      responseEncoding: "json-object",
+      returnMode: "callback",
+      handlePolicy: "client-handle",
+      callback: "FlareResultCallback");
+
   /// getConnectionState maps to `flare_sdk_state` via `ffi-symbol`. Operation: `connection.get_state`.
   static const connectionGetState = NativeCallDescriptor(
       module: "connection",
