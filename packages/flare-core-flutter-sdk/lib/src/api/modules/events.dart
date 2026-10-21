@@ -77,6 +77,8 @@ abstract interface class EventsApi {
   EventSubscription onMessagePinned(EventCallback<MessageMutationEvent> listener);
   /// A message was unpinned.
   EventSubscription onMessageUnpinned(EventCallback<MessageMutationEvent> listener);
+  /// Plugin card state stored on a local message changed; re-present that message with its messageId.
+  EventSubscription onMessagePluginStateChanged(EventCallback<MessageMutationEvent> listener);
   /// A core observable view snapshot changed.
   EventSubscription onViewUpdated(EventCallback<ViewUpdate> listener);
   /// A new conversation was created or discovered.

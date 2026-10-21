@@ -32,4 +32,6 @@ abstract class MessageEventListener {
   void onMessagePinned(MessageMutationEvent event) {}
   /// A message was unpinned.
   void onMessageUnpinned(MessageMutationEvent event) {}
+  /// Plugin card state stored on a local message changed; re-present that message with its messageId.
+  void onMessagePluginStateChanged(MessageMutationEvent event) {}
 }

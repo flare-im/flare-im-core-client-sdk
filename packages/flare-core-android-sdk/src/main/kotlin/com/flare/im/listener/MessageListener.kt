@@ -52,4 +52,6 @@ interface MessageEventListener {
     fun onMessagePinned(event: MessageMutationEvent) {}
     /** A message was unpinned. */
     fun onMessageUnpinned(event: MessageMutationEvent) {}
+    /** Plugin card state stored on a local message changed; re-present that message with its messageId. */
+    fun onMessagePluginStateChanged(event: MessageMutationEvent) {}
 }

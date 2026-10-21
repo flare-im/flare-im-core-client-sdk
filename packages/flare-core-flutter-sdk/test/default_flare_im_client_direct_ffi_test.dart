@@ -556,6 +556,30 @@ void main() {
       );
     });
 
+    test('plugin card state change is delivered as a message update', () async {
+      final bridge = _RecordingBridge();
+      final client = FlareCoreSdk.createClientWithBridge(bridge);
+      final changed = <MessageMutationEvent>[];
+      final edited = <MessageMutationEvent>[];
+      client.events.onMessagePluginStateChanged(changed.add);
+      client.events.onMessageEdited(edited.add);
+
+      await client.events.subscribeEvents(const {});
+      bridge.emitEvent(EventCode.messagePluginStateChanged, {
+        'type': 'message',
+        'event': 'plugin_state_changed',
+        'conversationId': 'c1',
+        'messageId': 'm1',
+        'version': 3,
+      });
+
+      expect(changed, hasLength(1));
+      expect(changed.single.name, MessageEventName.pluginStateChanged);
+      expect(changed.single.conversationId, 'c1');
+      expect(changed.single.messageId, 'm1');
+      expect(edited, isEmpty);
+    });
+
     test('read receipt event rejects malformed payloads', () async {
       final bridge = _RecordingBridge();
       final client = FlareCoreSdk.createClientWithBridge(bridge);

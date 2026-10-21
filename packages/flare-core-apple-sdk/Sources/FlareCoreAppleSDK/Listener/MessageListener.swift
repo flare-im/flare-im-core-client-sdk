@@ -31,6 +31,8 @@ public protocol MessageEventListener: AnyObject {
     func onMessagePinned(_ event: MessageMutationEvent)
     /// A message was unpinned.
     func onMessageUnpinned(_ event: MessageMutationEvent)
+    /// Plugin card state stored on a local message changed; re-present that message with its messageId.
+    func onMessagePluginStateChanged(_ event: MessageMutationEvent)
 }
 
 public extension MessageEventListener {
@@ -48,4 +50,5 @@ public extension MessageEventListener {
     func onMessageBurned(_ event: MessageMutationEvent) {}
     func onMessagePinned(_ event: MessageMutationEvent) {}
     func onMessageUnpinned(_ event: MessageMutationEvent) {}
+    func onMessagePluginStateChanged(_ event: MessageMutationEvent) {}
 }

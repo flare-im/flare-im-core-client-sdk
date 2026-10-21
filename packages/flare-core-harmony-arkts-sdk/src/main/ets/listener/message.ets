@@ -31,6 +31,8 @@ export interface MessageEventListener {
   onMessagePinned?(event: MessageMutationEvent): void;
   /** A message was unpinned. */
   onMessageUnpinned?(event: MessageMutationEvent): void;
+  /** Plugin card state stored on a local message changed; re-present that message with its messageId. */
+  onMessagePluginStateChanged?(event: MessageMutationEvent): void;
 }
 
 /** Direct callback for `messages.sendMessage(request, callback)` progress and terminal states.

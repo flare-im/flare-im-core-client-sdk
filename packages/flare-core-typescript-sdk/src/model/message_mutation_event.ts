@@ -1,7 +1,7 @@
 /** GENERATED. Do not edit by hand. */
 import type { MessageEventName } from './message_event_name';
 
-/** Message mutation notification for recall, edit, delete, pin, mark and burn events. */
+/** Message mutation notification for recall, edit, delete, pin, mark, burn and plugin card state events. */
 export interface MessageMutationEvent {
   /** wire: `name`. Mutation event name. */
   name: MessageEventName;

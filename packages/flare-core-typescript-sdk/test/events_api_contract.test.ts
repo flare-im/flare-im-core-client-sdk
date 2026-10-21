@@ -89,6 +89,26 @@ describe("DefaultEventsApi direct event callbacks", () => {
     expect(edited).toEqual([MessageEventName.Edited]);
   });
 
+  it("forwards plugin card state changes as a message update with its version", () => {
+    const events = new DefaultEventsApi(testBridge());
+    const changed: Array<Record<string, unknown>> = [];
+    const edited: string[] = [];
+
+    events.onMessagePluginStateChanged((event) => changed.push(event as unknown as Record<string, unknown>));
+    events.onMessageEdited((event) => edited.push(event.name));
+
+    events.emitNativeEvent(2022, { conversationId: "c1", messageId: "m1", version: 3 });
+
+    expect(changed).toHaveLength(1);
+    expect(changed[0]).toMatchObject({
+      name: MessageEventName.PluginStateChanged,
+      conversationId: "c1",
+      messageId: "m1",
+      version: 3,
+    });
+    expect(edited).toEqual([]);
+  });
+
   it("maps core connection state strings to strict event names", () => {
     const events = new DefaultEventsApi(testBridge());
     const names: string[] = [];

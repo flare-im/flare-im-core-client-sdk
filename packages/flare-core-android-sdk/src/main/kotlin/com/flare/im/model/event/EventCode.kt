@@ -31,6 +31,7 @@ object EventCode {
     const val MESSAGE_PRESENCE_CHANGED: Int = 2019
     const val MESSAGE_CUSTOM: Int = 2020
     const val MESSAGE_TYPING_AGGREGATE: Int = 2021
+    const val MESSAGE_PLUGIN_STATE_CHANGED: Int = 2022
     const val CONVERSATION_SYNCED: Int = 3001
     const val CONVERSATION_CREATED: Int = 3002
     const val CONVERSATION_UPDATED: Int = 3003

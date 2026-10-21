@@ -39,6 +39,7 @@ public protocol EventsApiProtocol: AnyObject {
     func onMessageBurned(_ listener: @escaping EventCallback<MessageMutationEvent>) -> any EventSubscription
     func onMessagePinned(_ listener: @escaping EventCallback<MessageMutationEvent>) -> any EventSubscription
     func onMessageUnpinned(_ listener: @escaping EventCallback<MessageMutationEvent>) -> any EventSubscription
+    func onMessagePluginStateChanged(_ listener: @escaping EventCallback<MessageMutationEvent>) -> any EventSubscription
     func onViewUpdated(_ listener: @escaping EventCallback<ViewUpdate>) -> any EventSubscription
     func onNewConversation(_ listener: @escaping EventCallback<ConversationEvent>) -> any EventSubscription
     func onConversationChanged(_ listener: @escaping EventCallback<ConversationEvent>) -> any EventSubscription

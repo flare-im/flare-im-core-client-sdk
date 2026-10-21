@@ -250,7 +250,8 @@
         "marked",
         "unmarked",
         "presence_changed",
-        "custom"
+        "custom",
+        "plugin_state_changed"
       ],
       "type": "message"
     },
@@ -535,6 +536,13 @@
       "eventName": "unpinned",
       "kind": "message",
       "name": "onMessageUnpinned",
+      "payload": "MessageMutationEvent"
+    },
+    {
+      "description": "Plugin card state stored on a local message changed; re-present that message with its messageId.",
+      "eventName": "plugin_state_changed",
+      "kind": "message",
+      "name": "onMessagePluginStateChanged",
       "payload": "MessageMutationEvent"
     },
     {
@@ -4636,7 +4644,8 @@
             "retention_purged",
             "presence_changed",
             "call_signal",
-            "custom"
+            "custom",
+            "plugin_state_changed"
           ]
         },
         {
@@ -4922,7 +4931,7 @@
           "name": "MessageSendFailedEvent"
         },
         {
-          "description": "Message mutation notification for recall, edit, delete, pin, mark and burn events.",
+          "description": "Message mutation notification for recall, edit, delete, pin, mark, burn and plugin card state events.",
           "fields": [
             {
               "description": "Mutation event name.",
@@ -5327,7 +5336,7 @@
         {
           "fields": [
             {
-              "description": "Typed UI evaluation envelope defined by the shared UI protocol.",
+              "description": "Typed UI evaluation envelope defined by the shared UI protocol. presentPluginMessage and invokePluginAction accept an optional messageId (server id or clientMsgId) of the message the card belongs to: present overlays the plugin state stored on that message, invoke stores a successful operation's data.messageState on it.",
               "name": "payload",
               "required": true,
               "type": "JsonObject",
@@ -7961,6 +7970,7 @@
         },
         {
           "cApi": "flare_capability_dispatch_json",
+          "description": "With messageId, a successful operation result carrying data.messageState is validated and stored on that local message by version (older versions are ignored), then onMessagePluginStateChanged fires. Calls without messageId ignore messageState; storage failures never change the result.",
           "dispatchOp": "plugin_ui_invoke",
           "name": "invokePluginAction",
           "nativeBinding": {
@@ -7979,6 +7989,7 @@
         },
         {
           "cApi": "flare_capability_dispatch_json",
+          "description": "Returns the resolved plugin view (available, title, fields, actions) plus stateVersion (0 when the message has no stored state) and, only when available is true, data: the payload with the state stored on messageId overlaid at top level (null values remove keys).",
           "dispatchOp": "plugin_ui_present",
           "name": "presentPluginMessage",
           "nativeBinding": {

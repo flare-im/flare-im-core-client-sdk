@@ -1142,7 +1142,7 @@ Typed SDK event and notification models for cross-platform subscriptions.
 
 - `ConnectionEventName`: Connection event notification name. Values: `connecting`, `connected`, `ready`, `disconnected`, `reconnecting`, `reconnect_failed`, `state_changed`, `sync_state_changed`, `server_error`, `kicked_off`, `token_expired`
 
-- `MessageEventName`: Message event notification name. Values: `received`, `received_batch`, `send_ack`, `send_failed`, `capability`, `recalled`, `typing`, `typing_aggregate`, `edited`, `reaction_changed`, `deleted`, `read_receipt`, `burn_scheduled`, `burned`, `hard_deleted`, `pinned`, `unpinned`, `marked`, `unmarked`, `retention_scheduled`, `retention_expired`, `retention_purged`, `presence_changed`, `call_signal`, `custom`
+- `MessageEventName`: Message event notification name. Values: `received`, `received_batch`, `send_ack`, `send_failed`, `capability`, `recalled`, `typing`, `typing_aggregate`, `edited`, `reaction_changed`, `deleted`, `read_receipt`, `burn_scheduled`, `burned`, `hard_deleted`, `pinned`, `unpinned`, `marked`, `unmarked`, `retention_scheduled`, `retention_expired`, `retention_purged`, `presence_changed`, `call_signal`, `custom`, `plugin_state_changed`
 
 - `ConversationEventName`: Conversation event notification name. Values: `synced`, `created`, `updated`, `unread_count_changed`, `deleted`
 
@@ -1237,7 +1237,7 @@ Message send failure notification.
 
 ### MessageMutationEvent
 
-Message mutation notification for recall, edit, delete, pin, mark and burn events.
+Message mutation notification for recall, edit, delete, pin, mark, burn and plugin card state events.
 
 | Field | Wire name | Type | Required | Description |
 |-------|-----------|------|----------|-------------|
@@ -1363,7 +1363,7 @@ Data-only plugin UI evaluation, authoritative types and bounds live in flare-plu
 
 | Field | Wire name | Type | Required | Description |
 |-------|-----------|------|----------|-------------|
-| `payload` | `payload` | `JsonObject` | yes | Typed UI evaluation envelope defined by the shared UI protocol. |
+| `payload` | `payload` | `JsonObject` | yes | Typed UI evaluation envelope defined by the shared UI protocol. presentPluginMessage and invokePluginAction accept an optional messageId (server id or clientMsgId) of the message the card belongs to: present overlays the plugin state stored on that message, invoke stores a successful operation's data.messageState on it. |
 
 ## PluginCommand
 

@@ -1,7 +1,7 @@
 // GENERATED. Do not edit by hand.
 import 'message_event_name.dart';
 
-/// Message mutation notification for recall, edit, delete, pin, mark and burn events.
+/// Message mutation notification for recall, edit, delete, pin, mark, burn and plugin card state events.
 final class MessageMutationEvent {
   /// wire: `name`. Mutation event name.
   final MessageEventName name;

@@ -2,7 +2,7 @@ package flare_core_harmony_cangjie_sdk.model.event.message
 
 // GENERATED. Do not edit by hand.
 // Collection/map payloads are represented as raw JSON strings at the bridge boundary.
-// Message mutation notification for recall, edit, delete, pin, mark and burn events.
+// Message mutation notification for recall, edit, delete, pin, mark, burn and plugin card state events.
 public class MessageMutationEvent {
     // wire: `name`. Mutation event name.
     public let name: MessageEventName

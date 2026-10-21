@@ -185,6 +185,10 @@ export class DefaultEventsApi implements EventsApi {
     return this.registerTyped(listener);
   }
 
+  onMessagePluginStateChanged(listener: EventCallback<MessageMutationEvent>): EventSubscription {
+    return this.registerTyped(listener);
+  }
+
   onNewConversation(listener: EventCallback<ConversationEvent>): EventSubscription {
     return this.registerTyped(listener);
   }

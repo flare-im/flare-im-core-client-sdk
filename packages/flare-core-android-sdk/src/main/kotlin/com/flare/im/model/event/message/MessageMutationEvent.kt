@@ -1,7 +1,7 @@
 package com.flare.im.model.event.message
 
 /** GENERATED. Do not edit by hand. */
-/** Message mutation notification for recall, edit, delete, pin, mark and burn events. */
+/** Message mutation notification for recall, edit, delete, pin, mark, burn and plugin card state events. */
 data class MessageMutationEvent(
     /** wire: `name`. Mutation event name. */
     val name: MessageEventName,

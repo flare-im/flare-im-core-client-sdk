@@ -40,6 +40,7 @@ export interface EventsApi {
   onMessageBurned(listener: EventCallback<MessageMutationEvent>): EventSubscription;
   onMessagePinned(listener: EventCallback<MessageMutationEvent>): EventSubscription;
   onMessageUnpinned(listener: EventCallback<MessageMutationEvent>): EventSubscription;
+  onMessagePluginStateChanged(listener: EventCallback<MessageMutationEvent>): EventSubscription;
   onViewUpdated(listener: EventCallback<ViewUpdate>): EventSubscription;
   onNewConversation(listener: EventCallback<ConversationEvent>): EventSubscription;
   onConversationChanged(listener: EventCallback<ConversationEvent>): EventSubscription;

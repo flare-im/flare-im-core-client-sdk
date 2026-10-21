@@ -186,6 +186,11 @@ final class DefaultEventsApi implements EventsApi {
           MessageEventName.unmarked,
           eventPayload,
         ));
+      case EventCode.messagePluginStateChanged:
+        _emit(messageMutationFromPayload(
+          MessageEventName.pluginStateChanged,
+          eventPayload,
+        ));
       case EventCode.messageRetentionScheduled:
         _emit(messageMutationFromPayload(
           MessageEventName.retentionScheduled,
@@ -380,6 +385,14 @@ final class DefaultEventsApi implements EventsApi {
     EventCallback<MessageMutationEvent> listener,
   ) =>
       _addWhere(listener, (event) => event.name == MessageEventName.unpinned);
+  @override
+  EventSubscription onMessagePluginStateChanged(
+    EventCallback<MessageMutationEvent> listener,
+  ) =>
+      _addWhere(
+        listener,
+        (event) => event.name == MessageEventName.pluginStateChanged,
+      );
   @override
   EventSubscription onViewUpdated(EventCallback<ViewUpdate> listener) =>
       _addTyped(listener);
@@ -640,6 +653,8 @@ final class _ListenerHandler {
         listener.onMessagePinned(event);
       case MessageEventName.unpinned:
         listener.onMessageUnpinned(event);
+      case MessageEventName.pluginStateChanged:
+        listener.onMessagePluginStateChanged(event);
       case MessageEventName.received:
       case MessageEventName.receivedBatch:
       case MessageEventName.sendAck:

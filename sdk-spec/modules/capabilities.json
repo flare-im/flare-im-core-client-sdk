@@ -55,6 +55,7 @@
     },
     {
       "name": "invokePluginAction",
+      "description": "With messageId, a successful operation result carrying data.messageState is validated and stored on that local message by version (older versions are ignored), then onMessagePluginStateChanged fires. Calls without messageId ignore messageState; storage failures never change the result.",
       "operation": "capability.plugin_ui_invoke",
       "transport": "capability-dispatch-json",
       "cApi": "flare_capability_dispatch_json",
@@ -65,6 +66,7 @@
     },
     {
       "name": "presentPluginMessage",
+      "description": "Returns the resolved plugin view (available, title, fields, actions) plus stateVersion (0 when the message has no stored state) and, only when available is true, data: the payload with the state stored on messageId overlaid at top level (null values remove keys).",
       "operation": "capability.plugin_ui_present",
       "transport": "capability-dispatch-json",
       "cApi": "flare_capability_dispatch_json",

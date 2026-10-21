@@ -43,6 +43,7 @@ Method return values remain the primary success/failure contract for commands su
 | `onMessageBurned` | `message` | `burned` | `MessageMutationEvent` | A burn-after-read message was burned. |
 | `onMessagePinned` | `message` | `pinned` | `MessageMutationEvent` | A message was pinned. |
 | `onMessageUnpinned` | `message` | `unpinned` | `MessageMutationEvent` | A message was unpinned. |
+| `onMessagePluginStateChanged` | `message` | `plugin_state_changed` | `MessageMutationEvent` | Plugin card state stored on a local message changed; re-present that message with its messageId. |
 | `onViewUpdated` | `view` | `updated` | `ViewUpdate` | A core observable view snapshot changed. |
 | `onNewConversation` | `conversation` | `created` | `ConversationEvent` | A new conversation was created or discovered. |
 | `onConversationChanged` | `conversation` | `updated` | `ConversationEvent` | Important conversation fields changed. |
@@ -66,7 +67,7 @@ Method return values remain the primary success/failure contract for commands su
 | `extension` | `event` |
 | `lifecycle` | `initializing`, `initialized`, `init_failed`, `login_succeeded`, `login_failed`, `logged_out`, `disposed` |
 | `media` | `cache_changed`, `upload_progress`, `download_progress` |
-| `message` | `burn_scheduled`, `burned`, `hard_deleted`, `call_signal`, `received`, `received_batch`, `send_ack`, `send_failed`, `recalled`, `typing`, `capability`, `edited`, `reaction_changed`, `deleted`, `read_receipt`, `typing_aggregate`, `retention_scheduled`, `retention_expired`, `retention_purged`, `pinned`, `unpinned`, `marked`, `unmarked`, `presence_changed`, `custom` |
+| `message` | `burn_scheduled`, `burned`, `hard_deleted`, `call_signal`, `received`, `received_batch`, `send_ack`, `send_failed`, `recalled`, `typing`, `capability`, `edited`, `reaction_changed`, `deleted`, `read_receipt`, `typing_aggregate`, `retention_scheduled`, `retention_expired`, `retention_purged`, `pinned`, `unpinned`, `marked`, `unmarked`, `presence_changed`, `custom`, `plugin_state_changed` |
 | `notification` | `received` |
 | `presence` | `changed` |
 | `sync` | `started`, `finished`, `failed`, `progress`, `task_completed`, `state_changed`, `resync_needed`, `readiness` |

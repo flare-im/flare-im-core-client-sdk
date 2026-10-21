@@ -67,6 +67,7 @@ interface EventsApi {
     fun onMessageBurned(listener: EventCallback<MessageMutationEvent>): EventSubscription
     fun onMessagePinned(listener: EventCallback<MessageMutationEvent>): EventSubscription
     fun onMessageUnpinned(listener: EventCallback<MessageMutationEvent>): EventSubscription
+    fun onMessagePluginStateChanged(listener: EventCallback<MessageMutationEvent>): EventSubscription
     fun onViewUpdated(listener: EventCallback<ViewUpdate>): EventSubscription
     fun onNewConversation(listener: EventCallback<ConversationEvent>): EventSubscription
     fun onConversationChanged(listener: EventCallback<ConversationEvent>): EventSubscription

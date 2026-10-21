@@ -89,7 +89,8 @@
         "retention_purged",
         "presence_changed",
         "call_signal",
-        "custom"
+        "custom",
+        "plugin_state_changed"
       ]
     },
     {
@@ -375,7 +376,7 @@
     },
     {
       "name": "MessageMutationEvent",
-      "description": "Message mutation notification for recall, edit, delete, pin, mark and burn events.",
+      "description": "Message mutation notification for recall, edit, delete, pin, mark, burn and plugin card state events.",
       "fields": [
         {
           "name": "name",

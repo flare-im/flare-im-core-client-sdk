@@ -33,6 +33,8 @@ public interface MessageEventListener {
     func onMessagePinned(event: MessageMutationEvent): Unit
     // A message was unpinned.
     func onMessageUnpinned(event: MessageMutationEvent): Unit
+    // Plugin card state stored on a local message changed; re-present that message with its messageId.
+    func onMessagePluginStateChanged(event: MessageMutationEvent): Unit
 }
 
 // Direct callback for `messages.sendMessage(request, callback)` progress and terminal states.

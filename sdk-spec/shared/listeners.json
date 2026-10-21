@@ -211,6 +211,13 @@
       "description": "A message was unpinned."
     },
     {
+      "name": "onMessagePluginStateChanged",
+      "kind": "message",
+      "eventName": "plugin_state_changed",
+      "payload": "MessageMutationEvent",
+      "description": "Plugin card state stored on a local message changed; re-present that message with its messageId."
+    },
+    {
       "name": "onViewUpdated",
       "kind": "view",
       "eventName": "updated",

@@ -81,6 +81,8 @@ export interface EventsApi {
   onMessagePinned(listener: EventCallback<MessageMutationEvent>): EventSubscription;
   /** A message was unpinned. */
   onMessageUnpinned(listener: EventCallback<MessageMutationEvent>): EventSubscription;
+  /** Plugin card state stored on a local message changed; re-present that message with its messageId. */
+  onMessagePluginStateChanged(listener: EventCallback<MessageMutationEvent>): EventSubscription;
   /** A core observable view snapshot changed. */
   onViewUpdated(listener: EventCallback<ViewUpdate>): EventSubscription;
   /** A new conversation was created or discovered. */

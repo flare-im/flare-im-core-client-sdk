@@ -28,4 +28,5 @@ public enum MessageEventName {
     | PresenceChanged
     | CallSignal
     | Custom
+    | PluginStateChanged
 }

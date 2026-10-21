@@ -28,4 +28,5 @@ public enum MessageEventName: String, Codable, Sendable {
     case presenceChanged = "presence_changed"
     case callSignal = "call_signal"
     case custom = "custom"
+    case pluginStateChanged = "plugin_state_changed"
 }
