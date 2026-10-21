@@ -4,6 +4,13 @@ export interface PluginUiPort {
   catalog(): Promise<unknown>;
   resolveMessage(payload: unknown): Promise<unknown>;
   action(payload: unknown): Promise<unknown>;
+  /** `capability.plugin_ui_present`: Core reads the catalog itself and, given `messageId`,
+   * overlays the card state stored on that message. Request: `{message, messageId?, platform, locale, kind}`. */
+  presentMessage(request: Record<string, unknown>): Promise<unknown>;
+  /** `capability.plugin_ui_invoke`: given `messageId`, Core writes a successful result's
+   * `data.messageState` onto that message and emits a message update. Request adds `actionId`,
+   * `userGesture`, `conversationId?` and `nativeAllowlist` to the present fields. */
+  invokeAction(request: Record<string, unknown>): Promise<unknown>;
   dispatch(request: { capabilityId: string; payload: unknown; conversationId?: string; tenantId?: string; userId?: string }): Promise<unknown>;
 }
 export interface PluginMessageEnvelope {
@@ -15,7 +22,22 @@ export interface PluginPresentation {
   fields: Array<{ label: string; value: string }>;
   actions: Array<{ id: string; label: string }>;
 }
+/** A presentation for one stored message card. */
+export interface PluginCardPresentation extends PluginPresentation {
+  /** The payload with the message's stored card state merged in; only while `available`. */
+  data?: Record<string, unknown>;
+  /** Version of that stored state; 0 when the message has none. */
+  stateVersion: number;
+}
+/** Outcome of a card action: the capability response, or what a host target returned. */
+export type PluginActionOutcome =
+  | { kind: "operation"; response: { success?: boolean; data?: unknown; error?: unknown } & Record<string, unknown> }
+  | { kind: "host"; result: unknown };
 export type PluginPlatform = "web" | "tauri" | "android" | "ios" | "flutter" | "harmonyos";
+/** Core's rule for a card's `messageId`: non-empty, at most 256 bytes, no whitespace or control characters. */
+export function validPluginMessageId(id: string): boolean {
+  return id.length > 0 && new TextEncoder().encode(id).length <= 256 && !/[\s\p{Cc}]/u.test(id);
+}
 export interface NativePluginBridge {
   capabilities: ReadonlyArray<"selectImage" | "selectFile" | "camera" | "microphone" | "clipboardWrite">;
   invoke(capability: string, payload: Record<string, unknown>): Promise<unknown>;
@@ -60,6 +82,49 @@ export class PluginUiSession {
     } catch { return this.fallback(message.summary); }
   }
   fallback(summary: string): PluginPresentation { return { available: false, title: summary.slice(0, 256), fields: [], actions: [] }; }
+  /**
+   * Present a stored message's card through Core. With a valid `messageId`, Core overlays the
+   * card state persisted on that message, so `data` and the view (fields, `hiddenWhen`) see it.
+   * A message id Core would refuse is left out rather than failing the whole card.
+   */
+  async present(message: PluginMessageEnvelope, messageId?: string,
+    kind: "message-content" | "message-action" | "conversation-menu" | "composer-action" | "page" = "message-content"): Promise<PluginCardPresentation> {
+    const generation = this.generation;
+    const fallback = (): PluginCardPresentation => ({ ...this.fallback(message.summary), stateVersion: 0 });
+    try {
+      const value = await this.port.presentMessage({ message, ...(messageId && validPluginMessageId(messageId) ? { messageId } : {}),
+        platform: this.platform, locale: this.locale(), kind });
+      if (generation !== this.generation) return fallback();
+      const view = value as PluginCardPresentation | null;
+      if (!view || typeof view.available !== "boolean" || typeof view.title !== "string" || !Array.isArray(view.fields) || !Array.isArray(view.actions)) return fallback();
+      const stateVersion = Number.isSafeInteger(view.stateVersion) && view.stateVersion >= 0 ? view.stateVersion : 0;
+      const data = view.available && view.data && typeof view.data === "object" && !Array.isArray(view.data) ? view.data : undefined;
+      return { available: view.available, title: view.title, fields: view.fields, actions: view.actions, stateVersion, ...(data ? { data } : {}) };
+    } catch { return fallback(); }
+  }
+  /**
+   * Run a card action through Core, which refreshes the grant and binds the declared input. With
+   * `messageId` Core persists the result's `data.messageState` on that message. Operation targets
+   * return the capability response; page and native targets run here, as `invoke` does.
+   */
+  async invokeAction(message: PluginMessageEnvelope, actionId: string,
+    options: { messageId?: string; conversationId?: string; userGesture: boolean }): Promise<PluginActionOutcome> {
+    const generation = this.generation;
+    const { messageId, conversationId, userGesture } = options;
+    const value = await this.port.invokeAction({ message, ...(messageId && validPluginMessageId(messageId) ? { messageId } : {}),
+      ...(conversationId ? { conversationId } : {}), platform: this.platform, actionId, userGesture, nativeAllowlist: this.native?.capabilities ?? [] });
+    if (generation !== this.generation) throw new Error("Plugin session changed");
+    const result = value as { kind?: unknown; response?: unknown; target?: { kind: string; page?: string; capability?: string }; payload?: Record<string, unknown> } | null;
+    if (result?.kind === "operation" && result.response && typeof result.response === "object") {
+      return { kind: "operation", response: result.response as Extract<PluginActionOutcome, { kind: "operation" }>["response"] };
+    }
+    const target = result?.kind === "host" ? result.target : undefined;
+    if (target?.kind === "page" && typeof target.page === "string" && this.navigate) return { kind: "host", result: this.navigate(target.page) };
+    if (target?.kind === "native" && typeof target.capability === "string" && this.native?.capabilities.includes(target.capability as never)) {
+      return { kind: "host", result: await this.native.invoke(target.capability, result?.payload ?? {}) };
+    }
+    throw new Error("Plugin target unavailable");
+  }
   async invoke(message: PluginMessageEnvelope, actionId: string, userGesture: boolean): Promise<unknown> {
     const generation = this.generation;
     const catalog = await this.port.catalog(); // Recheck latest grant before each action.
