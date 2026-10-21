@@ -303,7 +303,9 @@
       "models/messages.json",
       "models/message_content_elems.json",
       "models/message_builder.json",
-      "models/events.json"
+      "models/events.json",
+      "models/plugin_ui.json",
+      "models/plugin_command.json"
     ],
     "modules": [
       "modules/session.json",
@@ -762,6 +764,16 @@
         "sourceOperation": "message_builder.create_placeholder",
         "stability": "stable",
         "summary": "Build placeholder message"
+      },
+      {
+        "contentType": "custom",
+        "messageType": 14,
+        "method": "buildPluginMessage",
+        "op": "create_plugin_message",
+        "request": "BuildPluginMessageRequest",
+        "sourceOperation": "message_builder.create_plugin_message",
+        "stability": "stable",
+        "summary": "Build plugin message message"
       },
       {
         "contentType": "quote",
@@ -2890,6 +2902,13 @@
               "required": true,
               "type": "Message",
               "wireName": "message"
+            },
+            {
+              "description": "Optional active-user precondition; cannot override the authenticated sender.",
+              "name": "expectedUserId",
+              "required": false,
+              "type": "String",
+              "wireName": "expectedUserId"
             }
           ],
           "name": "SendMessageRequest"
@@ -3443,7 +3462,8 @@
             "create_announcement",
             "create_custom",
             "create_placeholder",
-            "create_with_content"
+            "create_with_content",
+            "create_plugin_message"
           ]
         }
       ],
@@ -4503,6 +4523,26 @@
             }
           ],
           "name": "BuildWithContentMessageRequest"
+        },
+        {
+          "description": "Generic safe plugin message over the existing AppCard envelope.",
+          "fields": [
+            {
+              "description": "Target conversation id.",
+              "name": "conversationId",
+              "required": true,
+              "type": "String",
+              "wireName": "conversationId"
+            },
+            {
+              "description": "Validated generic plugin message envelope defined by flare-plugin-protocol.",
+              "name": "payload",
+              "required": true,
+              "type": "JsonObject",
+              "wireName": "payload"
+            }
+          ],
+          "name": "BuildPluginMessageRequest"
         }
       ]
     },
@@ -5276,6 +5316,44 @@
             }
           ],
           "name": "CapabilityEvent"
+        }
+      ]
+    },
+    {
+      "description": "Data-only plugin UI evaluation, authoritative types and bounds live in flare-plugin-protocol/ui.rs.",
+      "enums": [],
+      "group": "pluginUi",
+      "models": [
+        {
+          "fields": [
+            {
+              "description": "Typed UI evaluation envelope defined by the shared UI protocol.",
+              "name": "payload",
+              "required": true,
+              "type": "JsonObject",
+              "wireName": "payload"
+            }
+          ],
+          "name": "PluginUiEvaluationRequest"
+        }
+      ]
+    },
+    {
+      "description": "Durable idempotent plugin intent; Rust PluginCommand and strict request parsers own semantics.",
+      "enums": [],
+      "group": "pluginCommand",
+      "models": [
+        {
+          "fields": [
+            {
+              "description": "prepare: slot + command; pending: slot; submit/acknowledge: slot + commandId. Scope is inferred from the active SDK session.",
+              "name": "payload",
+              "required": true,
+              "type": "JsonObject",
+              "wireName": "payload"
+            }
+          ],
+          "name": "PluginCommandRequest"
         }
       ]
     }
@@ -6061,7 +6139,8 @@
           "create_announcement",
           "create_custom",
           "create_placeholder",
-          "create_with_content"
+          "create_with_content",
+          "create_plugin_message"
         ]
       },
       "catalog": "shared/message_build_catalog.json",
@@ -6404,6 +6483,25 @@
           },
           "operation": "message_builder.create_placeholder",
           "request": "BuildPlaceholderMessageRequest",
+          "response": "Message",
+          "stability": "stable",
+          "transport": "dispatch-json"
+        },
+        {
+          "cApi": "flare_message_build_json",
+          "description": "Build plugin message message",
+          "dispatchOp": "create_plugin_message",
+          "name": "buildPluginMessage",
+          "nativeBinding": {
+            "asyncReturn": "i32 immediate_submit_code",
+            "callback": "FlareResultCallback",
+            "handlePolicy": "client-handle",
+            "requestEncoding": "json",
+            "responseEncoding": "json-object",
+            "returnMode": "callback"
+          },
+          "operation": "message_builder.create_plugin_message",
+          "request": "BuildPluginMessageRequest",
           "response": "Message",
           "stability": "stable",
           "transport": "dispatch-json"
@@ -7771,6 +7869,186 @@
       "facade": "client.capabilities",
       "key": "capabilities",
       "methods": [
+        {
+          "cApi": "flare_capability_dispatch_json",
+          "dispatchOp": "prepare_plugin_command",
+          "name": "preparePluginCommand",
+          "nativeBinding": {
+            "asyncReturn": "i32 immediate_submit_code",
+            "callback": "FlareResultCallback",
+            "handlePolicy": "client-handle",
+            "requestEncoding": "json",
+            "responseEncoding": "json-object",
+            "returnMode": "callback"
+          },
+          "operation": "capability.prepare_plugin_command",
+          "request": "PluginCommandRequest",
+          "response": "JsonObject",
+          "stability": "experimental",
+          "transport": "capability-dispatch-json"
+        },
+        {
+          "cApi": "flare_capability_dispatch_json",
+          "dispatchOp": "pending_plugin_command",
+          "name": "pendingPluginCommand",
+          "nativeBinding": {
+            "asyncReturn": "i32 immediate_submit_code",
+            "callback": "FlareResultCallback",
+            "handlePolicy": "client-handle",
+            "requestEncoding": "json",
+            "responseEncoding": "json-object",
+            "returnMode": "callback"
+          },
+          "operation": "capability.pending_plugin_command",
+          "request": "PluginCommandRequest",
+          "response": "JsonObject",
+          "stability": "experimental",
+          "transport": "capability-dispatch-json"
+        },
+        {
+          "cApi": "flare_capability_dispatch_json",
+          "dispatchOp": "reconcile_plugin_command",
+          "name": "reconcilePluginCommand",
+          "nativeBinding": {
+            "asyncReturn": "i32 immediate_submit_code",
+            "callback": "FlareResultCallback",
+            "handlePolicy": "client-handle",
+            "requestEncoding": "json",
+            "responseEncoding": "json-object",
+            "returnMode": "callback"
+          },
+          "operation": "capability.reconcile_plugin_command",
+          "request": "PluginCommandRequest",
+          "response": "JsonObject",
+          "stability": "experimental",
+          "transport": "capability-dispatch-json"
+        },
+        {
+          "cApi": "flare_capability_dispatch_json",
+          "dispatchOp": "submit_plugin_command",
+          "name": "submitPluginCommand",
+          "nativeBinding": {
+            "asyncReturn": "i32 immediate_submit_code",
+            "callback": "FlareResultCallback",
+            "handlePolicy": "client-handle",
+            "requestEncoding": "json",
+            "responseEncoding": "json-object",
+            "returnMode": "callback"
+          },
+          "operation": "capability.submit_plugin_command",
+          "request": "PluginCommandRequest",
+          "response": "JsonObject",
+          "stability": "experimental",
+          "transport": "capability-dispatch-json"
+        },
+        {
+          "cApi": "flare_capability_dispatch_json",
+          "dispatchOp": "acknowledge_plugin_command",
+          "name": "acknowledgePluginCommand",
+          "nativeBinding": {
+            "asyncReturn": "i32 immediate_submit_code",
+            "callback": "FlareResultCallback",
+            "handlePolicy": "client-handle",
+            "requestEncoding": "json",
+            "responseEncoding": "json-object",
+            "returnMode": "callback"
+          },
+          "operation": "capability.acknowledge_plugin_command",
+          "request": "PluginCommandRequest",
+          "response": "JsonObject",
+          "stability": "experimental",
+          "transport": "capability-dispatch-json"
+        },
+        {
+          "cApi": "flare_capability_dispatch_json",
+          "dispatchOp": "plugin_ui_invoke",
+          "name": "invokePluginAction",
+          "nativeBinding": {
+            "asyncReturn": "i32 immediate_submit_code",
+            "callback": "FlareResultCallback",
+            "handlePolicy": "client-handle",
+            "requestEncoding": "json",
+            "responseEncoding": "json-object",
+            "returnMode": "callback"
+          },
+          "operation": "capability.plugin_ui_invoke",
+          "request": "PluginUiEvaluationRequest",
+          "response": "JsonObject",
+          "stability": "experimental",
+          "transport": "capability-dispatch-json"
+        },
+        {
+          "cApi": "flare_capability_dispatch_json",
+          "dispatchOp": "plugin_ui_present",
+          "name": "presentPluginMessage",
+          "nativeBinding": {
+            "asyncReturn": "i32 immediate_submit_code",
+            "callback": "FlareResultCallback",
+            "handlePolicy": "client-handle",
+            "requestEncoding": "json",
+            "responseEncoding": "json-object",
+            "returnMode": "callback"
+          },
+          "operation": "capability.plugin_ui_present",
+          "request": "PluginUiEvaluationRequest",
+          "response": "JsonObject",
+          "stability": "experimental",
+          "transport": "capability-dispatch-json"
+        },
+        {
+          "cApi": "flare_capability_dispatch_json",
+          "dispatchOp": "plugin_ui_action",
+          "name": "pluginUiAction",
+          "nativeBinding": {
+            "asyncReturn": "i32 immediate_submit_code",
+            "callback": "FlareResultCallback",
+            "handlePolicy": "client-handle",
+            "requestEncoding": "json",
+            "responseEncoding": "json-object",
+            "returnMode": "callback"
+          },
+          "operation": "capability.plugin_ui_action",
+          "request": "PluginUiEvaluationRequest",
+          "response": "JsonObject",
+          "stability": "experimental",
+          "transport": "capability-dispatch-json"
+        },
+        {
+          "cApi": "flare_capability_dispatch_json",
+          "dispatchOp": "plugin_ui_resolve",
+          "name": "resolvePluginMessage",
+          "nativeBinding": {
+            "asyncReturn": "i32 immediate_submit_code",
+            "callback": "FlareResultCallback",
+            "handlePolicy": "client-handle",
+            "requestEncoding": "json",
+            "responseEncoding": "json-object",
+            "returnMode": "callback"
+          },
+          "operation": "capability.plugin_ui_resolve",
+          "request": "PluginUiEvaluationRequest",
+          "response": "JsonObject",
+          "stability": "experimental",
+          "transport": "capability-dispatch-json"
+        },
+        {
+          "cApi": "flare_capability_dispatch_json",
+          "dispatchOp": "plugin_ui_catalog",
+          "name": "pluginUiCatalog",
+          "nativeBinding": {
+            "asyncReturn": "i32 immediate_submit_code",
+            "callback": "FlareResultCallback",
+            "handlePolicy": "client-handle",
+            "requestEncoding": "json",
+            "responseEncoding": "json-object",
+            "returnMode": "callback"
+          },
+          "operation": "capability.plugin_ui_catalog",
+          "request": "ListCapabilitiesRequest",
+          "response": "JsonObject",
+          "stability": "experimental",
+          "transport": "capability-dispatch-json"
+        },
         {
           "cApi": "flare_capability_dispatch_json",
           "dispatchOp": "capability_list",

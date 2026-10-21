@@ -92,6 +92,7 @@ Typed quick-build APIs for all supported message content kinds. Prefer these ove
 | `buildMiniProgram` | `BuildMiniProgramMessageRequest` | `Message` | `dispatch-json` | `flare_message_build_json` |
 | `buildNotification` | `BuildNotificationMessageRequest` | `Message` | `dispatch-json` | `flare_message_build_json` |
 | `buildPlaceholder` | `BuildPlaceholderMessageRequest` | `Message` | `dispatch-json` | `flare_message_build_json` |
+| `buildPluginMessage` | `BuildPluginMessageRequest` | `Message` | `dispatch-json` | `flare_message_build_json` |
 | `buildQuote` | `BuildQuoteMessageRequest` | `Message` | `dispatch-json` | `flare_message_build_json` |
 | `buildRichDoc` | `BuildRichDocMessageRequest` | `Message` | `dispatch-json` | `flare_message_build_json` |
 | `buildSchedule` | `BuildScheduleMessageRequest` | `Message` | `dispatch-json` | `flare_message_build_json` |
@@ -206,6 +207,16 @@ Capability discovery and optional plugin dispatch through capability dispatch op
 
 | Method | Request | Response | Transport | C API |
 |--------|---------|----------|-----------|-------|
+| `preparePluginCommand` | `PluginCommandRequest` | `JsonObject` | `capability-dispatch-json` | `flare_capability_dispatch_json` |
+| `pendingPluginCommand` | `PluginCommandRequest` | `JsonObject` | `capability-dispatch-json` | `flare_capability_dispatch_json` |
+| `reconcilePluginCommand` | `PluginCommandRequest` | `JsonObject` | `capability-dispatch-json` | `flare_capability_dispatch_json` |
+| `submitPluginCommand` | `PluginCommandRequest` | `JsonObject` | `capability-dispatch-json` | `flare_capability_dispatch_json` |
+| `acknowledgePluginCommand` | `PluginCommandRequest` | `JsonObject` | `capability-dispatch-json` | `flare_capability_dispatch_json` |
+| `invokePluginAction` | `PluginUiEvaluationRequest` | `JsonObject` | `capability-dispatch-json` | `flare_capability_dispatch_json` |
+| `presentPluginMessage` | `PluginUiEvaluationRequest` | `JsonObject` | `capability-dispatch-json` | `flare_capability_dispatch_json` |
+| `pluginUiAction` | `PluginUiEvaluationRequest` | `JsonObject` | `capability-dispatch-json` | `flare_capability_dispatch_json` |
+| `resolvePluginMessage` | `PluginUiEvaluationRequest` | `JsonObject` | `capability-dispatch-json` | `flare_capability_dispatch_json` |
+| `pluginUiCatalog` | `ListCapabilitiesRequest` | `JsonObject` | `capability-dispatch-json` | `flare_capability_dispatch_json` |
 | `listCapabilities` | `ListCapabilitiesRequest` | `ListCapabilitiesResponse` | `capability-dispatch-json` | `flare_capability_dispatch_json` |
 | `listUserCapabilities` | `ListUserCapabilitiesRequest` | `ListUserCapabilitiesResponse` | `capability-dispatch-json` | `flare_capability_dispatch_json` |
 | `dispatchCapability` | `DispatchCapabilityRequest` | `DispatchCapabilityResponse` | `capability-dispatch-json` | `flare_capability_dispatch_json` |

@@ -1,9 +1,12 @@
 package com.flare.im.adapter.module
 
 import com.flare.im.adapter.codec.*
+import com.flare.im.api.ConnectionState
 import com.flare.im.api.messagebuilder.MessageBuilderApi
+import com.flare.im.callback.*
 import com.flare.im.contract.NativeBridge
 import com.flare.im.contract.NativeCallMap
+import com.flare.im.listener.*
 import com.flare.im.model.catalog.*
 import com.flare.im.model.command.*
 import com.flare.im.model.command.message.*
@@ -30,266 +33,149 @@ class DefaultMessageBuilderApi(
     private val bridge: NativeBridge,
 ) : MessageBuilderApi {
 
-    private suspend fun dispatchBuildMap(request: Map<String, Any?>): Message {
-        val raw = bridge.invoke<Map<String, Any?>>(NativeCallMap.MESSAGE_BUILDER_DISPATCH, request)
-        return messageFromJson(raw["message"] ?: raw)
+    override suspend fun listSupportedBuildOperations(): ListMessageBuildCatalogResponse {
+        return ListMessageBuildCatalogResponse(entries = MESSAGE_BUILD_CATALOG)
     }
 
-    override suspend fun listSupportedBuildOperations(): ListMessageBuildCatalogResponse =
-        ListMessageBuildCatalogResponse(entries = MESSAGE_BUILD_CATALOG)
-
     override suspend fun normalizeRichDocFromMarkdown(request: NormalizeRichDocFromMarkdownRequest): RichDocV2Normalized {
-        val raw = invokeMap(bridge, NativeCallMap.RICH_DOC_V2_NORMALIZE_FROM_MARKDOWN, normalizeRichDocFromMarkdownRequestToMap(request))
-        return richDocV2NormalizedFromJson(raw)
+        return richDocV2NormalizedFromJson(invokeMap(bridge, NativeCallMap.RICH_DOC_V2_NORMALIZE_FROM_MARKDOWN, normalizeRichDocFromMarkdownRequestToMap(request)))
     }
 
     override suspend fun normalizeRichDocFromHtml(request: NormalizeRichDocFromHtmlRequest): RichDocV2Normalized {
-        val raw = invokeMap(bridge, NativeCallMap.RICH_DOC_V2_NORMALIZE_FROM_HTML, normalizeRichDocFromHtmlRequestToMap(request))
-        return richDocV2NormalizedFromJson(raw)
+        return richDocV2NormalizedFromJson(invokeMap(bridge, NativeCallMap.RICH_DOC_V2_NORMALIZE_FROM_HTML, normalizeRichDocFromHtmlRequestToMap(request)))
     }
 
     override suspend fun normalizeRichDocFromDocJson(request: NormalizeRichDocFromDocJsonRequest): RichDocV2Normalized {
-        val raw = invokeMap(bridge, NativeCallMap.RICH_DOC_V2_NORMALIZE_FROM_DOC_JSON, normalizeRichDocFromDocJsonRequestToMap(request))
-        return richDocV2NormalizedFromJson(raw)
+        return richDocV2NormalizedFromJson(invokeMap(bridge, NativeCallMap.RICH_DOC_V2_NORMALIZE_FROM_DOC_JSON, normalizeRichDocFromDocJsonRequestToMap(request)))
     }
 
-    override suspend fun buildAnnouncement(request: BuildAnnouncementMessageRequest): Message =
-        dispatchBuildMap(
-            buildMap {
-                put("op", "create_announcement")
-                putAll(buildAnnouncementMessageRequestToMap(request))
-            },
-        )
+    override suspend fun buildAnnouncement(request: BuildAnnouncementMessageRequest): Message {
+        val raw = invokeMap(bridge, NativeCallMap.MESSAGE_BUILDER_CREATE_ANNOUNCEMENT, buildAnnouncementMessageRequestToMap(request))
+        return messageFromJson(raw["message"] ?: raw)
+    }
 
-    override suspend fun buildAudio(request: BuildAudioMessageRequest): Message =
-        dispatchBuildMap(
-            buildMap {
-                put("op", "create_audio")
-                put("conversationId", request.conversationId)
-                put("audioId", request.audioId)
-                request.payload?.let { put("payload", audioContentPayloadToMap(it)) }
-            },
-        )
+    override suspend fun buildAudio(request: BuildAudioMessageRequest): Message {
+        val raw = invokeMap(bridge, NativeCallMap.MESSAGE_BUILDER_CREATE_AUDIO, buildAudioMessageRequestToMap(request))
+        return messageFromJson(raw["message"] ?: raw)
+    }
 
-    override suspend fun buildCard(request: BuildCardMessageRequest): Message =
-        dispatchBuildMap(
-            buildMap {
-                put("op", "create_card")
-                put("conversationId", request.conversationId)
-                put("id", request.id)
-                request.cardType?.let { put("cardType", it) }
-                request.title?.let { put("title", it) }
-                request.subtitle?.let { put("subtitle", it) }
-                request.avatar?.let { put("avatar", it) }
-            },
-        )
+    override suspend fun buildCard(request: BuildCardMessageRequest): Message {
+        val raw = invokeMap(bridge, NativeCallMap.MESSAGE_BUILDER_CREATE_CARD, buildCardMessageRequestToMap(request))
+        return messageFromJson(raw["message"] ?: raw)
+    }
 
-    override suspend fun buildCustom(request: BuildCustomMessageRequest): Message =
-        dispatchBuildMap(
-            buildMap {
-                put("op", "create_custom")
-                putAll(buildCustomMessageRequestToMap(request))
-            },
-        )
+    override suspend fun buildCustom(request: BuildCustomMessageRequest): Message {
+        val raw = invokeMap(bridge, NativeCallMap.MESSAGE_BUILDER_CREATE_CUSTOM, buildCustomMessageRequestToMap(request))
+        return messageFromJson(raw["message"] ?: raw)
+    }
 
-    override suspend fun buildEmoji(request: BuildEmojiMessageRequest): Message =
-        dispatchBuildMap(
-            buildMap {
-                put("op", "create_emoji")
-                put("conversationId", request.conversationId)
-                put("emoji", request.emoji)
-            },
-        )
+    override suspend fun buildEmoji(request: BuildEmojiMessageRequest): Message {
+        val raw = invokeMap(bridge, NativeCallMap.MESSAGE_BUILDER_CREATE_EMOJI, buildEmojiMessageRequestToMap(request))
+        return messageFromJson(raw["message"] ?: raw)
+    }
 
-    override suspend fun buildFile(request: BuildFileMessageRequest): Message =
-        dispatchBuildMap(
-            buildMap {
-                put("op", "create_file")
-                put("conversationId", request.conversationId)
-                put("fileId", request.fileId)
-                request.payload?.let { put("payload", fileContentPayloadToMap(it)) }
-            },
-        )
+    override suspend fun buildFile(request: BuildFileMessageRequest): Message {
+        val raw = invokeMap(bridge, NativeCallMap.MESSAGE_BUILDER_CREATE_FILE, buildFileMessageRequestToMap(request))
+        return messageFromJson(raw["message"] ?: raw)
+    }
 
-    override suspend fun buildForward(request: BuildForwardMessageRequest): Message =
-        dispatchBuildMap(
-            buildMap {
-                put("op", "create_forward")
-                put("conversationId", request.conversationId)
-                put("merge", request.merge)
-                put("title", request.title)
-                if (request.sourceMessages.isNotEmpty()) {
-                    // 完整消息，不是 id 存根：核心侧 forward_item_from_source 要读
-                    // content / senderId / conversationId 才能还原原文。
-                    put("sourceMessages", request.sourceMessages.map { messageToWireMap(it) })
-                }
-            },
-        )
+    override suspend fun buildForward(request: BuildForwardMessageRequest): Message {
+        val raw = invokeMap(bridge, NativeCallMap.MESSAGE_BUILDER_CREATE_FORWARD, buildForwardMessageRequestToMap(request))
+        return messageFromJson(raw["message"] ?: raw)
+    }
 
-    override suspend fun buildImage(request: BuildImageMessageRequest): Message =
-        dispatchBuildMap(
-            buildMap {
-                put("op", "create_image")
-                put("conversationId", request.conversationId)
-                put("imageId", request.imageId)
-                request.payload?.let { put("payload", imageContentPayloadToMap(it)) }
-            },
-        )
+    override suspend fun buildImage(request: BuildImageMessageRequest): Message {
+        val raw = invokeMap(bridge, NativeCallMap.MESSAGE_BUILDER_CREATE_IMAGE, buildImageMessageRequestToMap(request))
+        return messageFromJson(raw["message"] ?: raw)
+    }
 
-    override suspend fun buildImageGroup(request: BuildImageGroupMessageRequest): Message =
-        dispatchBuildMap(
-            buildMap {
-                put("op", "create_image_group")
-                put("conversationId", request.conversationId)
-                put("payload", imageGroupContentPayloadToMap(request.payload))
-            },
-        )
+    override suspend fun buildImageGroup(request: BuildImageGroupMessageRequest): Message {
+        val raw = invokeMap(bridge, NativeCallMap.MESSAGE_BUILDER_CREATE_IMAGE_GROUP, buildImageGroupMessageRequestToMap(request))
+        return messageFromJson(raw["message"] ?: raw)
+    }
 
-    override suspend fun buildLinkCard(request: BuildLinkCardMessageRequest): Message =
-        dispatchBuildMap(
-            buildMap {
-                put("op", "create_link_card")
-                put("conversationId", request.conversationId)
-                put("url", request.url)
-                request.title?.let { put("title", it) }
-                request.description?.let { put("description", it) }
-            },
-        )
+    override suspend fun buildLinkCard(request: BuildLinkCardMessageRequest): Message {
+        val raw = invokeMap(bridge, NativeCallMap.MESSAGE_BUILDER_CREATE_LINK_CARD, buildLinkCardMessageRequestToMap(request))
+        return messageFromJson(raw["message"] ?: raw)
+    }
 
-    override suspend fun buildLocation(request: BuildLocationMessageRequest): Message =
-        dispatchBuildMap(
-            buildMap {
-                put("op", "create_location")
-                put("conversationId", request.conversationId)
-                put("latitude", request.latitude)
-                put("longitude", request.longitude)
-                request.title?.let { put("title", it) }
-                request.address?.let { put("address", it) }
-            },
-        )
+    override suspend fun buildLocation(request: BuildLocationMessageRequest): Message {
+        val raw = invokeMap(bridge, NativeCallMap.MESSAGE_BUILDER_CREATE_LOCATION, buildLocationMessageRequestToMap(request))
+        return messageFromJson(raw["message"] ?: raw)
+    }
 
-    override suspend fun buildMiniProgram(request: BuildMiniProgramMessageRequest): Message =
-        dispatchBuildMap(
-            buildMap {
-                put("op", "create_mini_program")
-                putAll(buildMiniProgramMessageRequestToMap(request))
-            },
-        )
+    override suspend fun buildMiniProgram(request: BuildMiniProgramMessageRequest): Message {
+        val raw = invokeMap(bridge, NativeCallMap.MESSAGE_BUILDER_CREATE_MINI_PROGRAM, buildMiniProgramMessageRequestToMap(request))
+        return messageFromJson(raw["message"] ?: raw)
+    }
 
-    override suspend fun buildNotification(request: BuildNotificationMessageRequest): Message =
-        dispatchBuildMap(
-            buildMap {
-                put("op", "create_notification")
-                putAll(buildNotificationMessageRequestToMap(request))
-            },
-        )
+    override suspend fun buildNotification(request: BuildNotificationMessageRequest): Message {
+        val raw = invokeMap(bridge, NativeCallMap.MESSAGE_BUILDER_CREATE_NOTIFICATION, buildNotificationMessageRequestToMap(request))
+        return messageFromJson(raw["message"] ?: raw)
+    }
 
-    override suspend fun buildPlaceholder(request: BuildPlaceholderMessageRequest): Message =
-        dispatchBuildMap(
-            buildMap {
-                put("op", "create_placeholder")
-                putAll(buildPlaceholderMessageRequestToMap(request))
-            },
-        )
+    override suspend fun buildPlaceholder(request: BuildPlaceholderMessageRequest): Message {
+        val raw = invokeMap(bridge, NativeCallMap.MESSAGE_BUILDER_CREATE_PLACEHOLDER, buildPlaceholderMessageRequestToMap(request))
+        return messageFromJson(raw["message"] ?: raw)
+    }
 
-    override suspend fun buildQuote(request: BuildQuoteMessageRequest): Message =
-        dispatchBuildMap(
-            buildMap {
-                put("op", "create_quote")
-                put("conversationId", request.conversationId)
-                put("quotedMessageId", request.quotedMessageId)
-                put("text", request.text)
-                request.quotedSenderId?.let { put("quotedSenderId", it) }
-                request.quotedTextPreview?.let { put("quotedTextPreview", it) }
-            },
-        )
+    override suspend fun buildPluginMessage(request: BuildPluginMessageRequest): Message {
+        val raw = invokeMap(bridge, NativeCallMap.MESSAGE_BUILDER_CREATE_PLUGIN_MESSAGE, buildPluginMessageRequestToMap(request))
+        return messageFromJson(raw["message"] ?: raw)
+    }
 
-    override suspend fun buildRichDoc(request: BuildRichDocMessageRequest): Message =
-        dispatchBuildMap(
-            buildMap {
-                put("op", "create_rich_doc")
-                putAll(buildRichDocMessageRequestToMap(request))
-            },
-        )
+    override suspend fun buildQuote(request: BuildQuoteMessageRequest): Message {
+        val raw = invokeMap(bridge, NativeCallMap.MESSAGE_BUILDER_CREATE_QUOTE, buildQuoteMessageRequestToMap(request))
+        return messageFromJson(raw["message"] ?: raw)
+    }
 
-    override suspend fun buildSchedule(request: BuildScheduleMessageRequest): Message =
-        dispatchBuildMap(
-            buildMap {
-                put("op", "create_schedule")
-                putAll(buildScheduleMessageRequestToMap(request))
-            },
-        )
+    override suspend fun buildRichDoc(request: BuildRichDocMessageRequest): Message {
+        val raw = invokeMap(bridge, NativeCallMap.MESSAGE_BUILDER_CREATE_RICH_DOC, buildRichDocMessageRequestToMap(request))
+        return messageFromJson(raw["message"] ?: raw)
+    }
 
-    override suspend fun buildSticker(request: BuildStickerMessageRequest): Message =
-        dispatchBuildMap(
-            buildMap {
-                put("op", "create_sticker")
-                put("conversationId", request.conversationId)
-                put("stickerId", request.stickerId)
-                request.packageId?.let { put("packageId", it) }
-                request.payload?.let { put("payload", stickerContentPayloadToMap(it)) }
-            },
-        )
+    override suspend fun buildSchedule(request: BuildScheduleMessageRequest): Message {
+        val raw = invokeMap(bridge, NativeCallMap.MESSAGE_BUILDER_CREATE_SCHEDULE, buildScheduleMessageRequestToMap(request))
+        return messageFromJson(raw["message"] ?: raw)
+    }
 
-    override suspend fun buildSystem(request: BuildSystemMessageRequest): Message =
-        dispatchBuildMap(
-            buildMap {
-                put("op", "create_system")
-                putAll(buildSystemMessageRequestToMap(request))
-            },
-        )
+    override suspend fun buildSticker(request: BuildStickerMessageRequest): Message {
+        val raw = invokeMap(bridge, NativeCallMap.MESSAGE_BUILDER_CREATE_STICKER, buildStickerMessageRequestToMap(request))
+        return messageFromJson(raw["message"] ?: raw)
+    }
 
-    override suspend fun buildTask(request: BuildTaskMessageRequest): Message =
-        dispatchBuildMap(
-            buildMap {
-                put("op", "create_task")
-                putAll(buildTaskMessageRequestToMap(request))
-            },
-        )
+    override suspend fun buildSystem(request: BuildSystemMessageRequest): Message {
+        val raw = invokeMap(bridge, NativeCallMap.MESSAGE_BUILDER_CREATE_SYSTEM, buildSystemMessageRequestToMap(request))
+        return messageFromJson(raw["message"] ?: raw)
+    }
 
-    override suspend fun buildText(request: BuildTextMessageRequest): Message =
-        dispatchBuildMap(
-            buildMap {
-                put("op", "create_text")
-                put("conversationId", request.conversationId)
-                put("text", request.text)
-            },
-        )
+    override suspend fun buildTask(request: BuildTaskMessageRequest): Message {
+        val raw = invokeMap(bridge, NativeCallMap.MESSAGE_BUILDER_CREATE_TASK, buildTaskMessageRequestToMap(request))
+        return messageFromJson(raw["message"] ?: raw)
+    }
 
-    override suspend fun buildThreadReply(request: BuildThreadReplyMessageRequest): Message =
-        dispatchBuildMap(
-            buildMap {
-                put("op", "create_thread_reply")
-                put("conversationId", request.conversationId)
-                put("threadId", request.threadId)
-                put("text", request.text)
-            },
-        )
+    override suspend fun buildText(request: BuildTextMessageRequest): Message {
+        val raw = invokeMap(bridge, NativeCallMap.MESSAGE_BUILDER_CREATE_TEXT, buildTextMessageRequestToMap(request))
+        return messageFromJson(raw["message"] ?: raw)
+    }
 
-    override suspend fun buildVideo(request: BuildVideoMessageRequest): Message =
-        dispatchBuildMap(
-            buildMap {
-                put("op", "create_video")
-                put("conversationId", request.conversationId)
-                put("videoId", request.videoId)
-                request.payload?.let { put("payload", videoContentPayloadToMap(it)) }
-            },
-        )
+    override suspend fun buildThreadReply(request: BuildThreadReplyMessageRequest): Message {
+        val raw = invokeMap(bridge, NativeCallMap.MESSAGE_BUILDER_CREATE_THREAD_REPLY, buildThreadReplyMessageRequestToMap(request))
+        return messageFromJson(raw["message"] ?: raw)
+    }
 
-    override suspend fun buildVote(request: BuildVoteMessageRequest): Message =
-        dispatchBuildMap(
-            buildMap {
-                put("op", "create_vote")
-                putAll(buildVoteMessageRequestToMap(request))
-            },
-        )
+    override suspend fun buildVideo(request: BuildVideoMessageRequest): Message {
+        val raw = invokeMap(bridge, NativeCallMap.MESSAGE_BUILDER_CREATE_VIDEO, buildVideoMessageRequestToMap(request))
+        return messageFromJson(raw["message"] ?: raw)
+    }
 
-    override suspend fun buildWithContent(request: BuildWithContentMessageRequest): Message =
-        dispatchBuildMap(
-            buildMap {
-                put("op", "create_with_content")
-                put("conversationId", request.conversationId)
-                put("content", messageContentToMap(request.content))
-            },
-        )
+    override suspend fun buildVote(request: BuildVoteMessageRequest): Message {
+        val raw = invokeMap(bridge, NativeCallMap.MESSAGE_BUILDER_CREATE_VOTE, buildVoteMessageRequestToMap(request))
+        return messageFromJson(raw["message"] ?: raw)
+    }
+
+    override suspend fun buildWithContent(request: BuildWithContentMessageRequest): Message {
+        val raw = invokeMap(bridge, NativeCallMap.MESSAGE_BUILDER_CREATE_WITH_CONTENT, buildWithContentMessageRequestToMap(request))
+        return messageFromJson(raw["message"] ?: raw)
+    }
 }

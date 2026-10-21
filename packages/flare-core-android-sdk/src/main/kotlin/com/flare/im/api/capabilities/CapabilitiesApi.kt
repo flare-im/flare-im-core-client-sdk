@@ -27,6 +27,26 @@ import com.flare.im.model.response.*
 /** GENERATED. Do not edit by hand. */
 /** Capability discovery and optional plugin dispatch through capability dispatch ops. */
 interface CapabilitiesApi {
+    /** preparePluginCommand maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `prepare_plugin_command`. Operation: `capability.prepare_plugin_command`. */
+    suspend fun preparePluginCommand(request: PluginCommandRequest): Map<String, Any?>
+    /** pendingPluginCommand maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `pending_plugin_command`. Operation: `capability.pending_plugin_command`. */
+    suspend fun pendingPluginCommand(request: PluginCommandRequest): Map<String, Any?>
+    /** reconcilePluginCommand maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `reconcile_plugin_command`. Operation: `capability.reconcile_plugin_command`. */
+    suspend fun reconcilePluginCommand(request: PluginCommandRequest): Map<String, Any?>
+    /** submitPluginCommand maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `submit_plugin_command`. Operation: `capability.submit_plugin_command`. */
+    suspend fun submitPluginCommand(request: PluginCommandRequest): Map<String, Any?>
+    /** acknowledgePluginCommand maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `acknowledge_plugin_command`. Operation: `capability.acknowledge_plugin_command`. */
+    suspend fun acknowledgePluginCommand(request: PluginCommandRequest): Map<String, Any?>
+    /** invokePluginAction maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `plugin_ui_invoke`. Operation: `capability.plugin_ui_invoke`. */
+    suspend fun invokePluginAction(request: PluginUiEvaluationRequest): Map<String, Any?>
+    /** presentPluginMessage maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `plugin_ui_present`. Operation: `capability.plugin_ui_present`. */
+    suspend fun presentPluginMessage(request: PluginUiEvaluationRequest): Map<String, Any?>
+    /** pluginUiAction maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `plugin_ui_action`. Operation: `capability.plugin_ui_action`. */
+    suspend fun pluginUiAction(request: PluginUiEvaluationRequest): Map<String, Any?>
+    /** resolvePluginMessage maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `plugin_ui_resolve`. Operation: `capability.plugin_ui_resolve`. */
+    suspend fun resolvePluginMessage(request: PluginUiEvaluationRequest): Map<String, Any?>
+    /** pluginUiCatalog maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `plugin_ui_catalog`. Operation: `capability.plugin_ui_catalog`. */
+    suspend fun pluginUiCatalog(request: Map<String, Any?>): Map<String, Any?>
     /** listCapabilities maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `capability_list`. Operation: `capability.list`. */
     suspend fun listCapabilities(request: Map<String, Any?>): Map<String, Any?>
     /** listUserCapabilities maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `capability_list_user`. Operation: `capability.list_user`. */

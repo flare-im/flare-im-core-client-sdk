@@ -33,6 +33,46 @@ class DefaultCapabilitiesApi(
     private val bridge: NativeBridge,
 ) : CapabilitiesApi {
 
+    override suspend fun preparePluginCommand(request: PluginCommandRequest): Map<String, Any?> {
+        return invokeMap(bridge, NativeCallMap.CAPABILITY_PREPARE_PLUGIN_COMMAND, pluginCommandRequestToMap(request))
+    }
+
+    override suspend fun pendingPluginCommand(request: PluginCommandRequest): Map<String, Any?> {
+        return invokeMap(bridge, NativeCallMap.CAPABILITY_PENDING_PLUGIN_COMMAND, pluginCommandRequestToMap(request))
+    }
+
+    override suspend fun reconcilePluginCommand(request: PluginCommandRequest): Map<String, Any?> {
+        return invokeMap(bridge, NativeCallMap.CAPABILITY_RECONCILE_PLUGIN_COMMAND, pluginCommandRequestToMap(request))
+    }
+
+    override suspend fun submitPluginCommand(request: PluginCommandRequest): Map<String, Any?> {
+        return invokeMap(bridge, NativeCallMap.CAPABILITY_SUBMIT_PLUGIN_COMMAND, pluginCommandRequestToMap(request))
+    }
+
+    override suspend fun acknowledgePluginCommand(request: PluginCommandRequest): Map<String, Any?> {
+        return invokeMap(bridge, NativeCallMap.CAPABILITY_ACKNOWLEDGE_PLUGIN_COMMAND, pluginCommandRequestToMap(request))
+    }
+
+    override suspend fun invokePluginAction(request: PluginUiEvaluationRequest): Map<String, Any?> {
+        return invokeMap(bridge, NativeCallMap.CAPABILITY_PLUGIN_UI_INVOKE, pluginUiEvaluationRequestToMap(request))
+    }
+
+    override suspend fun presentPluginMessage(request: PluginUiEvaluationRequest): Map<String, Any?> {
+        return invokeMap(bridge, NativeCallMap.CAPABILITY_PLUGIN_UI_PRESENT, pluginUiEvaluationRequestToMap(request))
+    }
+
+    override suspend fun pluginUiAction(request: PluginUiEvaluationRequest): Map<String, Any?> {
+        return invokeMap(bridge, NativeCallMap.CAPABILITY_PLUGIN_UI_ACTION, pluginUiEvaluationRequestToMap(request))
+    }
+
+    override suspend fun resolvePluginMessage(request: PluginUiEvaluationRequest): Map<String, Any?> {
+        return invokeMap(bridge, NativeCallMap.CAPABILITY_PLUGIN_UI_RESOLVE, pluginUiEvaluationRequestToMap(request))
+    }
+
+    override suspend fun pluginUiCatalog(request: Map<String, Any?>): Map<String, Any?> {
+        return invokeMap(bridge, NativeCallMap.CAPABILITY_PLUGIN_UI_CATALOG, request)
+    }
+
     override suspend fun listCapabilities(request: Map<String, Any?>): Map<String, Any?> {
         return invokeMap(bridge, NativeCallMap.CAPABILITY_LIST, request)
     }

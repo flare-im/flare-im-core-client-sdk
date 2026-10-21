@@ -21,6 +21,7 @@ export interface MessageBuilderApi {
   buildMiniProgram(request: BuildMiniProgramMessageRequest): Promise<Message>;
   buildNotification(request: BuildNotificationMessageRequest): Promise<Message>;
   buildPlaceholder(request: BuildPlaceholderMessageRequest): Promise<Message>;
+  buildPluginMessage(request: BuildPluginMessageRequest): Promise<Message>;
   buildQuote(request: BuildQuoteMessageRequest): Promise<Message>;
   buildRichDoc(request: BuildRichDocMessageRequest): Promise<Message>;
   buildSchedule(request: BuildScheduleMessageRequest): Promise<Message>;

@@ -1,17 +1,13 @@
 // GENERATED. Do not edit by hand.
-import { NativeBridge, NativeCallMap } from '../contract/BridgeContract';
-import type { MessageBuilderApi } from '../api/modules/message_builder';
-import { ListMessageBuildCatalogResponse, Message, BuildAnnouncementMessageRequest, BuildAudioMessageRequest, BuildCardMessageRequest, BuildCustomMessageRequest, BuildEmojiMessageRequest, BuildFileMessageRequest, BuildForwardMessageRequest, BuildImageGroupMessageRequest, BuildImageMessageRequest, BuildLinkCardMessageRequest, BuildLocationMessageRequest, BuildMiniProgramMessageRequest, BuildNotificationMessageRequest, BuildPlaceholderMessageRequest, BuildQuoteMessageRequest, BuildRichDocMessageRequest, BuildScheduleMessageRequest, BuildStickerMessageRequest, BuildSystemMessageRequest, BuildTaskMessageRequest, BuildTextMessageRequest, BuildThreadReplyMessageRequest, BuildTypedMessageRequest, BuildVideoMessageRequest, BuildVoteMessageRequest, BuildWithContentMessageRequest, NormalizeRichDocFromDocJsonRequest, NormalizeRichDocFromHtmlRequest, NormalizeRichDocFromMarkdownRequest, RichDocV2Normalized } from '../model';
-import { MESSAGE_BUILD_CATALOG } from './MessageBuildCatalog';
-import { invokeMap, invokeMessage } from './NativeInvoke';
-import { buildAnnouncementMessageRequestToMap, buildAudioMessageRequestToMap, buildCardMessageRequestToMap, buildCustomMessageRequestToMap, buildEmojiMessageRequestToMap, buildFileMessageRequestToMap, buildForwardMessageRequestToMap, buildImageGroupMessageRequestToMap, buildImageMessageRequestToMap, buildLinkCardMessageRequestToMap, buildLocationMessageRequestToMap, buildMiniProgramMessageRequestToMap, buildNotificationMessageRequestToMap, buildPlaceholderMessageRequestToMap, buildQuoteMessageRequestToMap, buildRichDocMessageRequestToMap, buildScheduleMessageRequestToMap, buildStickerMessageRequestToMap, buildSystemMessageRequestToMap, buildTaskMessageRequestToMap, buildTextMessageRequestToMap, buildThreadReplyMessageRequestToMap, buildTypedMessageRequestToMap, buildVideoMessageRequestToMap, buildVoteMessageRequestToMap, buildWithContentMessageRequestToMap, normalizeRichDocFromDocJsonRequestToMap, normalizeRichDocFromHtmlRequestToMap, normalizeRichDocFromMarkdownRequestToMap, richDocV2NormalizedFromJson } from './WireCodec';
+import { NativeBridge, NativeCallMap } from '../../contract/BridgeContract';
+import type { MessageBuilderApi } from '../../api/modules/message_builder';
+import { MESSAGE_BUILD_CATALOG } from '../catalog/MessageBuildCatalog';
+import type { BuildAnnouncementMessageRequest, BuildAudioMessageRequest, BuildCardMessageRequest, BuildCustomMessageRequest, BuildEmojiMessageRequest, BuildFileMessageRequest, BuildForwardMessageRequest, BuildImageGroupMessageRequest, BuildImageMessageRequest, BuildLinkCardMessageRequest, BuildLocationMessageRequest, BuildMiniProgramMessageRequest, BuildNotificationMessageRequest, BuildPlaceholderMessageRequest, BuildPluginMessageRequest, BuildQuoteMessageRequest, BuildRichDocMessageRequest, BuildScheduleMessageRequest, BuildStickerMessageRequest, BuildSystemMessageRequest, BuildTaskMessageRequest, BuildTextMessageRequest, BuildThreadReplyMessageRequest, BuildVideoMessageRequest, BuildVoteMessageRequest, BuildWithContentMessageRequest, ListMessageBuildCatalogResponse, Message, NormalizeRichDocFromDocJsonRequest, NormalizeRichDocFromHtmlRequest, NormalizeRichDocFromMarkdownRequest, RichDocV2Normalized } from '../../model';
+import { invokeMap } from '../codec/NativeInvoke';
+import { buildAnnouncementMessageRequestToMap, buildAudioMessageRequestToMap, buildCardMessageRequestToMap, buildCustomMessageRequestToMap, buildEmojiMessageRequestToMap, buildFileMessageRequestToMap, buildForwardMessageRequestToMap, buildImageGroupMessageRequestToMap, buildImageMessageRequestToMap, buildLinkCardMessageRequestToMap, buildLocationMessageRequestToMap, buildMiniProgramMessageRequestToMap, buildNotificationMessageRequestToMap, buildPlaceholderMessageRequestToMap, buildPluginMessageRequestToMap, buildQuoteMessageRequestToMap, buildRichDocMessageRequestToMap, buildScheduleMessageRequestToMap, buildStickerMessageRequestToMap, buildSystemMessageRequestToMap, buildTaskMessageRequestToMap, buildTextMessageRequestToMap, buildThreadReplyMessageRequestToMap, buildVideoMessageRequestToMap, buildVoteMessageRequestToMap, buildWithContentMessageRequestToMap, messageFromJson, normalizeRichDocFromDocJsonRequestToMap, normalizeRichDocFromHtmlRequestToMap, normalizeRichDocFromMarkdownRequestToMap, richDocV2NormalizedFromJson } from '../codec/WireCodec';
 
 export class DefaultMessageBuilderApi implements MessageBuilderApi {
   constructor(private readonly bridge: NativeBridge) {}
-
-  private async dispatchBuildMap(request: Record<string, Object>): Promise<Message> {
-    return await invokeMessage(this.bridge, NativeCallMap.messageBuilderDispatch, request);
-  }
 
   async listSupportedBuildOperations(): Promise<ListMessageBuildCatalogResponse> {
     return { entries: MESSAGE_BUILD_CATALOG };
@@ -33,102 +29,132 @@ export class DefaultMessageBuilderApi implements MessageBuilderApi {
   }
 
   async buildAnnouncement(request: BuildAnnouncementMessageRequest): Promise<Message> {
-    return this.dispatchBuildMap({ op: "create_announcement", ...buildAnnouncementMessageRequestToMap(request) });
+    const raw = await invokeMap(this.bridge, NativeCallMap.messageBuilderCreateAnnouncement, buildAnnouncementMessageRequestToMap(request));
+    return messageFromJson(raw['message'] ?? raw);
   }
 
   async buildAudio(request: BuildAudioMessageRequest): Promise<Message> {
-    return this.dispatchBuildMap({ op: "create_audio", ...buildAudioMessageRequestToMap(request) });
+    const raw = await invokeMap(this.bridge, NativeCallMap.messageBuilderCreateAudio, buildAudioMessageRequestToMap(request));
+    return messageFromJson(raw['message'] ?? raw);
   }
 
   async buildCard(request: BuildCardMessageRequest): Promise<Message> {
-    return this.dispatchBuildMap({ op: "create_card", ...buildCardMessageRequestToMap(request) });
+    const raw = await invokeMap(this.bridge, NativeCallMap.messageBuilderCreateCard, buildCardMessageRequestToMap(request));
+    return messageFromJson(raw['message'] ?? raw);
   }
 
   async buildCustom(request: BuildCustomMessageRequest): Promise<Message> {
-    return this.dispatchBuildMap({ op: "create_custom", ...buildCustomMessageRequestToMap(request) });
+    const raw = await invokeMap(this.bridge, NativeCallMap.messageBuilderCreateCustom, buildCustomMessageRequestToMap(request));
+    return messageFromJson(raw['message'] ?? raw);
   }
 
   async buildEmoji(request: BuildEmojiMessageRequest): Promise<Message> {
-    return this.dispatchBuildMap({ op: "create_emoji", ...buildEmojiMessageRequestToMap(request) });
+    const raw = await invokeMap(this.bridge, NativeCallMap.messageBuilderCreateEmoji, buildEmojiMessageRequestToMap(request));
+    return messageFromJson(raw['message'] ?? raw);
   }
 
   async buildFile(request: BuildFileMessageRequest): Promise<Message> {
-    return this.dispatchBuildMap({ op: "create_file", ...buildFileMessageRequestToMap(request) });
+    const raw = await invokeMap(this.bridge, NativeCallMap.messageBuilderCreateFile, buildFileMessageRequestToMap(request));
+    return messageFromJson(raw['message'] ?? raw);
   }
 
   async buildForward(request: BuildForwardMessageRequest): Promise<Message> {
-    return this.dispatchBuildMap({ op: "create_forward", ...buildForwardMessageRequestToMap(request) });
+    const raw = await invokeMap(this.bridge, NativeCallMap.messageBuilderCreateForward, buildForwardMessageRequestToMap(request));
+    return messageFromJson(raw['message'] ?? raw);
   }
 
   async buildImage(request: BuildImageMessageRequest): Promise<Message> {
-    return this.dispatchBuildMap({ op: "create_image", ...buildImageMessageRequestToMap(request) });
+    const raw = await invokeMap(this.bridge, NativeCallMap.messageBuilderCreateImage, buildImageMessageRequestToMap(request));
+    return messageFromJson(raw['message'] ?? raw);
   }
 
   async buildImageGroup(request: BuildImageGroupMessageRequest): Promise<Message> {
-    return this.dispatchBuildMap({ op: "create_image_group", ...buildImageGroupMessageRequestToMap(request) });
+    const raw = await invokeMap(this.bridge, NativeCallMap.messageBuilderCreateImageGroup, buildImageGroupMessageRequestToMap(request));
+    return messageFromJson(raw['message'] ?? raw);
   }
 
   async buildLinkCard(request: BuildLinkCardMessageRequest): Promise<Message> {
-    return this.dispatchBuildMap({ op: "create_link_card", ...buildLinkCardMessageRequestToMap(request) });
+    const raw = await invokeMap(this.bridge, NativeCallMap.messageBuilderCreateLinkCard, buildLinkCardMessageRequestToMap(request));
+    return messageFromJson(raw['message'] ?? raw);
   }
 
   async buildLocation(request: BuildLocationMessageRequest): Promise<Message> {
-    return this.dispatchBuildMap({ op: "create_location", ...buildLocationMessageRequestToMap(request) });
+    const raw = await invokeMap(this.bridge, NativeCallMap.messageBuilderCreateLocation, buildLocationMessageRequestToMap(request));
+    return messageFromJson(raw['message'] ?? raw);
   }
 
   async buildMiniProgram(request: BuildMiniProgramMessageRequest): Promise<Message> {
-    return this.dispatchBuildMap({ op: "create_mini_program", ...buildMiniProgramMessageRequestToMap(request) });
+    const raw = await invokeMap(this.bridge, NativeCallMap.messageBuilderCreateMiniProgram, buildMiniProgramMessageRequestToMap(request));
+    return messageFromJson(raw['message'] ?? raw);
   }
 
   async buildNotification(request: BuildNotificationMessageRequest): Promise<Message> {
-    return this.dispatchBuildMap({ op: "create_notification", ...buildNotificationMessageRequestToMap(request) });
+    const raw = await invokeMap(this.bridge, NativeCallMap.messageBuilderCreateNotification, buildNotificationMessageRequestToMap(request));
+    return messageFromJson(raw['message'] ?? raw);
   }
 
   async buildPlaceholder(request: BuildPlaceholderMessageRequest): Promise<Message> {
-    return this.dispatchBuildMap({ op: "create_placeholder", ...buildPlaceholderMessageRequestToMap(request) });
+    const raw = await invokeMap(this.bridge, NativeCallMap.messageBuilderCreatePlaceholder, buildPlaceholderMessageRequestToMap(request));
+    return messageFromJson(raw['message'] ?? raw);
+  }
+
+  async buildPluginMessage(request: BuildPluginMessageRequest): Promise<Message> {
+    const raw = await invokeMap(this.bridge, NativeCallMap.messageBuilderCreatePluginMessage, buildPluginMessageRequestToMap(request));
+    return messageFromJson(raw['message'] ?? raw);
   }
 
   async buildQuote(request: BuildQuoteMessageRequest): Promise<Message> {
-    return this.dispatchBuildMap({ op: "create_quote", ...buildQuoteMessageRequestToMap(request) });
+    const raw = await invokeMap(this.bridge, NativeCallMap.messageBuilderCreateQuote, buildQuoteMessageRequestToMap(request));
+    return messageFromJson(raw['message'] ?? raw);
   }
 
   async buildRichDoc(request: BuildRichDocMessageRequest): Promise<Message> {
-    return this.dispatchBuildMap({ op: "create_rich_doc", ...buildRichDocMessageRequestToMap(request) });
+    const raw = await invokeMap(this.bridge, NativeCallMap.messageBuilderCreateRichDoc, buildRichDocMessageRequestToMap(request));
+    return messageFromJson(raw['message'] ?? raw);
   }
 
   async buildSchedule(request: BuildScheduleMessageRequest): Promise<Message> {
-    return this.dispatchBuildMap({ op: "create_schedule", ...buildScheduleMessageRequestToMap(request) });
+    const raw = await invokeMap(this.bridge, NativeCallMap.messageBuilderCreateSchedule, buildScheduleMessageRequestToMap(request));
+    return messageFromJson(raw['message'] ?? raw);
   }
 
   async buildSticker(request: BuildStickerMessageRequest): Promise<Message> {
-    return this.dispatchBuildMap({ op: "create_sticker", ...buildStickerMessageRequestToMap(request) });
+    const raw = await invokeMap(this.bridge, NativeCallMap.messageBuilderCreateSticker, buildStickerMessageRequestToMap(request));
+    return messageFromJson(raw['message'] ?? raw);
   }
 
   async buildSystem(request: BuildSystemMessageRequest): Promise<Message> {
-    return this.dispatchBuildMap({ op: "create_system", ...buildSystemMessageRequestToMap(request) });
+    const raw = await invokeMap(this.bridge, NativeCallMap.messageBuilderCreateSystem, buildSystemMessageRequestToMap(request));
+    return messageFromJson(raw['message'] ?? raw);
   }
 
   async buildTask(request: BuildTaskMessageRequest): Promise<Message> {
-    return this.dispatchBuildMap({ op: "create_task", ...buildTaskMessageRequestToMap(request) });
+    const raw = await invokeMap(this.bridge, NativeCallMap.messageBuilderCreateTask, buildTaskMessageRequestToMap(request));
+    return messageFromJson(raw['message'] ?? raw);
   }
 
   async buildText(request: BuildTextMessageRequest): Promise<Message> {
-    return this.dispatchBuildMap({ op: "create_text", ...buildTextMessageRequestToMap(request) });
+    const raw = await invokeMap(this.bridge, NativeCallMap.messageBuilderCreateText, buildTextMessageRequestToMap(request));
+    return messageFromJson(raw['message'] ?? raw);
   }
 
   async buildThreadReply(request: BuildThreadReplyMessageRequest): Promise<Message> {
-    return this.dispatchBuildMap({ op: "create_thread_reply", ...buildThreadReplyMessageRequestToMap(request) });
+    const raw = await invokeMap(this.bridge, NativeCallMap.messageBuilderCreateThreadReply, buildThreadReplyMessageRequestToMap(request));
+    return messageFromJson(raw['message'] ?? raw);
   }
 
   async buildVideo(request: BuildVideoMessageRequest): Promise<Message> {
-    return this.dispatchBuildMap({ op: "create_video", ...buildVideoMessageRequestToMap(request) });
+    const raw = await invokeMap(this.bridge, NativeCallMap.messageBuilderCreateVideo, buildVideoMessageRequestToMap(request));
+    return messageFromJson(raw['message'] ?? raw);
   }
 
   async buildVote(request: BuildVoteMessageRequest): Promise<Message> {
-    return this.dispatchBuildMap({ op: "create_vote", ...buildVoteMessageRequestToMap(request) });
+    const raw = await invokeMap(this.bridge, NativeCallMap.messageBuilderCreateVote, buildVoteMessageRequestToMap(request));
+    return messageFromJson(raw['message'] ?? raw);
   }
 
   async buildWithContent(request: BuildWithContentMessageRequest): Promise<Message> {
-    return this.dispatchBuildMap({ op: "create_with_content", ...buildWithContentMessageRequestToMap(request) });
+    const raw = await invokeMap(this.bridge, NativeCallMap.messageBuilderCreateWithContent, buildWithContentMessageRequestToMap(request));
+    return messageFromJson(raw['message'] ?? raw);
   }
 }

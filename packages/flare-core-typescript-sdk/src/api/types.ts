@@ -74,6 +74,7 @@ export type GetOneConversationRequest = FlareJsonObject;
 export type GetUserDownloadSavedPathRequest = FlareJsonObject;
 export type GetUserPresenceRequest = FlareJsonObject;
 export type GrantCapabilityRequest = FlareJsonObject;
+export type JsonObject = FlareJsonObject;
 export type ListCapabilitiesRequest = FlareJsonObject;
 export type ListCapabilitiesResponse = FlareJsonObject;
 export type ListConversationsPaginatedRequest = FlareJsonObject;

@@ -3,6 +3,16 @@ import { CapabilityEvent, ConnectionEvent, ConversationEvent, LifecycleEvent, Me
 
 /** Capability discovery and optional plugin dispatch through capability dispatch ops. */
 export interface CapabilitiesApi {
+  preparePluginCommand(request: PluginCommandRequest): Promise<Record<string, Object>>;
+  pendingPluginCommand(request: PluginCommandRequest): Promise<Record<string, Object>>;
+  reconcilePluginCommand(request: PluginCommandRequest): Promise<Record<string, Object>>;
+  submitPluginCommand(request: PluginCommandRequest): Promise<Record<string, Object>>;
+  acknowledgePluginCommand(request: PluginCommandRequest): Promise<Record<string, Object>>;
+  invokePluginAction(request: PluginUiEvaluationRequest): Promise<Record<string, Object>>;
+  presentPluginMessage(request: PluginUiEvaluationRequest): Promise<Record<string, Object>>;
+  pluginUiAction(request: PluginUiEvaluationRequest): Promise<Record<string, Object>>;
+  resolvePluginMessage(request: PluginUiEvaluationRequest): Promise<Record<string, Object>>;
+  pluginUiCatalog(request: Record<string, Object>): Promise<Record<string, Object>>;
   listCapabilities(request: Record<string, Object>): Promise<Record<string, Object>>;
   listUserCapabilities(request: Record<string, Object>): Promise<Record<string, Object>>;
   dispatchCapability(request: Record<string, Object>): Promise<Record<string, Object>>;

@@ -26,4 +26,5 @@ export enum MessageBuildOp {
   CreateCustom = "create_custom",
   CreatePlaceholder = "create_placeholder",
   CreateWithContent = "create_with_content",
+  CreatePluginMessage = "create_plugin_message",
 }

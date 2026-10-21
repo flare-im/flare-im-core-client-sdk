@@ -6,6 +6,51 @@ import 'package:test/test.dart';
 
 void main() {
   group('DefaultFlareImClient direct FFI request shape', () {
+    test('plugin UI catalog dispatches through the Rust capability API',
+        () async {
+      final bridge = _RecordingBridge();
+      final client = FlareCoreSdk.createClientWithBridge(bridge);
+      final request = {'pluginId': 'red-packet'};
+
+      final response = await client.capabilities.pluginUiCatalog(request);
+
+      expect(bridge.lastOperation, 'capability.plugin_ui_catalog');
+      expect(bridge.lastTransport, 'capability-dispatch-json');
+      expect(bridge.lastCApi, 'flare_capability_dispatch_json');
+      expect(bridge.lastRequest, request);
+      expect(response, {'items': <Object>[]});
+    });
+
+    test('plugin UI actions and message resolution use typed payload envelope',
+        () async {
+      final bridge = _RecordingBridge();
+      final client = FlareCoreSdk.createClientWithBridge(bridge);
+      const request = PluginUiEvaluationRequest(payload: {'messageId': 'm1'});
+
+      await client.capabilities.presentPluginMessage(request);
+      expect(bridge.lastOperation, 'capability.plugin_ui_present');
+      expect(bridge.lastTransport, 'capability-dispatch-json');
+      expect(bridge.lastCApi, 'flare_capability_dispatch_json');
+      expect(bridge.lastRequest, {'payload': {'messageId': 'm1'}});
+      await client.capabilities.invokePluginAction(request);
+      expect(bridge.lastOperation, 'capability.plugin_ui_invoke');
+      expect(bridge.lastTransport, 'capability-dispatch-json');
+      expect(bridge.lastCApi, 'flare_capability_dispatch_json');
+      expect(bridge.lastRequest, {'payload': {'messageId': 'm1'}});
+
+      await client.capabilities.pluginUiAction(request);
+      expect(bridge.lastOperation, 'capability.plugin_ui_action');
+      expect(bridge.lastRequest, {
+        'payload': {'messageId': 'm1'}
+      });
+
+      await client.capabilities.resolvePluginMessage(request);
+      expect(bridge.lastOperation, 'capability.plugin_ui_resolve');
+      expect(bridge.lastRequest, {
+        'payload': {'messageId': 'm1'}
+      });
+    });
+
     test('createTextMessage uses platform camelCase fields', () async {
       final bridge = _RecordingBridge();
       final client = FlareCoreSdk.createClientWithBridge(bridge);
@@ -909,6 +954,13 @@ final class _RecordingBridge implements NativeBridge {
     lastRequest = request;
 
     switch (descriptor.operation) {
+      case 'capability.plugin_ui_catalog':
+        return {'items': <Object>[]} as T;
+      case 'capability.plugin_ui_action':
+      case 'capability.plugin_ui_resolve':
+      case 'capability.plugin_ui_present':
+      case 'capability.plugin_ui_invoke':
+        return {'accepted': true} as T;
       case 'message.create_text':
         return (createTextResponse ?? _messageResponse()) as T;
       case 'message_builder.dispatch':

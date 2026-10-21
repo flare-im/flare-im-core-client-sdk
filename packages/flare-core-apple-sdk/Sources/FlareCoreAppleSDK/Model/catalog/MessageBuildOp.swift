@@ -28,4 +28,5 @@ public enum MessageBuildOp: String, Codable, Sendable {
     case createCustom = "create_custom"
     case createPlaceholder = "create_placeholder"
     case createWithContent = "create_with_content"
+    case createPluginMessage = "create_plugin_message"
 }

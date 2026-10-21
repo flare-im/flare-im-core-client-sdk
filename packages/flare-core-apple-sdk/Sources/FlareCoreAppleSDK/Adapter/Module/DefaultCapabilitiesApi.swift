@@ -8,6 +8,46 @@ public final class DefaultCapabilitiesApi: CapabilitiesApiProtocol {
         self.bridge = bridge
     }
 
+    public func preparePluginCommand(_ request: PluginCommandRequest) async throws -> [String: AnySendable] {
+        return try await invokeMap(bridge, descriptor: NativeCallMap.capabilityPreparePluginCommand, request: pluginCommandRequestToMap(request))
+    }
+
+    public func pendingPluginCommand(_ request: PluginCommandRequest) async throws -> [String: AnySendable] {
+        return try await invokeMap(bridge, descriptor: NativeCallMap.capabilityPendingPluginCommand, request: pluginCommandRequestToMap(request))
+    }
+
+    public func reconcilePluginCommand(_ request: PluginCommandRequest) async throws -> [String: AnySendable] {
+        return try await invokeMap(bridge, descriptor: NativeCallMap.capabilityReconcilePluginCommand, request: pluginCommandRequestToMap(request))
+    }
+
+    public func submitPluginCommand(_ request: PluginCommandRequest) async throws -> [String: AnySendable] {
+        return try await invokeMap(bridge, descriptor: NativeCallMap.capabilitySubmitPluginCommand, request: pluginCommandRequestToMap(request))
+    }
+
+    public func acknowledgePluginCommand(_ request: PluginCommandRequest) async throws -> [String: AnySendable] {
+        return try await invokeMap(bridge, descriptor: NativeCallMap.capabilityAcknowledgePluginCommand, request: pluginCommandRequestToMap(request))
+    }
+
+    public func invokePluginAction(_ request: PluginUiEvaluationRequest) async throws -> [String: AnySendable] {
+        return try await invokeMap(bridge, descriptor: NativeCallMap.capabilityPluginUiInvoke, request: pluginUiEvaluationRequestToMap(request))
+    }
+
+    public func presentPluginMessage(_ request: PluginUiEvaluationRequest) async throws -> [String: AnySendable] {
+        return try await invokeMap(bridge, descriptor: NativeCallMap.capabilityPluginUiPresent, request: pluginUiEvaluationRequestToMap(request))
+    }
+
+    public func pluginUiAction(_ request: PluginUiEvaluationRequest) async throws -> [String: AnySendable] {
+        return try await invokeMap(bridge, descriptor: NativeCallMap.capabilityPluginUiAction, request: pluginUiEvaluationRequestToMap(request))
+    }
+
+    public func resolvePluginMessage(_ request: PluginUiEvaluationRequest) async throws -> [String: AnySendable] {
+        return try await invokeMap(bridge, descriptor: NativeCallMap.capabilityPluginUiResolve, request: pluginUiEvaluationRequestToMap(request))
+    }
+
+    public func pluginUiCatalog(_ request: [String: AnySendable]) async throws -> [String: AnySendable] {
+        return try await invokeMap(bridge, descriptor: NativeCallMap.capabilityPluginUiCatalog, request: unwrapRequest(AnySendable(request)))
+    }
+
     public func listCapabilities(_ request: [String: AnySendable]) async throws -> [String: AnySendable] {
         return try await invokeMap(bridge, descriptor: NativeCallMap.capabilityList, request: unwrapRequest(AnySendable(request)))
     }

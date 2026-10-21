@@ -6,8 +6,11 @@ package flare_core_harmony_cangjie_sdk.model.command.message
 public class SendMessageRequest {
     // wire: `message`. Message to send.
     public let message: Message
+    // wire: `expectedUserId`. Optional. Optional active-user precondition; cannot override the authenticated sender.
+    public let expectedUserId: ?String
 
-    public init(message!: Message) {
+    public init(message!: Message, expectedUserId!: ?String) {
         this.message = message
+        this.expectedUserId = expectedUserId
     }
 }

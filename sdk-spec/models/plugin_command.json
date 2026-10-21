@@ -1,0 +1,19 @@
+{
+  "group": "pluginCommand",
+  "description": "Durable idempotent plugin intent; Rust PluginCommand and strict request parsers own semantics.",
+  "models": [
+    {
+      "name": "PluginCommandRequest",
+      "fields": [
+        {
+          "name": "payload",
+          "wireName": "payload",
+          "type": "JsonObject",
+          "required": true,
+          "description": "prepare: slot + command; pending: slot; submit/acknowledge: slot + commandId. Scope is inferred from the active SDK session."
+        }
+      ]
+    }
+  ],
+  "enums": []
+}

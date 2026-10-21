@@ -8,127 +8,152 @@ public final class DefaultMessageBuilderApi: MessageBuilderApiProtocol {
         self.bridge = bridge
     }
 
-    private func dispatchBuildMap(_ descriptor: NativeCallDescriptor, request: [String: AnySendable]) async throws -> Message {
-        let raw = try await invokeMap(bridge, descriptor: descriptor, request: request)
-        return try messageFromJson(raw["message"] ?? raw)
-    }
-
     public func listSupportedBuildOperations() async throws -> ListMessageBuildCatalogResponse {
-        ListMessageBuildCatalogResponse(entries: messageBuildCatalog)
+        return ListMessageBuildCatalogResponse(entries: messageBuildCatalog)
     }
 
     public func normalizeRichDocFromMarkdown(_ request: NormalizeRichDocFromMarkdownRequest) async throws -> RichDocV2Normalized {
-        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.richDocV2NormalizeFromMarkdown, request: unwrapRequest(AnySendable(normalizeRichDocFromMarkdownRequestToMap(request))))
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.richDocV2NormalizeFromMarkdown, request: normalizeRichDocFromMarkdownRequestToMap(request))
         return try richDocV2NormalizedFromJson(raw)
     }
 
     public func normalizeRichDocFromHtml(_ request: NormalizeRichDocFromHtmlRequest) async throws -> RichDocV2Normalized {
-        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.richDocV2NormalizeFromHtml, request: unwrapRequest(AnySendable(normalizeRichDocFromHtmlRequestToMap(request))))
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.richDocV2NormalizeFromHtml, request: normalizeRichDocFromHtmlRequestToMap(request))
         return try richDocV2NormalizedFromJson(raw)
     }
 
     public func normalizeRichDocFromDocJson(_ request: NormalizeRichDocFromDocJsonRequest) async throws -> RichDocV2Normalized {
-        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.richDocV2NormalizeFromDocJson, request: unwrapRequest(AnySendable(normalizeRichDocFromDocJsonRequestToMap(request))))
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.richDocV2NormalizeFromDocJson, request: normalizeRichDocFromDocJsonRequestToMap(request))
         return try richDocV2NormalizedFromJson(raw)
     }
 
     public func buildAnnouncement(_ request: BuildAnnouncementMessageRequest) async throws -> Message {
-        var wire = buildAnnouncementMessageRequestToMap(request); wire["op"] = AnySendable("create_announcement"); return try await dispatchBuildMap(NativeCallMap.messageBuilderCreateAnnouncement, request: wire)
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.messageBuilderCreateAnnouncement, request: buildAnnouncementMessageRequestToMap(request))
+        return try messageFromJson(raw["message"] ?? raw)
     }
 
     public func buildAudio(_ request: BuildAudioMessageRequest) async throws -> Message {
-        var wire = buildAudioMessageRequestToMap(request); wire["op"] = AnySendable("create_audio"); return try await dispatchBuildMap(NativeCallMap.messageBuilderCreateAudio, request: wire)
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.messageBuilderCreateAudio, request: buildAudioMessageRequestToMap(request))
+        return try messageFromJson(raw["message"] ?? raw)
     }
 
     public func buildCard(_ request: BuildCardMessageRequest) async throws -> Message {
-        var wire = buildCardMessageRequestToMap(request); wire["op"] = AnySendable("create_card"); return try await dispatchBuildMap(NativeCallMap.messageBuilderCreateCard, request: wire)
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.messageBuilderCreateCard, request: buildCardMessageRequestToMap(request))
+        return try messageFromJson(raw["message"] ?? raw)
     }
 
     public func buildCustom(_ request: BuildCustomMessageRequest) async throws -> Message {
-        var wire = buildCustomMessageRequestToMap(request); wire["op"] = AnySendable("create_custom"); return try await dispatchBuildMap(NativeCallMap.messageBuilderCreateCustom, request: wire)
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.messageBuilderCreateCustom, request: buildCustomMessageRequestToMap(request))
+        return try messageFromJson(raw["message"] ?? raw)
     }
 
     public func buildEmoji(_ request: BuildEmojiMessageRequest) async throws -> Message {
-        var wire = buildEmojiMessageRequestToMap(request); wire["op"] = AnySendable("create_emoji"); return try await dispatchBuildMap(NativeCallMap.messageBuilderCreateEmoji, request: wire)
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.messageBuilderCreateEmoji, request: buildEmojiMessageRequestToMap(request))
+        return try messageFromJson(raw["message"] ?? raw)
     }
 
     public func buildFile(_ request: BuildFileMessageRequest) async throws -> Message {
-        var wire = buildFileMessageRequestToMap(request); wire["op"] = AnySendable("create_file"); return try await dispatchBuildMap(NativeCallMap.messageBuilderCreateFile, request: wire)
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.messageBuilderCreateFile, request: buildFileMessageRequestToMap(request))
+        return try messageFromJson(raw["message"] ?? raw)
     }
 
     public func buildForward(_ request: BuildForwardMessageRequest) async throws -> Message {
-        var wire = buildForwardMessageRequestToMap(request); wire["op"] = AnySendable("create_forward"); return try await dispatchBuildMap(NativeCallMap.messageBuilderCreateForward, request: wire)
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.messageBuilderCreateForward, request: buildForwardMessageRequestToMap(request))
+        return try messageFromJson(raw["message"] ?? raw)
     }
 
     public func buildImage(_ request: BuildImageMessageRequest) async throws -> Message {
-        var wire = buildImageMessageRequestToMap(request); wire["op"] = AnySendable("create_image"); return try await dispatchBuildMap(NativeCallMap.messageBuilderCreateImage, request: wire)
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.messageBuilderCreateImage, request: buildImageMessageRequestToMap(request))
+        return try messageFromJson(raw["message"] ?? raw)
     }
 
     public func buildImageGroup(_ request: BuildImageGroupMessageRequest) async throws -> Message {
-        var wire = buildImageGroupMessageRequestToMap(request); wire["op"] = AnySendable("create_image_group"); return try await dispatchBuildMap(NativeCallMap.messageBuilderCreateImageGroup, request: wire)
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.messageBuilderCreateImageGroup, request: buildImageGroupMessageRequestToMap(request))
+        return try messageFromJson(raw["message"] ?? raw)
     }
 
     public func buildLinkCard(_ request: BuildLinkCardMessageRequest) async throws -> Message {
-        var wire = buildLinkCardMessageRequestToMap(request); wire["op"] = AnySendable("create_link_card"); return try await dispatchBuildMap(NativeCallMap.messageBuilderCreateLinkCard, request: wire)
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.messageBuilderCreateLinkCard, request: buildLinkCardMessageRequestToMap(request))
+        return try messageFromJson(raw["message"] ?? raw)
     }
 
     public func buildLocation(_ request: BuildLocationMessageRequest) async throws -> Message {
-        var wire = buildLocationMessageRequestToMap(request); wire["op"] = AnySendable("create_location"); return try await dispatchBuildMap(NativeCallMap.messageBuilderCreateLocation, request: wire)
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.messageBuilderCreateLocation, request: buildLocationMessageRequestToMap(request))
+        return try messageFromJson(raw["message"] ?? raw)
     }
 
     public func buildMiniProgram(_ request: BuildMiniProgramMessageRequest) async throws -> Message {
-        var wire = buildMiniProgramMessageRequestToMap(request); wire["op"] = AnySendable("create_mini_program"); return try await dispatchBuildMap(NativeCallMap.messageBuilderCreateMiniProgram, request: wire)
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.messageBuilderCreateMiniProgram, request: buildMiniProgramMessageRequestToMap(request))
+        return try messageFromJson(raw["message"] ?? raw)
     }
 
     public func buildNotification(_ request: BuildNotificationMessageRequest) async throws -> Message {
-        var wire = buildNotificationMessageRequestToMap(request); wire["op"] = AnySendable("create_notification"); return try await dispatchBuildMap(NativeCallMap.messageBuilderCreateNotification, request: wire)
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.messageBuilderCreateNotification, request: buildNotificationMessageRequestToMap(request))
+        return try messageFromJson(raw["message"] ?? raw)
     }
 
     public func buildPlaceholder(_ request: BuildPlaceholderMessageRequest) async throws -> Message {
-        var wire = buildPlaceholderMessageRequestToMap(request); wire["op"] = AnySendable("create_placeholder"); return try await dispatchBuildMap(NativeCallMap.messageBuilderCreatePlaceholder, request: wire)
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.messageBuilderCreatePlaceholder, request: buildPlaceholderMessageRequestToMap(request))
+        return try messageFromJson(raw["message"] ?? raw)
+    }
+
+    public func buildPluginMessage(_ request: BuildPluginMessageRequest) async throws -> Message {
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.messageBuilderCreatePluginMessage, request: buildPluginMessageRequestToMap(request))
+        return try messageFromJson(raw["message"] ?? raw)
     }
 
     public func buildQuote(_ request: BuildQuoteMessageRequest) async throws -> Message {
-        var wire = buildQuoteMessageRequestToMap(request); wire["op"] = AnySendable("create_quote"); return try await dispatchBuildMap(NativeCallMap.messageBuilderCreateQuote, request: wire)
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.messageBuilderCreateQuote, request: buildQuoteMessageRequestToMap(request))
+        return try messageFromJson(raw["message"] ?? raw)
     }
 
     public func buildRichDoc(_ request: BuildRichDocMessageRequest) async throws -> Message {
-        var wire = buildRichDocMessageRequestToMap(request); wire["op"] = AnySendable("create_rich_doc"); return try await dispatchBuildMap(NativeCallMap.messageBuilderCreateRichDoc, request: wire)
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.messageBuilderCreateRichDoc, request: buildRichDocMessageRequestToMap(request))
+        return try messageFromJson(raw["message"] ?? raw)
     }
 
     public func buildSchedule(_ request: BuildScheduleMessageRequest) async throws -> Message {
-        var wire = buildScheduleMessageRequestToMap(request); wire["op"] = AnySendable("create_schedule"); return try await dispatchBuildMap(NativeCallMap.messageBuilderCreateSchedule, request: wire)
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.messageBuilderCreateSchedule, request: buildScheduleMessageRequestToMap(request))
+        return try messageFromJson(raw["message"] ?? raw)
     }
 
     public func buildSticker(_ request: BuildStickerMessageRequest) async throws -> Message {
-        var wire = buildStickerMessageRequestToMap(request); wire["op"] = AnySendable("create_sticker"); return try await dispatchBuildMap(NativeCallMap.messageBuilderCreateSticker, request: wire)
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.messageBuilderCreateSticker, request: buildStickerMessageRequestToMap(request))
+        return try messageFromJson(raw["message"] ?? raw)
     }
 
     public func buildSystem(_ request: BuildSystemMessageRequest) async throws -> Message {
-        var wire = buildSystemMessageRequestToMap(request); wire["op"] = AnySendable("create_system"); return try await dispatchBuildMap(NativeCallMap.messageBuilderCreateSystem, request: wire)
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.messageBuilderCreateSystem, request: buildSystemMessageRequestToMap(request))
+        return try messageFromJson(raw["message"] ?? raw)
     }
 
     public func buildTask(_ request: BuildTaskMessageRequest) async throws -> Message {
-        var wire = buildTaskMessageRequestToMap(request); wire["op"] = AnySendable("create_task"); return try await dispatchBuildMap(NativeCallMap.messageBuilderCreateTask, request: wire)
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.messageBuilderCreateTask, request: buildTaskMessageRequestToMap(request))
+        return try messageFromJson(raw["message"] ?? raw)
     }
 
     public func buildText(_ request: BuildTextMessageRequest) async throws -> Message {
-        var wire = buildTextMessageRequestToMap(request); wire["op"] = AnySendable("create_text"); return try await dispatchBuildMap(NativeCallMap.messageBuilderCreateText, request: wire)
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.messageBuilderCreateText, request: buildTextMessageRequestToMap(request))
+        return try messageFromJson(raw["message"] ?? raw)
     }
 
     public func buildThreadReply(_ request: BuildThreadReplyMessageRequest) async throws -> Message {
-        var wire = buildThreadReplyMessageRequestToMap(request); wire["op"] = AnySendable("create_thread_reply"); return try await dispatchBuildMap(NativeCallMap.messageBuilderCreateThreadReply, request: wire)
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.messageBuilderCreateThreadReply, request: buildThreadReplyMessageRequestToMap(request))
+        return try messageFromJson(raw["message"] ?? raw)
     }
 
     public func buildVideo(_ request: BuildVideoMessageRequest) async throws -> Message {
-        var wire = buildVideoMessageRequestToMap(request); wire["op"] = AnySendable("create_video"); return try await dispatchBuildMap(NativeCallMap.messageBuilderCreateVideo, request: wire)
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.messageBuilderCreateVideo, request: buildVideoMessageRequestToMap(request))
+        return try messageFromJson(raw["message"] ?? raw)
     }
 
     public func buildVote(_ request: BuildVoteMessageRequest) async throws -> Message {
-        var wire = buildVoteMessageRequestToMap(request); wire["op"] = AnySendable("create_vote"); return try await dispatchBuildMap(NativeCallMap.messageBuilderCreateVote, request: wire)
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.messageBuilderCreateVote, request: buildVoteMessageRequestToMap(request))
+        return try messageFromJson(raw["message"] ?? raw)
     }
 
     public func buildWithContent(_ request: BuildWithContentMessageRequest) async throws -> Message {
-        var wire = buildWithContentMessageRequestToMap(request); wire["op"] = AnySendable("create_with_content"); return try await dispatchBuildMap(NativeCallMap.messageBuilderCreateWithContent, request: wire)
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.messageBuilderCreateWithContent, request: buildWithContentMessageRequestToMap(request))
+        return try messageFromJson(raw["message"] ?? raw)
     }
 }

@@ -28,7 +28,9 @@
       "models/messages.json",
       "models/message_content_elems.json",
       "models/message_builder.json",
-      "models/events.json"
+      "models/events.json",
+      "models/plugin_ui.json",
+      "models/plugin_command.json"
     ],
     "modules": [
       "modules/session.json",

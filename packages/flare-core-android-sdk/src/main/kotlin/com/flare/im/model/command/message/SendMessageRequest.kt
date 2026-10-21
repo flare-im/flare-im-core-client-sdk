@@ -7,4 +7,6 @@ import com.flare.im.model.entity.Message
 data class SendMessageRequest(
     /** wire: `message`. Message to send. */
     val message: Message,
+    /** wire: `expectedUserId`. Optional active-user precondition; cannot override the authenticated sender. */
+    val expectedUserId: String? = null,
 )

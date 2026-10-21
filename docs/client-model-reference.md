@@ -593,6 +593,7 @@ Send a fully built message.
 | Field | Wire name | Type | Required | Description |
 |-------|-----------|------|----------|-------------|
 | `message` | `message` | `Message` | yes | Message to send. |
+| `expectedUserId` | `expectedUserId` | `String` | no | Optional active-user precondition; cannot override the authenticated sender. |
 
 ### SendMessageResponse
 
@@ -769,7 +770,7 @@ Typed requests for messageBuilder quick-build APIs and catalog metadata.
 
 ### Enums
 
-- `MessageBuildOp`: Dispatch op passed to flare_message_build_json. Values: `create_text`, `create_quote`, `create_thread_reply`, `create_forward`, `create_image`, `create_image_group`, `create_video`, `create_audio`, `create_file`, `create_emoji`, `create_location`, `create_sticker`, `create_link_card`, `create_card`, `create_mini_program`, `create_rich_doc`, `create_system`, `create_notification`, `create_vote`, `create_task`, `create_schedule`, `create_announcement`, `create_custom`, `create_placeholder`, `create_with_content`
+- `MessageBuildOp`: Dispatch op passed to flare_message_build_json. Values: `create_text`, `create_quote`, `create_thread_reply`, `create_forward`, `create_image`, `create_image_group`, `create_video`, `create_audio`, `create_file`, `create_emoji`, `create_location`, `create_sticker`, `create_link_card`, `create_card`, `create_mini_program`, `create_rich_doc`, `create_system`, `create_notification`, `create_vote`, `create_task`, `create_schedule`, `create_announcement`, `create_custom`, `create_placeholder`, `create_with_content`, `create_plugin_message`
 
 ### MessageBuildCatalogEntry
 
@@ -1118,6 +1119,15 @@ Build from an existing MessageContent envelope.
 | `conversationId` | `conversationId` | `String` | yes | Target conversation id. |
 | `content` | `content` | `MessageContent` | yes | Decoded content envelope. |
 
+### BuildPluginMessageRequest
+
+Generic safe plugin message over the existing AppCard envelope.
+
+| Field | Wire name | Type | Required | Description |
+|-------|-----------|------|----------|-------------|
+| `conversationId` | `conversationId` | `String` | yes | Target conversation id. |
+| `payload` | `payload` | `JsonObject` | yes | Validated generic plugin message envelope defined by flare-plugin-protocol. |
+
 ## Events
 
 Typed SDK event and notification models for cross-platform subscriptions.
@@ -1342,3 +1352,27 @@ Capability/plugin notification payload.
 | `name` | `name` | `CapabilityEventName` | yes | Capability event name. |
 | `capability` | `capability` | `String` | no | Capability key. |
 | `reason` | `reason` | `String` | no | Unavailable/change reason. |
+
+## PluginUi
+
+Data-only plugin UI evaluation, authoritative types and bounds live in flare-plugin-protocol/ui.rs.
+
+### PluginUiEvaluationRequest
+
+
+
+| Field | Wire name | Type | Required | Description |
+|-------|-----------|------|----------|-------------|
+| `payload` | `payload` | `JsonObject` | yes | Typed UI evaluation envelope defined by the shared UI protocol. |
+
+## PluginCommand
+
+Durable idempotent plugin intent; Rust PluginCommand and strict request parsers own semantics.
+
+### PluginCommandRequest
+
+
+
+| Field | Wire name | Type | Required | Description |
+|-------|-----------|------|----------|-------------|
+| `payload` | `payload` | `JsonObject` | yes | prepare: slot + command; pending: slot; submit/acknowledge: slot + commandId. Scope is inferred from the active SDK session. |

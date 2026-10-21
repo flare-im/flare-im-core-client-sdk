@@ -1,0 +1,19 @@
+{
+  "group": "pluginUi",
+  "description": "Data-only plugin UI evaluation, authoritative types and bounds live in flare-plugin-protocol/ui.rs.",
+  "models": [
+    {
+      "name": "PluginUiEvaluationRequest",
+      "fields": [
+        {
+          "name": "payload",
+          "wireName": "payload",
+          "type": "JsonObject",
+          "required": true,
+          "description": "Typed UI evaluation envelope defined by the shared UI protocol."
+        }
+      ]
+    }
+  ],
+  "enums": []
+}

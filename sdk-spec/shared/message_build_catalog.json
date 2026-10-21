@@ -142,6 +142,16 @@
       "summary": "Build placeholder message"
     },
     {
+      "contentType": "custom",
+      "messageType": 14,
+      "method": "buildPluginMessage",
+      "op": "create_plugin_message",
+      "request": "BuildPluginMessageRequest",
+      "sourceOperation": "message_builder.create_plugin_message",
+      "stability": "stable",
+      "summary": "Build plugin message message"
+    },
+    {
       "contentType": "quote",
       "messageType": 15,
       "method": "buildQuote",

@@ -437,6 +437,13 @@
           "type": "Message",
           "required": true,
           "description": "Message to send."
+        },
+        {
+          "name": "expectedUserId",
+          "wireName": "expectedUserId",
+          "type": "String",
+          "required": false,
+          "description": "Optional active-user precondition; cannot override the authenticated sender."
         }
       ]
     },

@@ -8,6 +8,11 @@ android {
     compileSdk = 35
     ndkVersion = "28.2.13676358"
 
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
     defaultConfig {
         minSdk = 23
 

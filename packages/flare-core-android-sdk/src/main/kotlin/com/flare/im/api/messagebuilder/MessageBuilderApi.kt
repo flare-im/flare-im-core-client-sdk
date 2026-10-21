@@ -63,6 +63,8 @@ interface MessageBuilderApi {
     suspend fun buildNotification(request: BuildNotificationMessageRequest): Message
     /** buildPlaceholder maps to `flare_message_build_json` via `dispatch-json`, dispatch op `create_placeholder`. Operation: `message_builder.create_placeholder`. */
     suspend fun buildPlaceholder(request: BuildPlaceholderMessageRequest): Message
+    /** buildPluginMessage maps to `flare_message_build_json` via `dispatch-json`, dispatch op `create_plugin_message`. Operation: `message_builder.create_plugin_message`. */
+    suspend fun buildPluginMessage(request: BuildPluginMessageRequest): Message
     /** buildQuote maps to `flare_message_build_json` via `dispatch-json`, dispatch op `create_quote`. Operation: `message_builder.create_quote`. */
     suspend fun buildQuote(request: BuildQuoteMessageRequest): Message
     /** buildRichDoc maps to `flare_message_build_json` via `dispatch-json`, dispatch op `create_rich_doc`. Operation: `message_builder.create_rich_doc`. */

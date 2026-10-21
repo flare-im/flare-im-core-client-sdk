@@ -17,6 +17,7 @@ import {
   BuildMiniProgramMessageRequest,
   BuildNotificationMessageRequest,
   BuildPlaceholderMessageRequest,
+  BuildPluginMessageRequest,
   BuildQuoteMessageRequest,
   BuildRichDocMessageRequest,
   BuildScheduleMessageRequest,
@@ -89,6 +90,8 @@ import {
   OpenConversationListViewRequest,
   OpenConversationTimelineRequest,
   OpenTimelineViewRequest,
+  PluginCommandRequest,
+  PluginUiEvaluationRequest,
   PresenceChangedEvent,
   ProgressEvent,
   ProgressEventName,
@@ -954,6 +957,13 @@ export function buildWithContentMessageRequestToMap(request: BuildWithContentMes
   };
 }
 
+export function buildPluginMessageRequestToMap(request: BuildPluginMessageRequest): Record<string, unknown> {
+  return {
+  conversationId: request.conversationId,
+  payload: request.payload,
+  };
+}
+
 export function sdkErrorPayloadToMap(request: SdkErrorPayload): Record<string, unknown> {
   return {
   code: request.code,
@@ -1119,10 +1129,22 @@ export function capabilityEventToMap(request: CapabilityEvent): Record<string, u
   };
 }
 
+export function pluginUiEvaluationRequestToMap(request: PluginUiEvaluationRequest): Record<string, unknown> {
+  return {
+  payload: request.payload,
+  };
+}
+
+export function pluginCommandRequestToMap(request: PluginCommandRequest): Record<string, unknown> {
+  return {
+  payload: request.payload,
+  };
+}
+
 
 
 export function sendMessageRequestToMap(request: SendMessageRequest): Record<string, unknown> {
-  return { message: messageToWireMap(request.message) };
+  return { message: messageToWireMap(request.message), ...(request.expectedUserId === undefined ? {} : { expectedUserId: request.expectedUserId }) };
 }
 
 export function messageToWireMap(message: Message): Record<string, unknown> {

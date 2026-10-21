@@ -4,6 +4,106 @@
   "description": "Capability discovery and optional plugin dispatch through capability dispatch ops.",
   "methods": [
     {
+      "name": "preparePluginCommand",
+      "operation": "capability.prepare_plugin_command",
+      "transport": "capability-dispatch-json",
+      "cApi": "flare_capability_dispatch_json",
+      "dispatchOp": "prepare_plugin_command",
+      "request": "PluginCommandRequest",
+      "response": "JsonObject",
+      "stability": "experimental"
+    },
+    {
+      "name": "pendingPluginCommand",
+      "operation": "capability.pending_plugin_command",
+      "transport": "capability-dispatch-json",
+      "cApi": "flare_capability_dispatch_json",
+      "dispatchOp": "pending_plugin_command",
+      "request": "PluginCommandRequest",
+      "response": "JsonObject",
+      "stability": "experimental"
+    },
+    {
+      "name": "reconcilePluginCommand",
+      "operation": "capability.reconcile_plugin_command",
+      "transport": "capability-dispatch-json",
+      "cApi": "flare_capability_dispatch_json",
+      "dispatchOp": "reconcile_plugin_command",
+      "request": "PluginCommandRequest",
+      "response": "JsonObject",
+      "stability": "experimental"
+    },
+    {
+      "name": "submitPluginCommand",
+      "operation": "capability.submit_plugin_command",
+      "transport": "capability-dispatch-json",
+      "cApi": "flare_capability_dispatch_json",
+      "dispatchOp": "submit_plugin_command",
+      "request": "PluginCommandRequest",
+      "response": "JsonObject",
+      "stability": "experimental"
+    },
+    {
+      "name": "acknowledgePluginCommand",
+      "operation": "capability.acknowledge_plugin_command",
+      "transport": "capability-dispatch-json",
+      "cApi": "flare_capability_dispatch_json",
+      "dispatchOp": "acknowledge_plugin_command",
+      "request": "PluginCommandRequest",
+      "response": "JsonObject",
+      "stability": "experimental"
+    },
+    {
+      "name": "invokePluginAction",
+      "operation": "capability.plugin_ui_invoke",
+      "transport": "capability-dispatch-json",
+      "cApi": "flare_capability_dispatch_json",
+      "dispatchOp": "plugin_ui_invoke",
+      "request": "PluginUiEvaluationRequest",
+      "response": "JsonObject",
+      "stability": "experimental"
+    },
+    {
+      "name": "presentPluginMessage",
+      "operation": "capability.plugin_ui_present",
+      "transport": "capability-dispatch-json",
+      "cApi": "flare_capability_dispatch_json",
+      "dispatchOp": "plugin_ui_present",
+      "request": "PluginUiEvaluationRequest",
+      "response": "JsonObject",
+      "stability": "experimental"
+    },
+    {
+      "name": "pluginUiAction",
+      "operation": "capability.plugin_ui_action",
+      "transport": "capability-dispatch-json",
+      "cApi": "flare_capability_dispatch_json",
+      "dispatchOp": "plugin_ui_action",
+      "request": "PluginUiEvaluationRequest",
+      "response": "JsonObject",
+      "stability": "experimental"
+    },
+    {
+      "name": "resolvePluginMessage",
+      "operation": "capability.plugin_ui_resolve",
+      "transport": "capability-dispatch-json",
+      "cApi": "flare_capability_dispatch_json",
+      "dispatchOp": "plugin_ui_resolve",
+      "request": "PluginUiEvaluationRequest",
+      "response": "JsonObject",
+      "stability": "experimental"
+    },
+    {
+      "name": "pluginUiCatalog",
+      "operation": "capability.plugin_ui_catalog",
+      "transport": "capability-dispatch-json",
+      "cApi": "flare_capability_dispatch_json",
+      "dispatchOp": "plugin_ui_catalog",
+      "request": "ListCapabilitiesRequest",
+      "response": "JsonObject",
+      "stability": "experimental"
+    },
+    {
       "name": "listCapabilities",
       "operation": "capability.list",
       "transport": "capability-dispatch-json",

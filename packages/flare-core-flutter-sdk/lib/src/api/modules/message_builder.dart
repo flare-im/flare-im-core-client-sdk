@@ -40,6 +40,8 @@ abstract interface class MessageBuilderApi {
   Future<Message> buildNotification(BuildNotificationMessageRequest request);
   /// buildPlaceholder maps to `flare_message_build_json` via `dispatch-json`, dispatch op `create_placeholder`. Operation: `message_builder.create_placeholder`.
   Future<Message> buildPlaceholder(BuildPlaceholderMessageRequest request);
+  /// buildPluginMessage maps to `flare_message_build_json` via `dispatch-json`, dispatch op `create_plugin_message`. Operation: `message_builder.create_plugin_message`.
+  Future<Message> buildPluginMessage(BuildPluginMessageRequest request);
   /// buildQuote maps to `flare_message_build_json` via `dispatch-json`, dispatch op `create_quote`. Operation: `message_builder.create_quote`.
   Future<Message> buildQuote(BuildQuoteMessageRequest request);
   /// buildRichDoc maps to `flare_message_build_json` via `dispatch-json`, dispatch op `create_rich_doc`. Operation: `message_builder.create_rich_doc`.

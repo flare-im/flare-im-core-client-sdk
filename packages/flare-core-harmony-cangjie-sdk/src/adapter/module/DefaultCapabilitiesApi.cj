@@ -12,6 +12,46 @@ public class DefaultCapabilitiesApi <: CapabilitiesApi {
         this.bridge = bridge
     }
 
+    public func preparePluginCommand(request: PluginCommandRequest): String {
+        return bridge.invoke(descriptor: NativeCallMap.capabilityPreparePluginCommand, requestJson: wireEncodeRequest(pluginCommandRequestToJson(request)))
+    }
+
+    public func pendingPluginCommand(request: PluginCommandRequest): String {
+        return bridge.invoke(descriptor: NativeCallMap.capabilityPendingPluginCommand, requestJson: wireEncodeRequest(pluginCommandRequestToJson(request)))
+    }
+
+    public func reconcilePluginCommand(request: PluginCommandRequest): String {
+        return bridge.invoke(descriptor: NativeCallMap.capabilityReconcilePluginCommand, requestJson: wireEncodeRequest(pluginCommandRequestToJson(request)))
+    }
+
+    public func submitPluginCommand(request: PluginCommandRequest): String {
+        return bridge.invoke(descriptor: NativeCallMap.capabilitySubmitPluginCommand, requestJson: wireEncodeRequest(pluginCommandRequestToJson(request)))
+    }
+
+    public func acknowledgePluginCommand(request: PluginCommandRequest): String {
+        return bridge.invoke(descriptor: NativeCallMap.capabilityAcknowledgePluginCommand, requestJson: wireEncodeRequest(pluginCommandRequestToJson(request)))
+    }
+
+    public func invokePluginAction(request: PluginUiEvaluationRequest): String {
+        return bridge.invoke(descriptor: NativeCallMap.capabilityPluginUiInvoke, requestJson: wireEncodeRequest(pluginUiEvaluationRequestToJson(request)))
+    }
+
+    public func presentPluginMessage(request: PluginUiEvaluationRequest): String {
+        return bridge.invoke(descriptor: NativeCallMap.capabilityPluginUiPresent, requestJson: wireEncodeRequest(pluginUiEvaluationRequestToJson(request)))
+    }
+
+    public func pluginUiAction(request: PluginUiEvaluationRequest): String {
+        return bridge.invoke(descriptor: NativeCallMap.capabilityPluginUiAction, requestJson: wireEncodeRequest(pluginUiEvaluationRequestToJson(request)))
+    }
+
+    public func resolvePluginMessage(request: PluginUiEvaluationRequest): String {
+        return bridge.invoke(descriptor: NativeCallMap.capabilityPluginUiResolve, requestJson: wireEncodeRequest(pluginUiEvaluationRequestToJson(request)))
+    }
+
+    public func pluginUiCatalog(requestJson: String): String {
+        return bridge.invoke(descriptor: NativeCallMap.capabilityPluginUiCatalog, requestJson: wireEncodeRequest(requestJson))
+    }
+
     public func listCapabilities(requestJson: String): String {
         return bridge.invoke(descriptor: NativeCallMap.capabilityList, requestJson: wireEncodeRequest(requestJson))
     }

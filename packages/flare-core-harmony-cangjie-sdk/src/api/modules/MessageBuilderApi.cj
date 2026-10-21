@@ -23,6 +23,7 @@ public interface MessageBuilderApi {
     func buildMiniProgram(request: BuildMiniProgramMessageRequest): Message
     func buildNotification(request: BuildNotificationMessageRequest): Message
     func buildPlaceholder(request: BuildPlaceholderMessageRequest): Message
+    func buildPluginMessage(request: BuildPluginMessageRequest): Message
     func buildQuote(request: BuildQuoteMessageRequest): Message
     func buildRichDoc(request: BuildRichDocMessageRequest): Message
     func buildSchedule(request: BuildScheduleMessageRequest): Message
