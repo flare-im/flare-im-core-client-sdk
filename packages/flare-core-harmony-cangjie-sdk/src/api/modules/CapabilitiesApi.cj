@@ -15,6 +15,7 @@ public interface CapabilitiesApi {
     func pluginUiAction(request: PluginUiEvaluationRequest): String
     func resolvePluginMessage(request: PluginUiEvaluationRequest): String
     func pluginUiCatalog(requestJson: String): String
+    func pluginComposerActions(request: PluginUiEvaluationRequest): String
     func listCapabilities(requestJson: String): String
     func listUserCapabilities(requestJson: String): String
     func dispatchCapability(requestJson: String): String

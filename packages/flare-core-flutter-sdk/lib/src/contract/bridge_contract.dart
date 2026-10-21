@@ -1979,6 +1979,20 @@ abstract final class NativeCallMap {
       dispatchOp: "plugin_ui_catalog",
       callback: "FlareResultCallback");
 
+  /// pluginComposerActions maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `plugin_composer_actions`. Operation: `capability.plugin_composer_actions`.
+  static const capabilityPluginComposerActions = NativeCallDescriptor(
+      module: "capabilities",
+      method: "pluginComposerActions",
+      operation: "capability.plugin_composer_actions",
+      transport: "capability-dispatch-json",
+      cApi: "flare_capability_dispatch_json",
+      requestEncoding: "json",
+      responseEncoding: "json-object",
+      returnMode: "callback",
+      handlePolicy: "client-handle",
+      dispatchOp: "plugin_composer_actions",
+      callback: "FlareResultCallback");
+
   /// listCapabilities maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `capability_list`. Operation: `capability.list`.
   static const capabilityList = NativeCallDescriptor(
       module: "capabilities",

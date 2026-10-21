@@ -8062,6 +8062,25 @@
         },
         {
           "cApi": "flare_capability_dispatch_json",
+          "description": "payload {platform, locale}. Returns {actions: [{pluginId, contributionId, title, icon?, order}]}: the composer-action contributions of the authorized catalog for that platform, title in locale (exact tag, then language), sorted by order (default 1000) then title. icon is a design kit icon name and is absent when undeclared. Reads a fresh catalog every call; the server already trimmed it by grant, capability policy and user consent.",
+          "dispatchOp": "plugin_composer_actions",
+          "name": "pluginComposerActions",
+          "nativeBinding": {
+            "asyncReturn": "i32 immediate_submit_code",
+            "callback": "FlareResultCallback",
+            "handlePolicy": "client-handle",
+            "requestEncoding": "json",
+            "responseEncoding": "json-object",
+            "returnMode": "callback"
+          },
+          "operation": "capability.plugin_composer_actions",
+          "request": "PluginUiEvaluationRequest",
+          "response": "JsonObject",
+          "stability": "experimental",
+          "transport": "capability-dispatch-json"
+        },
+        {
+          "cApi": "flare_capability_dispatch_json",
           "dispatchOp": "capability_list",
           "name": "listCapabilities",
           "nativeBinding": {

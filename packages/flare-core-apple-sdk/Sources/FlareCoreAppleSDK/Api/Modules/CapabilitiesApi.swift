@@ -13,6 +13,7 @@ public protocol CapabilitiesApiProtocol: AnyObject {
     func pluginUiAction(_ request: PluginUiEvaluationRequest) async throws -> [String: AnySendable]
     func resolvePluginMessage(_ request: PluginUiEvaluationRequest) async throws -> [String: AnySendable]
     func pluginUiCatalog(_ request: [String: AnySendable]) async throws -> [String: AnySendable]
+    func pluginComposerActions(_ request: PluginUiEvaluationRequest) async throws -> [String: AnySendable]
     func listCapabilities(_ request: [String: AnySendable]) async throws -> [String: AnySendable]
     func listUserCapabilities(_ request: [String: AnySendable]) async throws -> [String: AnySendable]
     func dispatchCapability(_ request: [String: AnySendable]) async throws -> [String: AnySendable]

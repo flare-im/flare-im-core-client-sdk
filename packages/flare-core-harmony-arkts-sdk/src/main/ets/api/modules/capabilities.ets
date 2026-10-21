@@ -13,6 +13,7 @@ export interface CapabilitiesApi {
   pluginUiAction(request: PluginUiEvaluationRequest): Promise<Record<string, Object>>;
   resolvePluginMessage(request: PluginUiEvaluationRequest): Promise<Record<string, Object>>;
   pluginUiCatalog(request: Record<string, Object>): Promise<Record<string, Object>>;
+  pluginComposerActions(request: PluginUiEvaluationRequest): Promise<Record<string, Object>>;
   listCapabilities(request: Record<string, Object>): Promise<Record<string, Object>>;
   listUserCapabilities(request: Record<string, Object>): Promise<Record<string, Object>>;
   dispatchCapability(request: Record<string, Object>): Promise<Record<string, Object>>;
