@@ -37,7 +37,8 @@
     "./tauri": "./src/adapters/tauri/index.ts",
     "./react-native": "./src/adapters/react-native/index.ts",
     "./uni-app": "./src/adapters/uni-app/index.ts",
-    "./transport": "./src/adapters/_shared/transportProfile.ts"
+    "./transport": "./src/adapters/_shared/transportProfile.ts",
+    "./plugin-ui": "./src/plugin-ui/index.ts"
   },
   "scripts": {
     "build": "tsc --noEmit",
