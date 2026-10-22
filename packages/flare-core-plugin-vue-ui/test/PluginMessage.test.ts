@@ -176,11 +176,16 @@ describe("CorePluginMessage", () => {
     expect(sheet().props("error")).toBeUndefined();
     expect(sheet().props("view")).toMatchObject({ title: "All answers", blocks: [{ kind: "entries" }] });
 
-    // A state change while it is open reloads it quietly.
+    // A state change while it is open reloads it quietly: Core refreshes the shown sheet.
+    const shown = sheet().props("view");
     port.pluginDetail.mockResolvedValueOnce({ available: true, title: "All answers (2)", fields: [], actions: [] });
     view().vm.$emit("action", "vote", { selection: [0] });
     await flushPromises();
     expect(port.pluginDetail).toHaveBeenCalledTimes(3);
+    const [refresh] = port.pluginDetail.mock.calls.at(-1)!;
+    expect(refresh).toMatchObject({ messageId: "srv-1", conversationId: "conv-1", userGesture: true, refresh: true });
+    expect(refresh.previous).toBe(shown);
+    expect(refresh).not.toHaveProperty("cursor");
     expect(sheet().props("loading")).toBe(false);
     expect(sheet().props("view")).toMatchObject({ title: "All answers (2)" });
 
@@ -231,7 +236,7 @@ describe("CorePluginMessage", () => {
       blocks: [{ kind: "entries", items: [{ index: 1, text: "Ann" }, { index: 2, text: "Bob" }], numbered: true, total: 2, more: false }] };
     const page = deferred<unknown>();
     const port = fakePort({ presentMessage: vi.fn(async () => card({ detail: true })), pluginDetail: vi.fn(async () => first) });
-    const { view, wrapper } = renderCard(port);
+    const { view, wrapper, state } = renderCard(port);
     await flushPromises();
     view().vm.$emit("openDetail");
     await flushPromises();
@@ -254,6 +259,19 @@ describe("CorePluginMessage", () => {
     expect(sheet().props("loadingMore")).toBe(false);
     expect(sheet().props("view")).toMatchObject({ blocks: [{ items: [{ text: "Ann" }, { text: "Bob" }] }] });
     expect(sheet().props("view")).not.toHaveProperty("nextCursor");
+
+    // New shared state while the sheet shows two pages: the refresh hands Core the merged sheet, whose
+    // answer replaces it whole, both pages kept.
+    const loaded = sheet().props("view");
+    const refreshed = { ...merged, blocks: [{ ...merged.blocks[0], items: [{ index: 1, text: "Cy" }, { index: 2, text: "Ann" }] }], nextCursor: "100" };
+    port.pluginDetail.mockResolvedValueOnce(refreshed);
+    state.messageExtra = { ...state.messageExtra, pluginSharedStateVersion: "9" };
+    await flushPromises();
+    const [refresh] = port.pluginDetail.mock.calls.at(-1)!;
+    expect(refresh).toMatchObject({ refresh: true });
+    expect(refresh.previous).toBe(loaded);
+    expect(sheet().props("loading")).toBe(false);
+    expect(sheet().props("view")).toMatchObject({ nextCursor: "100", blocks: [{ items: [{ text: "Cy" }, { text: "Ann" }] }] });
   });
 
   it("keeps the loaded pages when the next one fails, and says so in the sheet", async () => {

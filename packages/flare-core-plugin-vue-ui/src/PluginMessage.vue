@@ -119,15 +119,19 @@ const detailLoadingMore = ref(false);
 const detailView = shallowRef<PluginDetailPresentation>();
 let detailGeneration = 0;
 const detailRequest = () => ({ messageId: props.messageId, conversationId: conversation(), userGesture: true });
-/** Core runs the contribution's detail operation over the merged card data; `quiet` keeps the shown view while it reloads. */
+/**
+ * Core runs the contribution's detail operation over the merged card data. `quiet` keeps the shown view while it
+ * reloads and asks Core to refresh it: the first page again and as many more as the sheet had loaded, so a state
+ * change never folds the pages the viewer opened.
+ */
 async function loadDetail(quiet = false): Promise<void> {
-  const mine = ++detailGeneration, host = session.value, message = host?.envelope(props.content);
-  if (!quiet || !detailView.value) detailLoading.value = true;
+  const mine = ++detailGeneration, host = session.value, message = host?.envelope(props.content), shown = detailView.value;
+  if (!quiet || !shown) detailLoading.value = true;
   // A reload starts again from the first page: a page still on its way is dropped.
   detailError.value = ""; detailLoadingMore.value = false;
   try {
     if (!host || !message) throw new Error("Plugin detail unavailable");
-    const result = await host.detail(message, detailRequest());
+    const result = await host.detail(message, { ...detailRequest(), ...(quiet && shown ? { refresh: shown } : {}) });
     if (mine === detailGeneration) detailView.value = result;
   } catch {
     if (mine === detailGeneration && !(quiet && detailView.value)) detailError.value = t("pluginRuntime.unavailable");
