@@ -1,0 +1,169 @@
+/**
+ * Shapes of the plugin views the Rust core resolves (flare-plugin-protocol `ResolvedPluginView`,
+ * card protocol v2). Kits render them as given: every path is already read, every label
+ * translated, every condition applied. Optional members are absent when empty, so a v1 card
+ * (fields and actions only) keeps its exact v1 shape.
+ */
+
+export type PluginUiTone = "neutral" | "info" | "success" | "warning" | "danger";
+
+/** A card or row action. Labels and `confirm` are translated; `hiddenWhen` is already applied. */
+export interface PluginUiAction {
+  id: string;
+  label: string;
+  target?: { kind: "operation"; operation: string } | { kind: "page"; page: string } | { kind: "native"; capability: string };
+  input?: Record<string, string>;
+  /** Ids of `inputs` the host collects first; their values go to `invokeAction` as `formValues`. */
+  form?: string[];
+  /** Ask before invoking. */
+  confirm?: string;
+  style?: "primary" | "danger";
+}
+
+export interface PluginUiField { label: string; value: string }
+
+export interface PluginUiTextBlock { kind: "text"; text: string; maxLines?: number; style: "body" | "title" | "secondary" }
+export interface PluginUiFieldsBlock { kind: "fields"; fields: PluginUiField[] }
+export interface PluginUiChoice {
+  index: number;
+  label: string;
+  selected: boolean;
+  /** Present while results are shown. */
+  count?: number;
+  /** 0..=100, rounded half up; present while results are shown. */
+  percent?: number;
+}
+/** Options with counts. Submitting calls `invokeAction(…, action.id, { selection: [indices] })`. */
+export interface PluginUiChoicesBlock {
+  kind: "choices";
+  options: PluginUiChoice[];
+  multiple: boolean;
+  /** The viewer has a selection. */
+  voted: boolean;
+  closed: boolean;
+  /** Counts and percentages are present. */
+  showResults: boolean;
+  total?: number;
+  inputName: string;
+  /** The submit action, while the viewer can choose (absent once closed or hidden). */
+  action?: PluginUiAction;
+}
+export interface PluginUiEntry { index: number; text: string; name?: string; userId?: string }
+/** `more`: the host offers "view all", which opens `detail` (see `PluginUiSession.detail`). */
+export interface PluginUiEntriesBlock { kind: "entries"; items: PluginUiEntry[]; numbered: boolean; total: number; more: boolean; emptyText?: string }
+export interface PluginUiPeopleGroup { label: string; userIds: string[]; count: number; tone?: PluginUiTone }
+export interface PluginUiPeopleBlock { kind: "people"; groups: PluginUiPeopleGroup[] }
+export interface PluginUiStatusBlock { kind: "status"; label?: string; text: string; tone: PluginUiTone }
+export interface PluginUiProgressBlock { kind: "progress"; label?: string; value: number; total: number; percent: number }
+/** Epoch milliseconds; the host formats them in the viewer's time zone and counts down when asked. */
+export interface PluginUiTimeBlock { kind: "time"; label?: string; atMs: number; endMs?: number; countdown: boolean }
+export interface PluginUiDividerBlock { kind: "divider" }
+export interface PluginUiNoteBlock { kind: "note"; text: string; tone?: PluginUiTone }
+export interface PluginUiRowsBlock {
+  kind: "rows";
+  source: string;
+  columns: Array<{ label: string; format: "text" | "time" }>;
+  rows: Array<{ key: string; cells: Array<{ text: string; timeMs?: number }>; actions: Array<{ id: string; input: Record<string, unknown> }>; detailInput?: Record<string, unknown> }>;
+  nextCursor?: string;
+  actions: PluginUiAction[];
+  emptyText?: string;
+}
+export type PluginUiBlock =
+  | PluginUiTextBlock | PluginUiFieldsBlock | PluginUiChoicesBlock | PluginUiEntriesBlock | PluginUiPeopleBlock
+  | PluginUiStatusBlock | PluginUiProgressBlock | PluginUiTimeBlock | PluginUiDividerBlock | PluginUiNoteBlock | PluginUiRowsBlock;
+
+export type PluginUiInputKind = "text" | "textarea" | "number" | "toggle" | "select" | "datetime" | "options" | "members";
+/**
+ * A form input, labels translated and `default` resolved from the card data. Submitted values:
+ * text/textarea strings, number, toggle boolean, select a choice `value`, datetime epoch ms,
+ * options an array of strings, members an array of user ids (the host provides the members).
+ */
+export interface PluginUiInput {
+  id: string;
+  kind: PluginUiInputKind;
+  label: string;
+  required?: boolean;
+  placeholder?: string;
+  maxLength?: number;
+  min?: number;
+  max?: number;
+  default?: unknown;
+  choices?: Array<{ value: string; label: string }>;
+}
+
+export type PluginFormIssue =
+  | "required" | "unknown" | "invalidType" | "tooLong" | "outOfRange"
+  | "notAChoice" | "tooFewItems" | "tooManyItems" | "invalidItem" | "duplicateItem";
+/** One problem with a submitted form value; `input` is the input id (empty when the whole form is not an object). */
+export interface PluginFormError { input: string; issue: PluginFormIssue }
+
+/** A resolved document: a card, a composer form, or a detail sheet. */
+export interface PluginPresentation {
+  available: boolean;
+  title: string;
+  fields: PluginUiField[];
+  /** Actions not owned by a block; block actions live in their block. */
+  actions: PluginUiAction[];
+  blocks?: PluginUiBlock[];
+  /** All document inputs; an action's `form` lists the ones it collects. */
+  inputs?: PluginUiInput[];
+  /** The contribution declares a "view all" detail. */
+  detail?: boolean;
+}
+
+/**
+ * A detail sheet: a {@link PluginPresentation} plus, while a paged detail has more, the cursor of
+ * its next page. Load more with `PluginUiSession.detail(..., { cursor: view.nextCursor, previous: view })`;
+ * Core appends the page and returns the merged sheet.
+ */
+export interface PluginDetailPresentation extends PluginPresentation {
+  /** Cursor of the next page; absent on the last page and on a detail that does not page. */
+  nextCursor?: string;
+}
+
+/** Paging options of `PluginUiSession.detail`. */
+export interface PluginDetailPage {
+  /** The shown sheet's `nextCursor`. */
+  cursor: string;
+  /** The sheet shown so far, as `detail` returned it; the page comes back appended to it. */
+  previous: PluginDetailPresentation;
+}
+
+/** A presentation for one stored message card. */
+export interface PluginCardPresentation extends PluginPresentation {
+  /** The payload merged with the message's shared and local state layers; only while `available`. */
+  data?: Record<string, unknown>;
+  /** Version of the local layer (the viewer's own results); 0 when the message has none. */
+  stateVersion: number;
+  /** Version of the shared layer Core publishes for the card's entity; absent when there is none. */
+  sharedStateVersion?: number;
+}
+
+/** Outcome of a card action: the capability response, what a host target returned, or form problems. */
+export type PluginActionOutcome =
+  | { kind: "operation"; response: { success?: boolean; data?: unknown; error?: unknown } & Record<string, unknown> }
+  | { kind: "host"; result: unknown }
+  | { kind: "formErrors"; errors: PluginFormError[] };
+
+const FORM_ISSUES: ReadonlySet<string> = new Set<PluginFormIssue>([
+  "required", "unknown", "invalidType", "tooLong", "outOfRange", "notAChoice", "tooFewItems", "tooManyItems", "invalidItem", "duplicateItem",
+]);
+
+/** Core's form errors, leaving out anything malformed. */
+export function pluginFormErrors(value: unknown): PluginFormError[] {
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((entry) => {
+    const error = entry as { input?: unknown; issue?: unknown } | null;
+    return error && typeof error.input === "string" && typeof error.issue === "string" && FORM_ISSUES.has(error.issue)
+      ? [{ input: error.input, issue: error.issue as PluginFormIssue }] : [];
+  });
+}
+
+/** The v2 members of a resolved view, copied only when present and well-typed. */
+export function pluginViewExtras(view: Record<string, unknown>): Pick<PluginPresentation, "blocks" | "inputs" | "detail"> {
+  return {
+    ...(Array.isArray(view.blocks) && view.blocks.length ? { blocks: view.blocks as PluginUiBlock[] } : {}),
+    ...(Array.isArray(view.inputs) && view.inputs.length ? { inputs: view.inputs as PluginUiInput[] } : {}),
+    ...(view.detail === true ? { detail: true } : {}),
+  };
+}

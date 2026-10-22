@@ -72,3 +72,68 @@ describe("plugin UI runtime adapter", () => {
     await expect(pending).rejects.toThrow("Plugin session changed");
   });
 });
+describe("plugin UI card protocol v2", () => {
+  const choices = { kind: "choices", options: [{ index: 0, label: "Yes", selected: true, count: 2, percent: 67 }, { index: 1, label: "No", selected: false, count: 1, percent: 33 }],
+    multiple: false, voted: true, closed: false, showResults: true, total: 3, inputName: "selection", action: { id: "vote", label: "Vote", style: "primary" } };
+  const inputs = [{ id: "question", kind: "text", label: "Question", required: true }];
+  it("keeps blocks, inputs, detail and the shared layer version from Core", async () => {
+    const api = port();
+    api.presentMessage = async () => ({ available: true, title: "Poll", fields: [], actions: [], blocks: [choices], inputs, detail: true,
+      data: { counts: [2, 1], mySelection: [0] }, stateVersion: 1, sharedStateVersion: 7 });
+    const host = new PluginUiSession(api, "web");
+    expect(await host.present(message, "server-1")).toEqual({ available: true, title: "Poll", fields: [], actions: [], blocks: [choices], inputs, detail: true,
+      data: { counts: [2, 1], mySelection: [0] }, stateVersion: 1, sharedStateVersion: 7 });
+    // Empty or malformed v2 members are left out, so a v1 card keeps its v1 shape.
+    api.presentMessage = async () => ({ available: true, title: "Poll", fields: [], actions: [], blocks: [], inputs: "bad", detail: false, stateVersion: 0, sharedStateVersion: 0 });
+    expect(await host.present(message, "server-1")).toEqual({ available: true, title: "Poll", fields: [], actions: [], stateVersion: 0 });
+  });
+  it("sends form values and a selection, and returns Core's form errors", async () => {
+    const api = port(); const requests: Array<Record<string, unknown>> = [];
+    api.invokeAction = async (request) => { requests.push(request);
+      return { kind: "formErrors", errors: [{ input: "question", issue: "required" }, { input: "x", issue: "made-up" }, "junk"] }; };
+    const host = new PluginUiSession(api, "android");
+    expect(await host.invokeAction(message, "create", { conversationId: "group-1", userGesture: true, formValues: { question: "" } }))
+      .toEqual({ kind: "formErrors", errors: [{ input: "question", issue: "required" }] });
+    expect(requests[0]).toMatchObject({ actionId: "create", formValues: { question: "" } });
+    expect(requests[0]).not.toHaveProperty("selection");
+    api.invokeAction = async (request) => { requests.push(request); return { kind: "operation", response: { success: true, data: {} } }; };
+    await host.invokeAction(message, "vote", { messageId: "server-1", userGesture: true, selection: [1] });
+    expect(requests[1]).toMatchObject({ actionId: "vote", messageId: "server-1", selection: [1] });
+    expect(requests[1]).not.toHaveProperty("formValues");
+  });
+  it("opens a card's detail through Core", async () => {
+    const api = port(); let request: unknown;
+    const entries = { kind: "entries", items: [{ index: 1, text: "Yes", userId: "u2" }], numbered: true, total: 1, more: false };
+    api.pluginDetail = async (value) => { request = value; return { available: true, title: "Poll details", fields: [], actions: [], blocks: [entries] }; };
+    const host = new PluginUiSession(api, "ios", () => "en-US");
+    expect(await host.detail(message, { messageId: "server-1", conversationId: "group-1", userGesture: true }))
+      .toEqual({ available: true, title: "Poll details", fields: [], actions: [], blocks: [entries] });
+    expect(request).toEqual({ message, messageId: "server-1", conversationId: "group-1", platform: "ios", locale: "en-US", userGesture: true });
+    api.pluginDetail = async () => ({ broken: true });
+    await expect(host.detail(message, { userGesture: true })).rejects.toThrow("Plugin detail unavailable");
+    delete api.pluginDetail;
+    await expect(host.detail(message, { userGesture: true })).rejects.toThrow("Plugin detail unavailable");
+  });
+  it("pages a detail through Core, which appends each page to the sheet it is given", async () => {
+    const api = port(); const requests: Array<Record<string, unknown>> = [];
+    const first = { kind: "entries", items: [{ index: 1, text: "Ann" }], numbered: true, total: 2, more: false };
+    const merged = { ...first, items: [...first.items, { index: 2, text: "Bo" }] };
+    api.pluginDetail = async (value) => {
+      requests.push(value);
+      return value.cursor
+        ? { available: true, title: "Lines", fields: [], actions: [], blocks: [merged] }
+        : { available: true, title: "Lines", fields: [], actions: [], blocks: [first], nextCursor: "50" };
+    };
+    const host = new PluginUiSession(api, "web", () => "en-US");
+    const sheet = await host.detail(message, { messageId: "server-1", userGesture: true });
+    expect(sheet).toEqual({ available: true, title: "Lines", fields: [], actions: [], blocks: [first], nextCursor: "50" });
+    expect(requests[0]).not.toHaveProperty("cursor");
+    expect(requests[0]).not.toHaveProperty("previous");
+    const more = await host.detail(message, { messageId: "server-1", userGesture: true, page: { cursor: sheet.nextCursor!, previous: sheet } });
+    expect(requests[1]).toMatchObject({ messageId: "server-1", cursor: "50", previous: sheet });
+    expect(more).toEqual({ available: true, title: "Lines", fields: [], actions: [], blocks: [merged] });
+    expect(more).not.toHaveProperty("nextCursor");
+    api.pluginDetail = async () => ({ available: true, title: "Lines", fields: [], actions: [], nextCursor: "" });
+    expect(await host.detail(message, { userGesture: true })).not.toHaveProperty("nextCursor");
+  });
+});
