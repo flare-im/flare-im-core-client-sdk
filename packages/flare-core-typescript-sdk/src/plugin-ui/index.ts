@@ -16,9 +16,10 @@ export interface PluginUiPort {
    * `formValues?` and `selection?` to the present fields. */
   invokeAction(request: Record<string, unknown>): Promise<unknown>;
   /** `capability.plugin_detail`: the card's "view all" sheet. Request:
-   * `{message, messageId?, conversationId?, platform, locale, userGesture, cursor?, previous?}`; returns the
-   * resolved view, with `nextCursor` while a paged detail has more. With `cursor` and `previous` Core
-   * fetches the next page and returns it appended to `previous`. */
+   * `{message, messageId?, conversationId?, platform, locale, userGesture, cursor?, previous?, refresh?}`; returns
+   * the resolved view, with `nextCursor` while a paged detail has more. With `cursor` and `previous` Core
+   * fetches the next page and returns it appended to `previous`; with `refresh: true` and `previous` it
+   * re-reads the sheet from the first page, as many pages as `previous` had loaded. */
   pluginDetail?(request: Record<string, unknown>): Promise<unknown>;
   dispatch(request: { capabilityId: string; payload: unknown; conversationId?: string; tenantId?: string; userId?: string }): Promise<unknown>;
 }
@@ -134,16 +135,22 @@ export class PluginUiSession {
    * over the merged card data and resolves the detail document against its result. A paged detail
    * carries `nextCursor` while it has more; pass `page: { cursor: sheet.nextCursor, previous: sheet }`
    * to load the next page: Core appends it to `previous` (entries continue in order, the rest stays
-   * as on the first page) and returns the merged sheet, so hosts never merge pages. Throws when the
-   * port has no detail call, the plugin fails, or the session changed meanwhile.
+   * as on the first page) and returns the merged sheet, so hosts never merge pages.
+   *
+   * To re-read the sheet on show (after a state change, say), pass `refresh: sheet`: Core reads the
+   * first page again and as many more as the sheet had loaded (at most 10 pages), and the result
+   * replaces the sheet wholesale, with `nextCursor` while more remain. `page` and `refresh` exclude
+   * each other. Throws when the port has no detail call, the plugin fails (on a refresh: keep showing
+   * the sheet), or the session changed meanwhile.
    */
-  async detail(message: PluginMessageEnvelope, options: { messageId?: string; conversationId?: string; userGesture: boolean; page?: PluginDetailPage }): Promise<PluginDetailPresentation> {
+  async detail(message: PluginMessageEnvelope, options: { messageId?: string; conversationId?: string; userGesture: boolean; page?: PluginDetailPage; refresh?: PluginDetailPresentation }): Promise<PluginDetailPresentation> {
     const generation = this.generation;
     if (!this.port.pluginDetail) throw new Error("Plugin detail unavailable");
-    const { messageId, conversationId, userGesture, page } = options;
+    const { messageId, conversationId, userGesture, page, refresh } = options;
+    if (page && refresh) throw new Error("Plugin detail: page and refresh exclude each other");
     const value = await this.port.pluginDetail({ message, ...(messageId && validPluginMessageId(messageId) ? { messageId } : {}),
       ...(conversationId ? { conversationId } : {}), platform: this.platform, locale: this.locale(), userGesture,
-      ...(page ? { cursor: page.cursor, previous: page.previous } : {}) });
+      ...(page ? { cursor: page.cursor, previous: page.previous } : {}), ...(refresh ? { refresh: true, previous: refresh } : {}) });
     if (generation !== this.generation) throw new Error("Plugin session changed");
     const view = value as PluginDetailPresentation | null;
     if (!view || typeof view.available !== "boolean" || typeof view.title !== "string" || !Array.isArray(view.fields) || !Array.isArray(view.actions)) {

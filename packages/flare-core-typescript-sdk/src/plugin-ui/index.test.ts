@@ -136,4 +136,21 @@ describe("plugin UI card protocol v2", () => {
     api.pluginDetail = async () => ({ available: true, title: "Lines", fields: [], actions: [], nextCursor: "" });
     expect(await host.detail(message, { userGesture: true })).not.toHaveProperty("nextCursor");
   });
+  it("refreshes a shown sheet through Core, which keeps the pages it had loaded", async () => {
+    const api = port(); const requests: Array<Record<string, unknown>> = [];
+    const shown = { available: true, title: "Lines", fields: [], actions: [],
+      blocks: [{ kind: "entries", items: [{ index: 1, text: "Ann" }, { index: 2, text: "Bo" }], numbered: true, total: 3, more: false }],
+      nextCursor: "100" } as const;
+    const fresh = { kind: "entries", items: [{ index: 1, text: "Cy" }, { index: 2, text: "Ann" }], numbered: true, total: 4, more: false };
+    api.pluginDetail = async (value) => { requests.push(value); return { available: true, title: "Lines", fields: [], actions: [], blocks: [fresh], nextCursor: "100" }; };
+    const host = new PluginUiSession(api, "web", () => "en-US");
+    const sheet = await host.detail(message, { messageId: "server-1", conversationId: "group-1", userGesture: true, refresh: shown });
+    expect(requests[0]).toEqual({ message, messageId: "server-1", conversationId: "group-1", platform: "web", locale: "en-US",
+      userGesture: true, refresh: true, previous: shown });
+    expect(requests[0]).not.toHaveProperty("cursor");
+    expect(sheet).toEqual({ available: true, title: "Lines", fields: [], actions: [], blocks: [fresh], nextCursor: "100" });
+    await expect(host.detail(message, { userGesture: true, refresh: shown, page: { cursor: "100", previous: shown } }))
+      .rejects.toThrow("page and refresh exclude each other");
+    expect(requests).toHaveLength(1);
+  });
 });

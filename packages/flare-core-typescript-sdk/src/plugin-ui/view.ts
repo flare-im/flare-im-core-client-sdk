@@ -113,8 +113,9 @@ export interface PluginPresentation {
 
 /**
  * A detail sheet: a {@link PluginPresentation} plus, while a paged detail has more, the cursor of
- * its next page. Load more with `PluginUiSession.detail(..., { cursor: view.nextCursor, previous: view })`;
- * Core appends the page and returns the merged sheet.
+ * its next page. Load more with `PluginUiSession.detail(..., { page: { cursor: view.nextCursor, previous: view } })`;
+ * Core appends the page and returns the merged sheet. Re-read it with `{ refresh: view }`, which keeps
+ * the pages it had loaded.
  */
 export interface PluginDetailPresentation extends PluginPresentation {
   /** Cursor of the next page; absent on the last page and on a detail that does not page. */
