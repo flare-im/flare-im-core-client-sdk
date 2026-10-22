@@ -49,6 +49,14 @@ void main() {
       expect(bridge.lastRequest, {
         'payload': {'messageId': 'm1'}
       });
+
+      await client.capabilities.pluginDetail(request);
+      expect(bridge.lastOperation, 'capability.plugin_detail');
+      expect(bridge.lastTransport, 'capability-dispatch-json');
+      expect(bridge.lastCApi, 'flare_capability_dispatch_json');
+      expect(bridge.lastRequest, {
+        'payload': {'messageId': 'm1'}
+      });
     });
 
     test('createTextMessage uses platform camelCase fields', () async {
@@ -984,6 +992,7 @@ final class _RecordingBridge implements NativeBridge {
       case 'capability.plugin_ui_resolve':
       case 'capability.plugin_ui_present':
       case 'capability.plugin_ui_invoke':
+      case 'capability.plugin_detail':
         return {'accepted': true} as T;
       case 'message.create_text':
         return (createTextResponse ?? _messageResponse()) as T;

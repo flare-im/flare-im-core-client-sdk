@@ -69,7 +69,8 @@ final class DefaultMessageBuilderApi implements MessageBuilderApi {
       if (request.cardType != null) 'cardType': request.cardType!,
       if (request.title != null) 'title': request.title!,
       if (request.subtitle != null) 'subtitle': request.subtitle!,
-      if (request.avatar != null) 'avatar': request.avatar!
+      if (request.avatar != null) 'avatar': request.avatar!,
+      if (request.attributes != null) 'attributes': request.attributes!
     });
 
   @override
@@ -151,7 +152,8 @@ final class DefaultMessageBuilderApi implements MessageBuilderApi {
       'appId': request.appId,
       if (request.pagePath != null) 'pagePath': request.pagePath!,
       if (request.title != null) 'title': request.title!,
-      if (request.thumbnailUrl != null) 'thumbnailUrl': request.thumbnailUrl!
+      if (request.thumbnailUrl != null) 'thumbnailUrl': request.thumbnailUrl!,
+      if (request.extra != null) 'extra': request.extra!
     });
 
   @override
@@ -196,6 +198,7 @@ final class DefaultMessageBuilderApi implements MessageBuilderApi {
       'plainText': request.plainText,
       if (request.inputFormat != null) 'inputFormat': request.inputFormat!,
       if (request.inputFormatVersion != null) 'inputFormatVersion': request.inputFormatVersion!,
+      if (request.sourcePayload != null) 'sourcePayload': request.sourcePayload!,
       if (request.title != null) 'title': request.title!,
       if (request.searchText != null) 'searchText': request.searchText!,
       if (request.renderHintsJson != null) 'renderHintsJson': request.renderHintsJson!

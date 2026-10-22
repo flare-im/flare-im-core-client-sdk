@@ -539,7 +539,7 @@
       "payload": "MessageMutationEvent"
     },
     {
-      "description": "Plugin card state stored on a local message changed; re-present that message with its messageId.",
+      "description": "Plugin card state on a local message changed: the shared layer Core publishes for the card's entity (events, sync, the caller's own result) or the viewer's local layer. Re-present that message with its messageId; version is the local layer's when that changed, the shared layer's otherwise.",
       "eventName": "plugin_state_changed",
       "kind": "message",
       "name": "onMessagePluginStateChanged",
@@ -4032,6 +4032,13 @@
               "required": false,
               "type": "String",
               "wireName": "avatar"
+            },
+            {
+              "description": "Card attributes, the card elem's extra (CardContent.attributes), such as cardType and a shared person's referrerId. Blank keys are dropped.",
+              "name": "attributes",
+              "required": false,
+              "type": "StringMap",
+              "wireName": "attributes"
             }
           ],
           "name": "BuildCardMessageRequest"
@@ -5336,7 +5343,7 @@
         {
           "fields": [
             {
-              "description": "Typed UI evaluation envelope defined by the shared UI protocol. presentPluginMessage and invokePluginAction accept an optional messageId (server id or clientMsgId) of the message the card belongs to: present overlays the plugin state stored on that message, invoke stores a successful operation's data.messageState on it.",
+              "description": "Typed UI evaluation envelope defined by the shared UI protocol. presentPluginMessage, invokePluginAction and pluginDetail accept an optional messageId (server id or clientMsgId) of the message the card belongs to: the card resolves over the shared and local state layers stored on that message, and invoke stores a successful operation's data.sharedState and data.messageState on it. invokePluginAction also takes formValues and selection; pluginDetail also takes cursor and previous for the next page of a paged detail.",
               "name": "payload",
               "required": true,
               "type": "JsonObject",
@@ -7970,7 +7977,7 @@
         },
         {
           "cApi": "flare_capability_dispatch_json",
-          "description": "With messageId, a successful operation result carrying data.messageState is validated and stored on that local message by version (older versions are ignored), then onMessagePluginStateChanged fires. Calls without messageId ignore messageState; storage failures never change the result.",
+          "description": "The action input is bound over the merged card data (payload, then the shared layer, then the local layer); a composer-action form binds over {config: <the plugin's client-visible configuration>} instead. An action with a form takes formValues ({inputId: value}); they are validated first against the inputs as resolved over that same data (maxPath and defaultPath apply) and problems return {kind: \"formErrors\", errors: [{input, issue}]} without sending anything (issue: required, unknown, invalidType, tooLong, outOfRange, notAChoice, tooFewItems, tooManyItems, invalidItem, duplicateItem). An action owned by a choices block takes selection (option indices). Operation targets return {kind: \"operation\", response}; page and native targets return {kind: \"host\", target, payload}. With messageId, a successful result's data.sharedState of this card's entity is applied at once as the shared layer (newer versions only) and data.messageState is stored as the local layer by version; then onMessagePluginStateChanged fires once. Calls without messageId ignore both; storage failures never change the result.",
           "dispatchOp": "plugin_ui_invoke",
           "name": "invokePluginAction",
           "nativeBinding": {
@@ -7989,7 +7996,7 @@
         },
         {
           "cApi": "flare_capability_dispatch_json",
-          "description": "Returns the resolved plugin view (available, title, fields, actions) plus stateVersion (0 when the message has no stored state) and, only when available is true, data: the payload with the state stored on messageId overlaid at top level (null values remove keys).",
+          "description": "Returns the resolved v2 plugin view (available, title, fields, actions, and blocks, inputs and detail when the document declares them) over the state layers stored on messageId: payload, then the shared layer Core publishes, then the viewer's local layer, each a top-level overlay where null removes a key. Adds stateVersion (local layer, 0 when none), sharedStateVersion (shared layer, 0 when none) and, only when available is true, data: the data the document was resolved against, the merged card data or, for a composer-action form, {config: <client-visible configuration>}. Actions owned by a block (a choices submit) are listed in that block, not in actions.",
           "dispatchOp": "plugin_ui_present",
           "name": "presentPluginMessage",
           "nativeBinding": {
@@ -8044,6 +8051,7 @@
         },
         {
           "cApi": "flare_capability_dispatch_json",
+          "description": "The authorized plugin UI catalog of the signed-in tenant. Each plugin carries configuration, the client-visible subset of its tenant configuration (keys marked x-flare-client-visible), absent when empty. The catalog expires (validUntilMs); drop it on logout.",
           "dispatchOp": "plugin_ui_catalog",
           "name": "pluginUiCatalog",
           "nativeBinding": {
@@ -8062,7 +8070,7 @@
         },
         {
           "cApi": "flare_capability_dispatch_json",
-          "description": "payload {platform, locale}. Returns {actions: [{pluginId, contributionId, title, icon?, order}]}: the composer-action contributions of the authorized catalog for that platform, title in locale (exact tag, then language), sorted by order (default 1000) then title. icon is a design kit icon name and is absent when undeclared. Reads a fresh catalog every call; the server already trimmed it by grant, capability policy and user consent.",
+          "description": "payload {platform, locale}. Returns {actions: [{pluginId, contributionId, title, icon?, order, audience?}]}: the composer-action contributions of the authorized catalog for that platform, title in locale (exact tag, then language), sorted by order (default 1000) then title. icon is a design kit icon name and is absent when undeclared. audience {conversationTypes?: [single|group], groupRoles?: [owner|admin|member]} is absent for everyone; hosts filter by the open conversation (roles apply in groups only; a role-restricted entry is hidden while the role is unknown). Reads a fresh catalog every call; the server already trimmed it by grant, capability policy and user consent.",
           "dispatchOp": "plugin_composer_actions",
           "name": "pluginComposerActions",
           "nativeBinding": {
@@ -8074,6 +8082,25 @@
             "returnMode": "callback"
           },
           "operation": "capability.plugin_composer_actions",
+          "request": "PluginUiEvaluationRequest",
+          "response": "JsonObject",
+          "stability": "experimental",
+          "transport": "capability-dispatch-json"
+        },
+        {
+          "cApi": "flare_capability_dispatch_json",
+          "description": "payload {message, platform, locale?, userGesture, messageId?, conversationId?, cursor?, previous?}. The \"view all\" sheet of a message card: invokes the contribution's detail operation with its input bound over the merged card data (messageId adds the stored state layers), then returns the detail document resolved against the result data as a v2 view (available, title, fields, actions, blocks?, inputs?, nextCursor?). nextCursor is present while a paged detail has more: request the next page with cursor set to it and previous set to the view shown so far, exactly as returned; the page comes back appended to previous (entries continue in order and are numbered on, everything else stays as on the first page, nextCursor is the new page's, absent on the last). Without previous only that page is returned; previous without cursor, or a cursor on a detail that does not page, is an invalid request. A plugin failure is an error; a card without a detail, or one the current catalog does not offer, fails with sdk.plugin.ui_action_unavailable.",
+          "dispatchOp": "plugin_detail",
+          "name": "pluginDetail",
+          "nativeBinding": {
+            "asyncReturn": "i32 immediate_submit_code",
+            "callback": "FlareResultCallback",
+            "handlePolicy": "client-handle",
+            "requestEncoding": "json",
+            "responseEncoding": "json-object",
+            "returnMode": "callback"
+          },
+          "operation": "capability.plugin_detail",
           "request": "PluginUiEvaluationRequest",
           "response": "JsonObject",
           "stability": "experimental",

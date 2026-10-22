@@ -14,6 +14,8 @@ final class BuildCardMessageRequest {
   final String? subtitle;
   /// wire: `avatar`. Avatar URL or media id.
   final String? avatar;
+  /// wire: `attributes`. Card attributes, the card elem's extra (CardContent.attributes), such as cardType and a shared person's referrerId. Blank keys are dropped.
+  final Map<String, String>? attributes;
 
   const BuildCardMessageRequest({
     this.conversationId = '',
@@ -22,5 +24,6 @@ final class BuildCardMessageRequest {
     this.title,
     this.subtitle,
     this.avatar,
+    this.attributes,
   });
 }

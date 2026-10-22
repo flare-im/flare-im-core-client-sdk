@@ -16,13 +16,16 @@ public class BuildCardMessageRequest {
     public let subtitle: ?String
     // wire: `avatar`. Optional. Avatar URL or media id.
     public let avatar: ?String
+    // wire: `attributes`. Optional. Card attributes, the card elem's extra (CardContent.attributes), such as cardType and a shared person's referrerId. Blank keys are dropped.
+    public let attributes: ?String
 
-    public init(conversationId!: String, id!: String, cardType!: ?String, title!: ?String, subtitle!: ?String, avatar!: ?String) {
+    public init(conversationId!: String, id!: String, cardType!: ?String, title!: ?String, subtitle!: ?String, avatar!: ?String, attributes!: ?String) {
         this.conversationId = conversationId
         this.id = id
         this.cardType = cardType
         this.title = title
         this.subtitle = subtitle
         this.avatar = avatar
+        this.attributes = attributes
     }
 }

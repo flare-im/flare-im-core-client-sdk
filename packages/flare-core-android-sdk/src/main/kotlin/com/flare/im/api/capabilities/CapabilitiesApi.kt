@@ -49,6 +49,8 @@ interface CapabilitiesApi {
     suspend fun pluginUiCatalog(request: Map<String, Any?>): Map<String, Any?>
     /** pluginComposerActions maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `plugin_composer_actions`. Operation: `capability.plugin_composer_actions`. */
     suspend fun pluginComposerActions(request: PluginUiEvaluationRequest): Map<String, Any?>
+    /** pluginDetail maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `plugin_detail`. Operation: `capability.plugin_detail`. */
+    suspend fun pluginDetail(request: PluginUiEvaluationRequest): Map<String, Any?>
     /** listCapabilities maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `capability_list`. Operation: `capability.list`. */
     suspend fun listCapabilities(request: Map<String, Any?>): Map<String, Any?>
     /** listUserCapabilities maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `capability_list_user`. Operation: `capability.list_user`. */

@@ -592,6 +592,13 @@
           "type": "String",
           "required": false,
           "description": "Avatar URL or media id."
+        },
+        {
+          "name": "attributes",
+          "wireName": "attributes",
+          "type": "StringMap",
+          "required": false,
+          "description": "Card attributes, the card elem's extra (CardContent.attributes), such as cardType and a shared person's referrerId. Blank keys are dropped."
         }
       ]
     },

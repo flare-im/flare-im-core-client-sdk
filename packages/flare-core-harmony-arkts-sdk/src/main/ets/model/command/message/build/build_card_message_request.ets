@@ -14,4 +14,6 @@ export interface BuildCardMessageRequest {
   subtitle?: string;
   /** wire: `avatar`. Avatar URL or media id. */
   avatar?: string;
+  /** wire: `attributes`. Card attributes, the card elem's extra (CardContent.attributes), such as cardType and a shared person's referrerId. Blank keys are dropped. */
+  attributes?: Record<string, string>;
 }

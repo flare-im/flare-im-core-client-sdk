@@ -4,7 +4,7 @@ package flare_core_harmony_cangjie_sdk.model.command
 // Collection/map payloads are represented as raw JSON strings at the bridge boundary.
 // 
 public class PluginUiEvaluationRequest {
-    // wire: `payload`. Typed UI evaluation envelope defined by the shared UI protocol. presentPluginMessage and invokePluginAction accept an optional messageId (server id or clientMsgId) of the message the card belongs to: present overlays the plugin state stored on that message, invoke stores a successful operation's data.messageState on it.
+    // wire: `payload`. Typed UI evaluation envelope defined by the shared UI protocol. presentPluginMessage, invokePluginAction and pluginDetail accept an optional messageId (server id or clientMsgId) of the message the card belongs to: the card resolves over the shared and local state layers stored on that message, and invoke stores a successful operation's data.sharedState and data.messageState on it. invokePluginAction also takes formValues and selection; pluginDetail also takes cursor and previous for the next page of a paged detail.
     public let payload: String
 
     public init(payload!: String) {

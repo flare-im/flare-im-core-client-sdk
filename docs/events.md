@@ -43,7 +43,7 @@ Method return values remain the primary success/failure contract for commands su
 | `onMessageBurned` | `message` | `burned` | `MessageMutationEvent` | A burn-after-read message was burned. |
 | `onMessagePinned` | `message` | `pinned` | `MessageMutationEvent` | A message was pinned. |
 | `onMessageUnpinned` | `message` | `unpinned` | `MessageMutationEvent` | A message was unpinned. |
-| `onMessagePluginStateChanged` | `message` | `plugin_state_changed` | `MessageMutationEvent` | Plugin card state stored on a local message changed; re-present that message with its messageId. |
+| `onMessagePluginStateChanged` | `message` | `plugin_state_changed` | `MessageMutationEvent` | Plugin card state on a local message changed: the shared layer Core publishes for the card's entity (events, sync, the caller's own result) or the viewer's local layer. Re-present that message with its messageId; version is the local layer's when that changed, the shared layer's otherwise. |
 | `onViewUpdated` | `view` | `updated` | `ViewUpdate` | A core observable view snapshot changed. |
 | `onNewConversation` | `conversation` | `created` | `ConversationEvent` | A new conversation was created or discovered. |
 | `onConversationChanged` | `conversation` | `updated` | `ConversationEvent` | Important conversation fields changed. |

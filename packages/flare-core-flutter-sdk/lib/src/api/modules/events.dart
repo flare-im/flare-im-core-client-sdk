@@ -77,7 +77,7 @@ abstract interface class EventsApi {
   EventSubscription onMessagePinned(EventCallback<MessageMutationEvent> listener);
   /// A message was unpinned.
   EventSubscription onMessageUnpinned(EventCallback<MessageMutationEvent> listener);
-  /// Plugin card state stored on a local message changed; re-present that message with its messageId.
+  /// Plugin card state on a local message changed: the shared layer Core publishes for the card's entity (events, sync, the caller's own result) or the viewer's local layer. Re-present that message with its messageId; version is the local layer's when that changed, the shared layer's otherwise.
   EventSubscription onMessagePluginStateChanged(EventCallback<MessageMutationEvent> listener);
   /// A core observable view snapshot changed.
   EventSubscription onViewUpdated(EventCallback<ViewUpdate> listener);

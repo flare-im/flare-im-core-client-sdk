@@ -77,6 +77,10 @@ class DefaultCapabilitiesApi(
         return invokeMap(bridge, NativeCallMap.CAPABILITY_PLUGIN_COMPOSER_ACTIONS, pluginUiEvaluationRequestToMap(request))
     }
 
+    override suspend fun pluginDetail(request: PluginUiEvaluationRequest): Map<String, Any?> {
+        return invokeMap(bridge, NativeCallMap.CAPABILITY_PLUGIN_DETAIL, pluginUiEvaluationRequestToMap(request))
+    }
+
     override suspend fun listCapabilities(request: Map<String, Any?>): Map<String, Any?> {
         return invokeMap(bridge, NativeCallMap.CAPABILITY_LIST, request)
     }

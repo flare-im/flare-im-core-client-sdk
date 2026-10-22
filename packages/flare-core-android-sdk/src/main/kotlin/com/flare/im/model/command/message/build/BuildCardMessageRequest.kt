@@ -15,4 +15,6 @@ data class BuildCardMessageRequest(
     val subtitle: String? = null,
     /** wire: `avatar`. Avatar URL or media id. */
     val avatar: String? = null,
+    /** wire: `attributes`. Card attributes, the card elem's extra (CardContent.attributes), such as cardType and a shared person's referrerId. Blank keys are dropped. */
+    val attributes: Map<String, String>? = null,
 )

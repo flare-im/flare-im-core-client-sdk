@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 import {
   conversationFromJson,
   conversationListQueryToMap,
+  buildCardMessageRequestToMap,
   buildTextMessageRequestToMap,
   buildThreadReplyMessageRequestToMap,
   buildTypedMessageRequestToMap,
@@ -386,6 +387,13 @@ describe("wireCodec message timeline contract", () => {
         text: "reply inside the thread",
       },
     });
+  });
+
+  it("sends card attributes as the card elem's extra", () => {
+    const card = { conversationId: "group_001", id: "user_007", cardType: "user", title: "Ann" };
+    expect(JSON.parse(JSON.stringify(buildCardMessageRequestToMap({ ...card, attributes: { cardType: "user", referrerId: "user_009" } }))))
+      .toEqual({ ...card, attributes: { cardType: "user", referrerId: "user_009" } });
+    expect(JSON.parse(JSON.stringify(buildCardMessageRequestToMap(card)))).toEqual(card);
   });
 
   it("requires message arrays in list and timeline responses", () => {
