@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "strict": true,
+    "noEmit": true,
+    "jsx": "preserve",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "types": ["node", "vite/client"],
+    // The peers are checked against their sibling sources (flare-im-design, the TypeScript SDK in
+    // this repo). A mapping that does not resolve falls back to node_modules, so a lone checkout
+    // with the published packages installed checks the same way. One Vue for every file.
+    "paths": {
+      "vue": ["./node_modules/vue"],
+      "@vue/*": ["./node_modules/@vue/*"],
+      "naive-ui": ["./node_modules/naive-ui"],
+      "@flare-im/sdk/plugin-ui": ["../flare-core-typescript-sdk/src/plugin-ui/index.ts"],
+      "@flare-im/vue-ui": ["../../../flare-im-design/packages/vue-im-ui/src/index.ts"],
+      "@flare-im/vue-ui/i18n": ["../../../flare-im-design/packages/vue-im-ui/src/shared/i18n/index.ts"],
+      "@flare-im/vue-ui/*": ["../../../flare-im-design/packages/vue-im-ui/src/*"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.vue", "test/**/*.ts"]
+}

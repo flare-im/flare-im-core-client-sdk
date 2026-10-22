@@ -1,11 +1,16 @@
 <script setup lang="ts">
-// 通用插件入口:「+」面板里没有原生处理器的插件项。Kit 底部面板里用 PluginView 画这个
-// composer-action 贡献(标题、字段、动作都来自贡献的文档),动作经 Core 带会话 ID 调用;
-// 结果的 data.message 是这个插件的合法插件消息时,交给宿主发到当前会话(design §4)。
-import { inject, ref, watch } from "vue";
-import { FlareBottomSheet, FlarePluginView, useFlareI18n, type FlarePluginViewModel } from "@flare-im/vue-ui";
+// 通用插件入口:「+」面板里没有原生处理器的插件项。Kit 底部面板里画这个 composer-action 贡献
+// (标题、字段、块、动作都来自贡献的文档),动作经 Core 带会话 ID 调用。贡献带输入时,收集表单的
+// 那个动作(创建)直接在面板里用 Kit PluginForm 收集,不再弹第二层面板;Core 校验不过时把
+// formErrors 交回表单。结果的 data.message 是这个插件的合法插件消息时,交给宿主发到当前会话(design §4)。
+import { computed, inject, ref, shallowRef, watch } from "vue";
+import {
+  FlareBottomSheet, FlareDangerConfirm, FlarePluginForm, FlarePluginView, useFlareI18n,
+  type FlarePluginAction, type FlarePluginActionPayload, type FlarePluginFormError, type FlarePluginInput,
+  type FlarePluginMember, type FlarePluginResolveUser, type FlarePluginViewModel,
+} from "@flare-im/vue-ui";
 import type { PluginMessageEnvelope } from "@flare-im/sdk/plugin-ui";
-import { pluginUiSessionKey } from "./context";
+import { pluginUiDirectoryKey, pluginUiSessionKey } from "./context";
 import { pluginMessageFromResult, type ComposerPluginItem } from "./composerMenu";
 
 const props = defineProps<{
@@ -14,13 +19,25 @@ const props = defineProps<{
   conversationId: string;
   /** Posts a plugin message to the conversation under the given client message id. */
   deliver: (message: PluginMessageEnvelope, clientMsgId: string) => Promise<void>;
+  /** Overrides the provided directory's conversation members (members inputs). */
+  members?: FlarePluginMember[];
+  /** Overrides the provided directory's resolver. */
+  resolveUser?: FlarePluginResolveUser;
 }>();
 const emit = defineEmits<{ close: [] }>();
 
 const { t } = useFlareI18n();
 const session = inject(pluginUiSessionKey, ref(null));
-const view = ref<FlarePluginViewModel>({ available: false, title: "", fields: [], actions: [] });
-const busy = ref(false), error = ref("");
+const directory = inject(pluginUiDirectoryKey, {});
+const members = computed(() => props.members ?? directory.members?.() ?? []);
+const resolver = computed(() => props.resolveUser ?? directory.resolveUser);
+const view = shallowRef<FlarePluginViewModel>({ available: false, title: "", fields: [], actions: [] });
+const busyActionId = ref<string>();
+const error = ref("");
+const formErrors = shallowRef<FlarePluginFormError[]>([]);
+/** Moved once per finished action, after its error and formErrors are set (kit settleToken). */
+const settleToken = ref(0);
+const confirming = shallowRef<{ action: FlarePluginAction; payload: FlarePluginActionPayload } | null>(null);
 let generation = 0;
 
 /** The contribution's own document, rendered for this conversation. */
@@ -29,22 +46,41 @@ function message(item: ComposerPluginItem): PluginMessageEnvelope {
     payload: { conversationId: props.conversationId } };
 }
 
+/**
+ * The action that collects the contribution's inputs (its create action): the primary one when
+ * several do. The sheet is then that action's form; without one the view is drawn as it is.
+ */
+const formAction = computed<FlarePluginAction | undefined>(() => {
+  if (!view.value.available || !view.value.inputs?.length) return undefined;
+  const collecting = view.value.actions.filter((action) => action.form?.length);
+  return collecting.find((action) => action.style === "primary") ?? collecting[0];
+});
+const formInputs = computed<FlarePluginInput[]>(() => (formAction.value?.form ?? [])
+  .map((id) => view.value.inputs?.find((input) => input.id === id))
+  .filter((input): input is FlarePluginInput => Boolean(input)));
+/** What the document shows besides the form (fields, blocks), drawn above it without its keys. */
+const preface = computed<FlarePluginViewModel | null>(() => (view.value.fields.length || view.value.blocks?.length
+  ? { ...view.value, actions: [] } : null));
+
 async function load(): Promise<void> {
   const mine = ++generation, host = session.value, item = props.item;
-  busy.value = false; error.value = "";
+  busyActionId.value = undefined; error.value = ""; formErrors.value = []; confirming.value = null;
   view.value = { available: false, title: item?.label ?? "", fields: [], actions: [] };
   if (!host || !item) return;
   const result = await host.present(message(item), undefined, "composer-action");
   if (mine === generation) view.value = result;
 }
 
-async function action(id: string): Promise<void> {
+async function invoke(id: string, payload: FlarePluginActionPayload): Promise<void> {
   const host = session.value, item = props.item, mine = generation;
-  if (!host || !item || busy.value || !view.value.available) return;
-  busy.value = true; error.value = "";
+  if (!host || !item || busyActionId.value || !view.value.available) return;
+  busyActionId.value = id; error.value = ""; formErrors.value = [];
+  let done = false;
   try {
-    const outcome = await host.invokeAction(message(item), id, { conversationId: props.conversationId, userGesture: true });
+    const outcome = await host.invokeAction(message(item), id, { conversationId: props.conversationId, userGesture: true,
+      ...(payload.formValues ? { formValues: payload.formValues } : {}), ...(payload.selection ? { selection: payload.selection } : {}) });
     if (mine !== generation) return;
+    if (outcome.kind === "formErrors") { formErrors.value = outcome.errors; return; }
     if (outcome.kind === "operation") {
       if (outcome.response.success === false) { error.value = t("pluginRuntime.rejected"); return; }
       const posted = pluginMessageFromResult(outcome.response.data, item.pluginId);
@@ -54,19 +90,77 @@ async function action(id: string): Promise<void> {
         await props.deliver(posted, `plugin_${requestId}`);
       }
     }
-    if (mine === generation) emit("close");
+    done = mine === generation;
   } catch {
     if (mine === generation) error.value = t("pluginRuntime.unavailable");
   } finally {
-    if (mine === generation) busy.value = false;
+    // The outcome is set: settle it, then let the keys go.
+    if (mine === generation) { settleToken.value++; busyActionId.value = undefined; }
   }
+  if (done) emit("close");
+}
+
+/** A key of the drawn view; the kit has already asked its confirmation and collected its form. */
+function action(id: string, payload?: FlarePluginActionPayload): void {
+  void invoke(id, payload ?? {});
+}
+/** The form's submit: confirmed first when the action asks to be. */
+function submitForm(values: Record<string, unknown>): void {
+  const target = formAction.value;
+  if (!target || busyActionId.value) return;
+  const payload = { formValues: values };
+  if (target.confirm) confirming.value = { action: target, payload };
+  else void invoke(target.id, payload);
+}
+function confirmed(): void {
+  const next = confirming.value;
+  confirming.value = null;
+  if (next) void invoke(next.action.id, next.payload);
+}
+function close(): void {
+  if (!busyActionId.value) emit("close");
 }
 
 watch(() => [props.item, props.conversationId, session.value], () => { void load(); }, { immediate: true });
 </script>
 
 <template>
-  <FlareBottomSheet :open="Boolean(item)" :title="view.title || item?.label || ''" :dismissible="!busy" @close="emit('close')">
-    <FlarePluginView :view="view" :busy="busy" :error="error" @action="action" />
+  <FlareBottomSheet :open="Boolean(item)" :title="view.title || item?.label || ''" :dismissible="!busyActionId" @close="close">
+    <template v-if="formAction">
+      <FlarePluginView v-if="preface" :view="preface" embedded inset="sheetTop" :resolve-user="resolver" />
+      <FlarePluginForm
+        :inputs="formInputs"
+        :errors="formErrors"
+        :submit-label="formAction.label"
+        :busy="Boolean(busyActionId)"
+        :error="error || undefined"
+        :members="members"
+        @submit="submitForm"
+        @cancel="close"
+      />
+      <FlareDangerConfirm
+        v-if="confirming"
+        :open="Boolean(confirming)"
+        :title="confirming.action.label"
+        :description="confirming.action.confirm ?? ''"
+        target=""
+        :confirm-text="confirming.action.label"
+        @confirm="confirmed"
+        @cancel="confirming = null"
+      />
+    </template>
+    <FlarePluginView
+      v-else
+      :view="view"
+      embedded
+      inset="sheet"
+      :busy-action-id="busyActionId"
+      :error="error || undefined"
+      :form-errors="formErrors"
+      :settle-token="settleToken"
+      :resolve-user="resolver"
+      :members="members"
+      @action="action"
+    />
   </FlareBottomSheet>
 </template>
