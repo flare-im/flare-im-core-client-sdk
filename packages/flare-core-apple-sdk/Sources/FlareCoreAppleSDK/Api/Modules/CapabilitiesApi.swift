@@ -15,6 +15,8 @@ public protocol CapabilitiesApiProtocol: AnyObject {
     func pluginUiCatalog(_ request: [String: AnySendable]) async throws -> [String: AnySendable]
     func pluginComposerActions(_ request: PluginUiEvaluationRequest) async throws -> [String: AnySendable]
     func pluginDetail(_ request: PluginUiEvaluationRequest) async throws -> [String: AnySendable]
+    func pluginAccountEntries(_ request: PluginUiEvaluationRequest) async throws -> [String: AnySendable]
+    func invalidatePluginCatalog(_ request: [String: AnySendable]) async throws -> Void
     func listCapabilities(_ request: [String: AnySendable]) async throws -> [String: AnySendable]
     func listUserCapabilities(_ request: [String: AnySendable]) async throws -> [String: AnySendable]
     func dispatchCapability(_ request: [String: AnySendable]) async throws -> [String: AnySendable]

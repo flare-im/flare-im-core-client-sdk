@@ -26,6 +26,8 @@ export interface PluginUiPort {
 export interface PluginMessageEnvelope {
   pluginId: string; contributionId: string; schemaVersion: number;
   summary: string; payload: Record<string, unknown>;
+  /** The plugin's name, written by the platform when it posts the card; for inert cards to name their plugin. */
+  displayName?: string;
 }
 export type PluginPlatform = "web" | "tauri" | "android" | "ios" | "flutter" | "harmonyos";
 /** Core's rule for a card's `messageId`: non-empty, at most 256 bytes, no whitespace or control characters. */

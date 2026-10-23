@@ -18,6 +18,8 @@ export interface PluginUiAction {
   /** Ask before invoking. */
   confirm?: string;
   style?: "primary" | "danger";
+  /** `menu`: listed in the view's `menuActions` (the card's overflow menu); absent: the button row. */
+  placement?: "menu";
 }
 
 export interface PluginUiField { label: string; value: string }
@@ -48,9 +50,16 @@ export interface PluginUiChoicesBlock {
   /** The submit action, while the viewer can choose (absent once closed or hidden). */
   action?: PluginUiAction;
 }
-export interface PluginUiEntry { index: number; text: string; name?: string; userId?: string }
-/** `more`: the host offers "view all", which opens `detail` (see `PluginUiSession.detail`). */
-export interface PluginUiEntriesBlock { kind: "entries"; items: PluginUiEntry[]; numbered: boolean; total: number; more: boolean; emptyText?: string }
+/** The header of a group of entries ("Option A · 5 votes · 42%"); `percent` 0..=100 when `count` and `total` are known. */
+export interface PluginUiEntryGroup { key: string; label: string; count?: number; total?: number; percent?: number }
+/** `index` is 1-based; in a grouped block it counts within the group. `group` is on the first entry of each group. */
+export interface PluginUiEntry { index: number; text: string; name?: string; userId?: string; group?: PluginUiEntryGroup }
+/**
+ * `more`: the host offers "view all", which opens `detail` (see `PluginUiSession.detail`).
+ * `numbered: false` shows no numbers. `grouped`: render one flat list with a header row before every
+ * entry that has `group`.
+ */
+export interface PluginUiEntriesBlock { kind: "entries"; items: PluginUiEntry[]; numbered: boolean; total: number; more: boolean; emptyText?: string; grouped?: boolean }
 export interface PluginUiPeopleGroup { label: string; userIds: string[]; count: number; tone?: PluginUiTone }
 export interface PluginUiPeopleBlock { kind: "people"; groups: PluginUiPeopleGroup[] }
 export interface PluginUiStatusBlock { kind: "status"; label?: string; text: string; tone: PluginUiTone }
@@ -97,13 +106,24 @@ export type PluginFormIssue =
 /** One problem with a submitted form value; `input` is the input id (empty when the whole form is not an object). */
 export interface PluginFormError { input: string; issue: PluginFormIssue }
 
+/**
+ * Why a view is inert (`available: false`), or `unbound_copy` for a read-only copy of a card
+ * (`available: true`, without actions, menu, inputs, detail or block submits).
+ */
+export type PluginUnavailableReason =
+  | "disabled" | "not_installed" | "no_permission" | "unsupported_platform"
+  | "incompatible_version" | "catalog_unreachable" | "unbound_copy";
+
 /** A resolved document: a card, a composer form, or a detail sheet. */
 export interface PluginPresentation {
   available: boolean;
+  unavailableReason?: PluginUnavailableReason;
   title: string;
   fields: PluginUiField[];
-  /** Actions not owned by a block; block actions live in their block. */
+  /** Button-row actions not owned by a block; block actions live in their block. */
   actions: PluginUiAction[];
+  /** Actions of the overflow menu (⋯); absent when there are none. */
+  menuActions?: PluginUiAction[];
   blocks?: PluginUiBlock[];
   /** All document inputs; an action's `form` lists the ones it collects. */
   inputs?: PluginUiInput[];
@@ -160,11 +180,18 @@ export function pluginFormErrors(value: unknown): PluginFormError[] {
   });
 }
 
+const UNAVAILABLE_REASONS: ReadonlySet<string> = new Set<PluginUnavailableReason>([
+  "disabled", "not_installed", "no_permission", "unsupported_platform", "incompatible_version", "catalog_unreachable", "unbound_copy",
+]);
+
 /** The v2 members of a resolved view, copied only when present and well-typed. */
-export function pluginViewExtras(view: Record<string, unknown>): Pick<PluginPresentation, "blocks" | "inputs" | "detail"> {
+export function pluginViewExtras(view: Record<string, unknown>): Pick<PluginPresentation, "blocks" | "inputs" | "detail" | "menuActions" | "unavailableReason"> {
   return {
     ...(Array.isArray(view.blocks) && view.blocks.length ? { blocks: view.blocks as PluginUiBlock[] } : {}),
     ...(Array.isArray(view.inputs) && view.inputs.length ? { inputs: view.inputs as PluginUiInput[] } : {}),
     ...(view.detail === true ? { detail: true } : {}),
+    ...(Array.isArray(view.menuActions) && view.menuActions.length ? { menuActions: view.menuActions as PluginUiAction[] } : {}),
+    ...(typeof view.unavailableReason === "string" && UNAVAILABLE_REASONS.has(view.unavailableReason)
+      ? { unavailableReason: view.unavailableReason as PluginUnavailableReason } : {}),
   };
 }

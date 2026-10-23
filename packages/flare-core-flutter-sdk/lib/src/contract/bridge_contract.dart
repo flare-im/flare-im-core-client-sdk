@@ -2007,6 +2007,34 @@ abstract final class NativeCallMap {
       dispatchOp: "plugin_detail",
       callback: "FlareResultCallback");
 
+  /// pluginAccountEntries maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `plugin_account_entries`. Operation: `capability.plugin_account_entries`.
+  static const capabilityPluginAccountEntries = NativeCallDescriptor(
+      module: "capabilities",
+      method: "pluginAccountEntries",
+      operation: "capability.plugin_account_entries",
+      transport: "capability-dispatch-json",
+      cApi: "flare_capability_dispatch_json",
+      requestEncoding: "json",
+      responseEncoding: "json-object",
+      returnMode: "callback",
+      handlePolicy: "client-handle",
+      dispatchOp: "plugin_account_entries",
+      callback: "FlareResultCallback");
+
+  /// invalidatePluginCatalog maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `plugin_catalog_invalidate`. Operation: `capability.plugin_catalog_invalidate`.
+  static const capabilityPluginCatalogInvalidate = NativeCallDescriptor(
+      module: "capabilities",
+      method: "invalidatePluginCatalog",
+      operation: "capability.plugin_catalog_invalidate",
+      transport: "capability-dispatch-json",
+      cApi: "flare_capability_dispatch_json",
+      requestEncoding: "json",
+      responseEncoding: "unit",
+      returnMode: "callback-unit",
+      handlePolicy: "client-handle",
+      dispatchOp: "plugin_catalog_invalidate",
+      callback: "FlareResultCallback");
+
   /// listCapabilities maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `capability_list`. Operation: `capability.list`.
   static const capabilityList = NativeCallDescriptor(
       module: "capabilities",

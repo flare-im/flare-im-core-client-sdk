@@ -7977,7 +7977,7 @@
         },
         {
           "cApi": "flare_capability_dispatch_json",
-          "description": "The action input is bound over the merged card data (payload, then the shared layer, then the local layer); a composer-action form binds over {config: <the plugin's client-visible configuration>} instead. An action with a form takes formValues ({inputId: value}); they are validated first against the inputs as resolved over that same data (maxPath and defaultPath apply) and problems return {kind: \"formErrors\", errors: [{input, issue}]} without sending anything (issue: required, unknown, invalidType, tooLong, outOfRange, notAChoice, tooFewItems, tooManyItems, invalidItem, duplicateItem). An action owned by a choices block takes selection (option indices). Operation targets return {kind: \"operation\", response}; page and native targets return {kind: \"host\", target, payload}. With messageId, a successful result's data.sharedState of this card's entity is applied at once as the shared layer (newer versions only) and data.messageState is stored as the local layer by version; then onMessagePluginStateChanged fires once. Calls without messageId ignore both; storage failures never change the result.",
+          "description": "The action input is bound over the merged card data (payload, then the shared layer, then the local layer); a composer-action form binds over {config: <the plugin's client-visible configuration>} instead. An action with a form takes formValues ({inputId: value}); they are validated first against the inputs as resolved over that same data (maxPath and defaultPath apply) and problems return {kind: \"formErrors\", errors: [{input, issue}]} without sending anything (issue: required, unknown, invalidType, tooLong, outOfRange, notAChoice, tooFewItems, tooManyItems, invalidItem, duplicateItem). An action owned by a choices block takes selection (option indices). Operation targets return {kind: \"operation\", response}; page and native targets return {kind: \"host\", target, payload}. With messageId, a successful result's data.sharedState of this card's entity is applied at once as the shared layer (newer versions only) and data.messageState is stored as the local layer by version; then onMessagePluginStateChanged fires once. Calls without messageId ignore both; storage failures never change the result. A card call names its message to Core (messageId, the stored card's server id); Core accepts it only from the message bound to the card's entity, and a card marked as an unbound copy is refused locally with sdk.plugin.card_unbound. A create result's data.posted ({conversationId, serverMsgId, clientMsgId}, the card Core posted) is returned as it is. Plugin failures come back as sdk.plugin.* keys: disabled, not_installed, permission_denied, unsupported_platform, card_unbound, card_platform_only, card_not_posted, message_recalled, rate_limited, outcome_unknown, rejected (the plugin's own code in machineReason), catalog_unreachable, ui_action_unavailable; one meaning the plugin is no longer available re-announces that plugin's recently presented cards (as invalidatePluginCatalog does).",
           "dispatchOp": "plugin_ui_invoke",
           "name": "invokePluginAction",
           "nativeBinding": {
@@ -7996,7 +7996,7 @@
         },
         {
           "cApi": "flare_capability_dispatch_json",
-          "description": "Returns the resolved v2 plugin view (available, title, fields, actions, and blocks, inputs and detail when the document declares them) over the state layers stored on messageId: payload, then the shared layer Core publishes, then the viewer's local layer, each a top-level overlay where null removes a key. Adds stateVersion (local layer, 0 when none), sharedStateVersion (shared layer, 0 when none) and, only when available is true, data: the data the document was resolved against, the merged card data or, for a composer-action form, {config: <client-visible configuration>}. Actions owned by a block (a choices submit) are listed in that block, not in actions. A card of an entity whose message has no shared layer (cached before the client knew shared state, its events missed) is read back from the server once per message and process in the background; a layer found there is stored and announced through onMessagePluginStateChanged, so present the card again then.",
+          "description": "Returns the resolved v2 plugin view (available, title, fields, actions, and blocks, inputs and detail when the document declares them) over the state layers stored on messageId: payload, then the shared layer Core publishes, then the viewer's local layer, each a top-level overlay where null removes a key. Adds stateVersion (local layer, 0 when none), sharedStateVersion (shared layer, 0 when none) and, only when available is true, data: the data the document was resolved against, the merged card data or, for a composer-action form, {config: <client-visible configuration>}. Actions owned by a block (a choices submit) are listed in that block, not in actions. A card of an entity whose message has no shared layer (cached before the client knew shared state, its events missed) is read back from the server once per message and process in the background; a layer found there is stored and announced through onMessagePluginStateChanged, so present the card again then. Each block-free action of the document is either in actions (the button row) or in menuActions (the card's overflow menu, absent when empty), both after hiddenWhen. A grouped entries block (grouped: true) carries a group header {key, label, count?, total?, percent?} on the first entry of each group and numbers entries within their group; numbered: false shows no numbers. A card whose contribution declares viewerState has its viewer layer read in the background while it is presented (missing, or computed from an older shared version), and again when a newer shared version arrives if refreshOn includes sharedVersion; at most once per minIntervalMs per card, one call in flight, backing off after failures. The result is overlaid on the local layer with basedOnVersion; a local key replaces the shared key of the same name only while basedOnVersion is at least the shared version. A stored layer announces itself through onMessagePluginStateChanged. An inert view (available: false) says why in unavailableReason: disabled, not_installed, no_permission, unsupported_platform, incompatible_version or catalog_unreachable (the catalog could not be read; the view is returned instead of an error); unbound_copy marks a read-only copy of a card (available stays true, with no actions, menuActions, inputs, detail or block submits). Concurrent presentations share one catalog read; no catalog is kept after it.",
           "dispatchOp": "plugin_ui_present",
           "name": "presentPluginMessage",
           "nativeBinding": {
@@ -8051,7 +8051,7 @@
         },
         {
           "cApi": "flare_capability_dispatch_json",
-          "description": "The authorized plugin UI catalog of the signed-in tenant. Each plugin carries configuration, the client-visible subset of its tenant configuration (keys marked x-flare-client-visible), absent when empty. The catalog expires (validUntilMs); drop it on logout.",
+          "description": "The authorized plugin UI catalog of the signed-in tenant. Each plugin carries configuration, the client-visible subset of its tenant configuration (keys marked x-flare-client-visible), absent when empty. The catalog expires (validUntilMs); drop it on logout. unavailable lists the tenant's plugins this viewer cannot use, with their reason; a plugin this client cannot read is dropped (only that plugin, or only that contribution) instead of failing the catalog.",
           "dispatchOp": "plugin_ui_catalog",
           "name": "pluginUiCatalog",
           "nativeBinding": {
@@ -8089,7 +8089,7 @@
         },
         {
           "cApi": "flare_capability_dispatch_json",
-          "description": "payload {message, platform, locale?, userGesture, messageId?, conversationId?, cursor?, previous?, refresh?}. The \"view all\" sheet of a message card: invokes the contribution's detail operation with its input bound over the merged card data (messageId adds the stored state layers), then returns the detail document resolved against the result data as a v2 view (available, title, fields, actions, blocks?, inputs?, nextCursor?). nextCursor is present while a paged detail has more: request the next page with cursor set to it and previous set to the view shown so far, exactly as returned; the page comes back appended to previous (entries continue in order and are numbered on, everything else stays as on the first page, nextCursor is the new page's, absent on the last). Without previous only that page is returned. To re-read a shown sheet (after a state change, say) without folding the pages the viewer loaded, set refresh: true and previous to that sheet: Core reads the first page again and follows nextCursor until the sheet holds at least as many entries as previous did, the detail has no next page, or 10 pages were read, and returns the merged sheet to replace previous wholesale (nextCursor stays while more remain); any page failing fails the call, so keep showing previous. previous without cursor or refresh, refresh without previous or with cursor, and a cursor on a detail that does not page are invalid requests. A plugin failure is an error; a card without a detail, or one the current catalog does not offer, fails with sdk.plugin.ui_action_unavailable.",
+          "description": "payload {message, platform, locale?, userGesture, messageId?, conversationId?, cursor?, previous?, refresh?}. The \"view all\" sheet of a message card: invokes the contribution's detail operation with its input bound over the merged card data (messageId adds the stored state layers), then returns the detail document resolved against the result data as a v2 view (available, title, fields, actions, blocks?, inputs?, nextCursor?). nextCursor is present while a paged detail has more: request the next page with cursor set to it and previous set to the view shown so far, exactly as returned; the page comes back appended to previous (entries continue in order and are numbered on, everything else stays as on the first page, nextCursor is the new page's, absent on the last). Without previous only that page is returned. To re-read a shown sheet (after a state change, say) without folding the pages the viewer loaded, set refresh: true and previous to that sheet: Core reads the first page again and follows nextCursor until the sheet holds at least as many entries as previous did, the detail has no next page, or 10 pages were read, and returns the merged sheet to replace previous wholesale (nextCursor stays while more remain); any page failing fails the call, so keep showing previous. previous without cursor or refresh, refresh without previous or with cursor, and a cursor on a detail that does not page are invalid requests. A plugin failure is an error; a card without a detail, or one the current catalog does not offer, fails with sdk.plugin.ui_action_unavailable. Like actions, a detail call names its card message (messageId) to Core and fails with the same sdk.plugin.* keys.",
           "dispatchOp": "plugin_detail",
           "name": "pluginDetail",
           "nativeBinding": {
@@ -8103,6 +8103,44 @@
           "operation": "capability.plugin_detail",
           "request": "PluginUiEvaluationRequest",
           "response": "JsonObject",
+          "stability": "experimental",
+          "transport": "capability-dispatch-json"
+        },
+        {
+          "cApi": "flare_capability_dispatch_json",
+          "description": "payload {platform, locale}. Returns {entries: [{pluginId, contributionId, title, icon?, order, page, summary?}]}: the account-entry contributions (\"Me\" screen entries, such as a wallet) of the authorized catalog for that platform, title in locale (exact tag, then language), sorted by order (default 1000) then title. page is the plugin's page contribution the entry opens. summary {operation, path} names a query operation and the pointer of a scalar in its result data to show as the subtitle; listing never calls it: dispatch the operation with payload {} when the entry is shown. Reads a fresh catalog every call; the server already trimmed it by grant, capability policy and user consent.",
+          "dispatchOp": "plugin_account_entries",
+          "name": "pluginAccountEntries",
+          "nativeBinding": {
+            "asyncReturn": "i32 immediate_submit_code",
+            "callback": "FlareResultCallback",
+            "handlePolicy": "client-handle",
+            "requestEncoding": "json",
+            "responseEncoding": "json-object",
+            "returnMode": "callback"
+          },
+          "operation": "capability.plugin_account_entries",
+          "request": "PluginUiEvaluationRequest",
+          "response": "JsonObject",
+          "stability": "experimental",
+          "transport": "capability-dispatch-json"
+        },
+        {
+          "cApi": "flare_capability_dispatch_json",
+          "description": "The plugin catalog may have changed: a catalog read in flight is no longer shared, and the cards presented in the last minutes (inert ones included) are announced through onMessagePluginStateChanged, so present them again against a fresh catalog. Call it when the app returns to the foreground; the SDK does the same for a plugin's cards by itself when a call to it answers disabled, not installed, no permission or unsupported platform.",
+          "dispatchOp": "plugin_catalog_invalidate",
+          "name": "invalidatePluginCatalog",
+          "nativeBinding": {
+            "asyncReturn": "i32 immediate_submit_code",
+            "callback": "FlareResultCallback",
+            "handlePolicy": "client-handle",
+            "requestEncoding": "json",
+            "responseEncoding": "unit",
+            "returnMode": "callback-unit"
+          },
+          "operation": "capability.plugin_catalog_invalidate",
+          "request": "ListCapabilitiesRequest",
+          "response": "Unit",
           "stability": "experimental",
           "transport": "capability-dispatch-json"
         },
