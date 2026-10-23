@@ -28,6 +28,8 @@ abstract interface class CapabilitiesApi {
   Future<Map<String, Object?>> pluginComposerActions(PluginUiEvaluationRequest request);
   /// pluginDetail maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `plugin_detail`. Operation: `capability.plugin_detail`.
   Future<Map<String, Object?>> pluginDetail(PluginUiEvaluationRequest request);
+  /// pluginPage maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `plugin_page`. Operation: `capability.plugin_page`.
+  Future<Map<String, Object?>> pluginPage(PluginUiEvaluationRequest request);
   /// pluginAccountEntries maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `plugin_account_entries`. Operation: `capability.plugin_account_entries`.
   Future<Map<String, Object?>> pluginAccountEntries(PluginUiEvaluationRequest request);
   /// invalidatePluginCatalog maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `plugin_catalog_invalidate`. Operation: `capability.plugin_catalog_invalidate`.

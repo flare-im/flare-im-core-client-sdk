@@ -32,6 +32,7 @@ public interface MessagesApi {
     func searchMessages(request: MessageSearchQuery): ListMessagesResponse
     func searchMessagesByQuery(request: MessageSearchQuery): ListMessagesResponse
     func searchMessagesInConversation(request: MessageSearchQuery): ListMessagesResponse
+    func readReceiptMembers(request: MessageReadReceiptMembersRequest): String
     func editRichDocByMessageId(requestJson: String): Unit
     func setTyping(requestJson: String): Unit
 }

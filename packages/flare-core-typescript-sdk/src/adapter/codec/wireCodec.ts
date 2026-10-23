@@ -75,6 +75,10 @@ import {
   MessageLocalState,
   MessageMutationEvent,
   MessagePreview,
+  MessageReadReceiptMembersRequest,
+  MessageReadSummary,
+  MessageReceiptStatus,
+  MessageReceiptView,
   MessageReceivedBatchEvent,
   MessageReceivedEvent,
   MessageSearchKind,
@@ -532,6 +536,21 @@ export function messageContentToMap(request: MessageContent): Record<string, unk
   };
 }
 
+export function messageReadSummaryToMap(request: MessageReadSummary): Record<string, unknown> {
+  return {
+  readCount: request.readCount,
+  unreadCount: request.unreadCount,
+  total: request.total,
+  };
+}
+
+export function messageReceiptViewToMap(request: MessageReceiptView): Record<string, unknown> {
+  return {
+  status: request.status,
+  ...(request.readSummary !== undefined ? { readSummary: messageReadSummaryToMap(request.readSummary) } : {}),
+  };
+}
+
 export function createTextMessageRequestToMap(request: CreateTextMessageRequest): Record<string, unknown> {
   return {
   conversationId: request.conversationId,
@@ -564,6 +583,12 @@ export function listMessagesRequestToMap(request: ListMessagesRequest): Record<s
 export function listMessagesResponseToMap(request: ListMessagesResponse): Record<string, unknown> {
   return {
   messages: request.messages.map((item) => messageToMap(item)),
+  };
+}
+
+export function messageReadReceiptMembersRequestToMap(request: MessageReadReceiptMembersRequest): Record<string, unknown> {
+  return {
+  payload: request.payload,
   };
 }
 
@@ -1349,6 +1374,37 @@ export function conversationParticipantFromJson(value: unknown | undefined): Con
   };
 }
 
+const MESSAGE_RECEIPT_STATUS_WIRE_VALUES: MessageReceiptStatus[] = [MessageReceiptStatus.Pending, MessageReceiptStatus.Sending, MessageReceiptStatus.Sent, MessageReceiptStatus.Read, MessageReceiptStatus.Failed];
+
+/** The core's receipt projection; undefined when absent or malformed (an older core). */
+export function messageReceiptViewFromJson(value: unknown | undefined): MessageReceiptView | undefined {
+  if (value === undefined || value === null || typeof value !== 'object' || Array.isArray(value)) {
+    return undefined;
+  }
+  const json = value as Record<string, unknown>;
+  const status = field(json, 'status');
+  if (typeof status !== 'string' || !(MESSAGE_RECEIPT_STATUS_WIRE_VALUES as string[]).includes(status)) {
+    return undefined;
+  }
+  const rawSummary = field(json, 'readSummary');
+  const summary = rawSummary !== undefined && rawSummary !== null && typeof rawSummary === 'object' && !Array.isArray(rawSummary)
+    ? (rawSummary as Record<string, unknown>)
+    : undefined;
+  const count = (raw: unknown): number | undefined =>
+    typeof raw === 'number' && Number.isInteger(raw) && raw >= 0 ? raw : undefined;
+  const readCount = summary ? count(field(summary, 'readCount')) : undefined;
+  const unreadCount = summary ? count(field(summary, 'unreadCount')) : undefined;
+  const total = summary ? count(field(summary, 'total')) : undefined;
+  const readSummary: MessageReadSummary | undefined =
+    readCount !== undefined && unreadCount !== undefined && total !== undefined && total > 0
+      ? { readCount, unreadCount, total }
+      : undefined;
+  return {
+    status: status as MessageReceiptStatus,
+    ...(readSummary !== undefined ? { readSummary } : {}),
+  };
+}
+
 export function reactionEntryFromJson(value: unknown | undefined): ReactionEntry {
   const json = recordValue(value);
   return {
@@ -1420,6 +1476,7 @@ export function messageFromJson(value: unknown | undefined): Message {
     ...(field(json, 'localState') !== undefined ? { localState: messageLocalStateFromJson(field(json, 'localState')) } : {}),
     timelineKey: requiredStringField(json, 'timelineKey', 'Message'),
     timelineSortTs: requiredIntField(json, 'timelineSortTs', 'Message'),
+    ...(messageReceiptViewFromJson(field(json, 'receipt')) !== undefined ? { receipt: messageReceiptViewFromJson(field(json, 'receipt')) } : {}),
   } as Message;
 }
 

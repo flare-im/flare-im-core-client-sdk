@@ -69,4 +69,6 @@ data class Message(
     val timelineKey: String = "",
     /** wire: `timelineSortTs`. Core-computed timeline sort timestamp in milliseconds. */
     val timelineSortTs: Long = 0L,
+    /** wire: `receipt`. Core-computed receipt projection (status and, on the viewer's own group messages, the read summary); always present on messages the SDK returns. */
+    val receipt: MessageReceiptView? = null,
 )

@@ -69,8 +69,10 @@ public struct Message: Sendable {
     public let timelineKey: String
     /// wire: `timelineSortTs`. Core-computed timeline sort timestamp in milliseconds.
     public let timelineSortTs: UInt64
+    /// wire: `receipt`. Core-computed receipt projection (status and, on the viewer's own group messages, the read summary); always present on messages the SDK returns.
+    public let receipt: MessageReceiptView?
 
-    public init(attributes: [String: String] = [:], channelId: String = "", clientCreatedAt: UInt64 = 0, clientMsgId: String = "", content: MessageContent? = nil, conversationId: String = "", conversationSeq: UInt64 = 0, conversationType: Int32 = 0, createdAt: UInt64 = 0, extensions: [String: [UInt8]] = [:], isEdited: Bool = false, isRead: Bool = false, isRecalled: Bool = false, localState: MessageLocalState? = nil, mentionAll: Bool = false, mentionUsers: [String] = [], messageType: Int32 = 0, quotePreview: String? = nil, reactions: [ReactionEntry] = [], replyTo: String? = nil, senderAvatar: String = "", senderDisplayName: String = "", senderId: String = "", senderName: String = "", serverId: String = "", source: Int32 = 0, status: Int32 = 0, textPreview: String = "", threadId: String? = nil, updatedAt: UInt64 = 0, version: UInt64 = 0, timelineKey: String = "", timelineSortTs: UInt64 = 0) {
+    public init(attributes: [String: String] = [:], channelId: String = "", clientCreatedAt: UInt64 = 0, clientMsgId: String = "", content: MessageContent? = nil, conversationId: String = "", conversationSeq: UInt64 = 0, conversationType: Int32 = 0, createdAt: UInt64 = 0, extensions: [String: [UInt8]] = [:], isEdited: Bool = false, isRead: Bool = false, isRecalled: Bool = false, localState: MessageLocalState? = nil, mentionAll: Bool = false, mentionUsers: [String] = [], messageType: Int32 = 0, quotePreview: String? = nil, reactions: [ReactionEntry] = [], replyTo: String? = nil, senderAvatar: String = "", senderDisplayName: String = "", senderId: String = "", senderName: String = "", serverId: String = "", source: Int32 = 0, status: Int32 = 0, textPreview: String = "", threadId: String? = nil, updatedAt: UInt64 = 0, version: UInt64 = 0, timelineKey: String = "", timelineSortTs: UInt64 = 0, receipt: MessageReceiptView? = nil) {
         self.attributes = attributes
         self.channelId = channelId
         self.clientCreatedAt = clientCreatedAt
@@ -104,5 +106,6 @@ public struct Message: Sendable {
         self.version = version
         self.timelineKey = timelineKey
         self.timelineSortTs = timelineSortTs
+        self.receipt = receipt
     }
 }

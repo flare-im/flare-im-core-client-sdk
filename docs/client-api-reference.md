@@ -138,6 +138,7 @@ Message build, send, query and mutation.
 | `searchMessages` | `MessageSearchQuery` | `ListMessagesResponse` | `message-dispatch-json` | `flare_message_dispatch_json` |
 | `searchMessagesByQuery` | `MessageSearchQuery` | `ListMessagesResponse` | `message-dispatch-json` | `flare_message_dispatch_json` |
 | `searchMessagesInConversation` | `MessageSearchQuery` | `ListMessagesResponse` | `message-dispatch-json` | `flare_message_dispatch_json` |
+| `readReceiptMembers` | `MessageReadReceiptMembersRequest` | `JsonObject` | `message-dispatch-json` | `flare_message_dispatch_json` |
 | `editRichDocByMessageId` | `EditRichDocByMessageIdRequest` | `Unit` | `message-dispatch-json` | `flare_message_dispatch_json` |
 | `setTyping` | `SetTypingRequest` | `Unit` | `message-dispatch-json` | `flare_message_dispatch_json` |
 
@@ -219,6 +220,7 @@ Capability discovery and optional plugin dispatch through capability dispatch op
 | `pluginUiCatalog` | `ListCapabilitiesRequest` | `JsonObject` | `capability-dispatch-json` | `flare_capability_dispatch_json` |
 | `pluginComposerActions` | `PluginUiEvaluationRequest` | `JsonObject` | `capability-dispatch-json` | `flare_capability_dispatch_json` |
 | `pluginDetail` | `PluginUiEvaluationRequest` | `JsonObject` | `capability-dispatch-json` | `flare_capability_dispatch_json` |
+| `pluginPage` | `PluginUiEvaluationRequest` | `JsonObject` | `capability-dispatch-json` | `flare_capability_dispatch_json` |
 | `pluginAccountEntries` | `PluginUiEvaluationRequest` | `JsonObject` | `capability-dispatch-json` | `flare_capability_dispatch_json` |
 | `invalidatePluginCatalog` | `ListCapabilitiesRequest` | `Unit` | `capability-dispatch-json` | `flare_capability_dispatch_json` |
 | `listCapabilities` | `ListCapabilitiesRequest` | `ListCapabilitiesResponse` | `capability-dispatch-json` | `flare_capability_dispatch_json` |

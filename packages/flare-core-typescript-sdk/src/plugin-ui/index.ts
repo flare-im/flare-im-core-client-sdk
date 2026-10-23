@@ -1,4 +1,4 @@
-import { pluginFormErrors, pluginViewExtras, type PluginActionOutcome, type PluginCardPresentation, type PluginDetailPage, type PluginDetailPresentation, type PluginPresentation } from "./view";
+import { pluginFormErrors, pluginViewExtras, type PluginActionOutcome, type PluginCardPresentation, type PluginDetailPage, type PluginDetailPresentation, type PluginPagePage, type PluginPagePresentation, type PluginPresentation } from "./view";
 export * from "./view";
 /** Runtime adaptation only. Rust owns schema evaluation, lease/permission
  * checks, action declaration and history fallback on every platform. */
@@ -21,6 +21,11 @@ export interface PluginUiPort {
    * fetches the next page and returns it appended to `previous`; with `refresh: true` and `previous` it
    * re-reads the sheet from the first page, as many pages as `previous` had loaded. */
   pluginDetail?(request: Record<string, unknown>): Promise<unknown>;
+  /** `capability.plugin_page`: a plugin page. Request: `{pluginId, page, platform, locale, arguments?,
+   * filters?, cursor?, previous?, refresh?}`; returns the resolved view plus `data`, with `nextCursor`
+   * while its source has more. Paging and refresh as for `pluginDetail`. A page action goes through
+   * `invokeAction` with `page: {pluginId, page}`, `data` and `row?` instead of `message`. */
+  pluginPage?(request: Record<string, unknown>): Promise<unknown>;
   dispatch(request: { capabilityId: string; payload: unknown; conversationId?: string; tenantId?: string; userId?: string }): Promise<unknown>;
 }
 export interface PluginMessageEnvelope {
@@ -42,7 +47,9 @@ export class PluginUiSession {
   private generation = 0;
   private catalogInFlight: Promise<unknown> | null = null;
   constructor(private readonly port: PluginUiPort, readonly platform: PluginPlatform,
-    private readonly locale: () => string = () => "en-US", private readonly native?: NativePluginBridge, private readonly navigate?: (page: string) => void) {}
+    private readonly locale: () => string = () => "en-US", private readonly native?: NativePluginBridge,
+    /** Opens a plugin page with its arguments (the payload the opening action bound). */
+    private readonly navigate?: (page: string, args?: Record<string, unknown>) => void) {}
   reset(): void { this.generation++; this.catalogInFlight = null; }
   private catalogForView(): Promise<unknown> {
     if (this.catalogInFlight) return this.catalogInFlight;
@@ -126,7 +133,59 @@ export class PluginUiSession {
     }
     if (result?.kind === "formErrors") return { kind: "formErrors", errors: pluginFormErrors(result.errors) };
     const target = result?.kind === "host" ? result.target : undefined;
-    if (target?.kind === "page" && typeof target.page === "string" && this.navigate) return { kind: "host", result: this.navigate(target.page) };
+    if (target?.kind === "page" && typeof target.page === "string" && this.navigate) return { kind: "host", result: this.navigate(target.page, result?.payload ?? {}) };
+    if (target?.kind === "native" && typeof target.capability === "string" && this.native?.capabilities.includes(target.capability as never)) {
+      return { kind: "host", result: await this.native.invoke(target.capability, result?.payload ?? {}) };
+    }
+    throw new Error("Plugin target unavailable");
+  }
+  /**
+   * A plugin page (a `page` contribution, such as a wallet) through Core: its source query is called
+   * with the input bound from `args` (the payload of the action that opened it, `{}` from an account
+   * entry) plus validated `filters`, and the page document is resolved against the result. Paging and
+   * refresh work as for `detail`. An unavailable plugin (disabled, uninstalled, not permitted, catalog
+   * unreachable) gives an inert page with `unavailableReason` on the first page and on a refresh; a
+   * next page throws instead. Throws when the port has no page call or the session changed meanwhile.
+   */
+  async page(pluginId: string, page: string, options: { args?: Record<string, unknown>; filters?: Record<string, unknown>; page?: PluginPagePage; refresh?: PluginPagePresentation } = {}): Promise<PluginPagePresentation> {
+    const generation = this.generation;
+    if (!this.port.pluginPage) throw new Error("Plugin page unavailable");
+    const { args, filters, page: next, refresh } = options;
+    if (next && refresh) throw new Error("Plugin page: page and refresh exclude each other");
+    const value = await this.port.pluginPage({ pluginId, page, platform: this.platform, locale: this.locale(),
+      ...(args ? { arguments: args } : {}), ...(filters ? { filters } : {}),
+      ...(next ? { cursor: next.cursor, previous: next.previous } : {}), ...(refresh ? { refresh: true, previous: refresh } : {}) });
+    if (generation !== this.generation) throw new Error("Plugin session changed");
+    const view = value as PluginPagePresentation | null;
+    if (!view || typeof view.available !== "boolean" || typeof view.title !== "string" || !Array.isArray(view.fields) || !Array.isArray(view.actions)) {
+      throw new Error("Plugin page unavailable");
+    }
+    const nextCursor = typeof view.nextCursor === "string" && view.nextCursor ? view.nextCursor : undefined;
+    const data = view.available && view.data && typeof view.data === "object" && !Array.isArray(view.data) ? view.data : undefined;
+    return { available: view.available, title: view.title, fields: view.fields, actions: view.actions,
+      ...pluginViewExtras(view as unknown as Record<string, unknown>), ...(nextCursor ? { nextCursor } : {}), ...(data ? { data } : {}) };
+  }
+  /**
+   * Run a page action through Core: a document action binds over the page's `data`, a row action
+   * takes `row` as the view's rows gave it (`{key, input}`), with `formValues` and `selection` as for
+   * a card. No message is named. Page targets open through `navigate` with the bound payload as the
+   * next page's arguments; native targets run here.
+   */
+  async invokePageAction(pluginId: string, page: string, actionId: string,
+    options: { data?: Record<string, unknown>; row?: { key: string; input: Record<string, unknown> }; conversationId?: string; userGesture: boolean; formValues?: Record<string, unknown>; selection?: number[] }): Promise<PluginActionOutcome> {
+    const generation = this.generation;
+    const { data, row, conversationId, userGesture, formValues, selection } = options;
+    const value = await this.port.invokeAction({ page: { pluginId, page }, platform: this.platform, actionId, userGesture,
+      nativeAllowlist: this.native?.capabilities ?? [], ...(data ? { data } : {}), ...(row ? { row } : {}),
+      ...(conversationId ? { conversationId } : {}), ...(formValues ? { formValues } : {}), ...(selection ? { selection } : {}) });
+    if (generation !== this.generation) throw new Error("Plugin session changed");
+    const result = value as { kind?: unknown; response?: unknown; errors?: unknown; target?: { kind: string; page?: string; capability?: string }; payload?: Record<string, unknown> } | null;
+    if (result?.kind === "operation" && result.response && typeof result.response === "object") {
+      return { kind: "operation", response: result.response as Extract<PluginActionOutcome, { kind: "operation" }>["response"] };
+    }
+    if (result?.kind === "formErrors") return { kind: "formErrors", errors: pluginFormErrors(result.errors) };
+    const target = result?.kind === "host" ? result.target : undefined;
+    if (target?.kind === "page" && typeof target.page === "string" && this.navigate) return { kind: "host", result: this.navigate(target.page, result?.payload ?? {}) };
     if (target?.kind === "native" && typeof target.capability === "string" && this.native?.capabilities.includes(target.capability as never)) {
       return { kind: "host", result: await this.native.invoke(target.capability, result?.payload ?? {}) };
     }

@@ -2,9 +2,9 @@
 import { NativeBridge, NativeCallMap } from '../contract/BridgeContract';
 import type { MessagesApi } from '../api/modules/messages';
 import type { MessageSendCallback } from '../listener';
-import { CreateTextMessageRequest, ListMessagesRequest, ListMessagesResponse, Message, MessageSearchQuery, SendMessageRequest, SendMessageResponse } from '../model';
+import { CreateTextMessageRequest, ListMessagesRequest, ListMessagesResponse, Message, MessageReadReceiptMembersRequest, MessageSearchQuery, SendMessageRequest, SendMessageResponse } from '../model';
 import { invokeBool, invokeConnectionState, invokeConversation, invokeListConversations, invokeListMessages, invokeMap, invokeMessage, invokeSendAck, invokeVoid, sdkErrorPayloadFromError } from './NativeInvoke';
-import { conversationFromJson, createTextMessageRequestToMap, listConversationsResponseFromJson, listMessagesRequestToMap, listMessagesResponseFromJson, listOfMaps, messageFromJson, messageSearchQueryToMap, sendAckFromJson, sendMessageRequestToMap } from './WireCodec';
+import { conversationFromJson, createTextMessageRequestToMap, listConversationsResponseFromJson, listMessagesRequestToMap, listMessagesResponseFromJson, listOfMaps, messageFromJson, messageReadReceiptMembersRequestToMap, messageSearchQueryToMap, sendAckFromJson, sendMessageRequestToMap } from './WireCodec';
 
 export class DefaultMessagesApi implements MessagesApi {
   constructor(private readonly bridge: NativeBridge) {}
@@ -129,6 +129,10 @@ export class DefaultMessagesApi implements MessagesApi {
 
   async searchMessagesInConversation(request: MessageSearchQuery): Promise<ListMessagesResponse> {
     return await invokeListMessages(this.bridge, NativeCallMap.messageSearchInConversation, messageSearchQueryToMap(request));
+  }
+
+  async readReceiptMembers(request: MessageReadReceiptMembersRequest): Promise<Record<string, Object>> {
+    return await invokeMap(this.bridge, NativeCallMap.messageReadReceiptMembers, messageReadReceiptMembersRequestToMap(request));
   }
 
   async editRichDocByMessageId(request: Record<string, Object>): Promise<void> {

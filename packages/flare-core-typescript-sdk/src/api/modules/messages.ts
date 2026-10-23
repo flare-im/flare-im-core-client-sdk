@@ -4,8 +4,8 @@
  * Module API: `messages` — Message build, send, query and mutation.
  */
 import type { MessageSendCallback } from '../../callback';
-import type { CreateTextMessageRequest, ListMessagesRequest, ListMessagesResponse, Message, MessageSearchQuery, SendMessageRequest, SendMessageResponse } from '../../model';
-import type { DeleteMessageRequest, EditRichDocByMessageIdRequest, EditTextByMessageIdRequest, GetMessageRequest, MarkMessageReadAndBurnRequest, MessageDispatchRequest, MessageMutationRequest, ReactionMutationRequest, RecallMessageRequest, SetTypingRequest } from '../types';
+import type { CreateTextMessageRequest, ListMessagesRequest, ListMessagesResponse, Message, MessageReadReceiptMembersRequest, MessageSearchQuery, SendMessageRequest, SendMessageResponse } from '../../model';
+import type { DeleteMessageRequest, EditRichDocByMessageIdRequest, EditTextByMessageIdRequest, GetMessageRequest, JsonObject, MarkMessageReadAndBurnRequest, MessageDispatchRequest, MessageMutationRequest, ReactionMutationRequest, RecallMessageRequest, SetTypingRequest } from '../types';
 
 /** Message build, send, query and mutation. */
 export interface MessagesApi {
@@ -63,6 +63,8 @@ export interface MessagesApi {
   searchMessagesByQuery(request: MessageSearchQuery): Promise<ListMessagesResponse>;
   /** searchMessagesInConversation maps to `flare_message_dispatch_json`, dispatch op `search_in_conversation`. Operation: `message.search_in_conversation`. */
   searchMessagesInConversation(request: MessageSearchQuery): Promise<ListMessagesResponse>;
+  /** readReceiptMembers maps to `flare_message_dispatch_json`, dispatch op `read_receipt_members`. Operation: `message.read_receipt_members`. */
+  readReceiptMembers(request: MessageReadReceiptMembersRequest): Promise<JsonObject>;
   /** editRichDocByMessageId maps to `flare_message_dispatch_json`, dispatch op `edit_rich_doc_by_message_id`. Operation: `message.edit_rich_doc_by_message_id`. */
   editRichDocByMessageId(request: EditRichDocByMessageIdRequest): Promise<void>;
   /** setTyping maps to `flare_message_dispatch_json`, dispatch op `typing`. Operation: `message.typing`. */

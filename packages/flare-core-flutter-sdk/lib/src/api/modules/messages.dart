@@ -59,6 +59,8 @@ abstract interface class MessagesApi {
   Future<ListMessagesResponse> searchMessagesByQuery(MessageSearchQuery request);
   /// searchMessagesInConversation maps to `flare_message_dispatch_json` via `message-dispatch-json`, dispatch op `search_in_conversation`. Operation: `message.search_in_conversation`.
   Future<ListMessagesResponse> searchMessagesInConversation(MessageSearchQuery request);
+  /// readReceiptMembers maps to `flare_message_dispatch_json` via `message-dispatch-json`, dispatch op `read_receipt_members`. Operation: `message.read_receipt_members`.
+  Future<Map<String, Object?>> readReceiptMembers(MessageReadReceiptMembersRequest request);
   /// editRichDocByMessageId maps to `flare_message_dispatch_json` via `message-dispatch-json`, dispatch op `edit_rich_doc_by_message_id`. Operation: `message.edit_rich_doc_by_message_id`.
   Future<void> editRichDocByMessageId(Map<String, Object?> request);
   /// setTyping maps to `flare_message_dispatch_json` via `message-dispatch-json`, dispatch op `typing`. Operation: `message.typing`.

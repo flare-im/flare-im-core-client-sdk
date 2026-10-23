@@ -81,6 +81,8 @@ interface MessagesApi {
     suspend fun searchMessagesByQuery(request: MessageSearchQuery): ListMessagesResponse
     /** searchMessagesInConversation maps to `flare_message_dispatch_json` via `message-dispatch-json`, dispatch op `search_in_conversation`. Operation: `message.search_in_conversation`. */
     suspend fun searchMessagesInConversation(request: MessageSearchQuery): ListMessagesResponse
+    /** readReceiptMembers maps to `flare_message_dispatch_json` via `message-dispatch-json`, dispatch op `read_receipt_members`. Operation: `message.read_receipt_members`. */
+    suspend fun readReceiptMembers(request: MessageReadReceiptMembersRequest): Map<String, Any?>
     /** editRichDocByMessageId maps to `flare_message_dispatch_json` via `message-dispatch-json`, dispatch op `edit_rich_doc_by_message_id`. Operation: `message.edit_rich_doc_by_message_id`. */
     suspend fun editRichDocByMessageId(request: Map<String, Any?>): Unit
     /** setTyping maps to `flare_message_dispatch_json` via `message-dispatch-json`, dispatch op `typing`. Operation: `message.typing`. */

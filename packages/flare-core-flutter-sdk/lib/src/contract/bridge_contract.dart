@@ -1380,6 +1380,20 @@ abstract final class NativeCallMap {
       dispatchOp: "search_in_conversation",
       callback: "FlareResultCallback");
 
+  /// readReceiptMembers maps to `flare_message_dispatch_json` via `message-dispatch-json`, dispatch op `read_receipt_members`. Operation: `message.read_receipt_members`.
+  static const messageReadReceiptMembers = NativeCallDescriptor(
+      module: "messages",
+      method: "readReceiptMembers",
+      operation: "message.read_receipt_members",
+      transport: "message-dispatch-json",
+      cApi: "flare_message_dispatch_json",
+      requestEncoding: "json",
+      responseEncoding: "json-object",
+      returnMode: "callback",
+      handlePolicy: "client-handle",
+      dispatchOp: "read_receipt_members",
+      callback: "FlareResultCallback");
+
   /// editRichDocByMessageId maps to `flare_message_dispatch_json` via `message-dispatch-json`, dispatch op `edit_rich_doc_by_message_id`. Operation: `message.edit_rich_doc_by_message_id`.
   static const messageEditRichDocByMessageId = NativeCallDescriptor(
       module: "messages",
@@ -2005,6 +2019,20 @@ abstract final class NativeCallMap {
       returnMode: "callback",
       handlePolicy: "client-handle",
       dispatchOp: "plugin_detail",
+      callback: "FlareResultCallback");
+
+  /// pluginPage maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `plugin_page`. Operation: `capability.plugin_page`.
+  static const capabilityPluginPage = NativeCallDescriptor(
+      module: "capabilities",
+      method: "pluginPage",
+      operation: "capability.plugin_page",
+      transport: "capability-dispatch-json",
+      cApi: "flare_capability_dispatch_json",
+      requestEncoding: "json",
+      responseEncoding: "json-object",
+      returnMode: "callback",
+      handlePolicy: "client-handle",
+      dispatchOp: "plugin_page",
       callback: "FlareResultCallback");
 
   /// pluginAccountEntries maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `plugin_account_entries`. Operation: `capability.plugin_account_entries`.

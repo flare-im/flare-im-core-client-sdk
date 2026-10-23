@@ -32,6 +32,8 @@ export interface CapabilitiesApi {
   pluginComposerActions(request: PluginUiEvaluationRequest): Promise<JsonObject>;
   /** pluginDetail maps to `flare_capability_dispatch_json`, dispatch op `plugin_detail`. Operation: `capability.plugin_detail`. */
   pluginDetail(request: PluginUiEvaluationRequest): Promise<JsonObject>;
+  /** pluginPage maps to `flare_capability_dispatch_json`, dispatch op `plugin_page`. Operation: `capability.plugin_page`. */
+  pluginPage(request: PluginUiEvaluationRequest): Promise<JsonObject>;
   /** pluginAccountEntries maps to `flare_capability_dispatch_json`, dispatch op `plugin_account_entries`. Operation: `capability.plugin_account_entries`. */
   pluginAccountEntries(request: PluginUiEvaluationRequest): Promise<JsonObject>;
   /** invalidatePluginCatalog maps to `flare_capability_dispatch_json`, dispatch op `plugin_catalog_invalidate`. Operation: `capability.plugin_catalog_invalidate`. */

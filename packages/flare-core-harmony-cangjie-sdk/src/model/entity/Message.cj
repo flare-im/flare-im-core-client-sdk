@@ -70,8 +70,10 @@ public class Message {
     public let timelineKey: String
     // wire: `timelineSortTs`. Core-computed timeline sort timestamp in milliseconds.
     public let timelineSortTs: UInt64
+    // wire: `receipt`. Optional. Core-computed receipt projection (status and, on the viewer's own group messages, the read summary); always present on messages the SDK returns.
+    public let receipt: ?MessageReceiptView
 
-    public init(attributes!: String, channelId!: String, clientCreatedAt!: UInt64, clientMsgId!: String, content!: ?MessageContent, conversationId!: String, conversationSeq!: UInt64, conversationType!: Int32, createdAt!: UInt64, extensions!: String, isEdited!: Bool, isRead!: Bool, isRecalled!: Bool, localState!: ?MessageLocalState, mentionAll!: Bool, mentionUsers!: String, messageType!: Int32, quotePreview!: ?String, reactions!: String, replyTo!: ?String, senderAvatar!: String, senderDisplayName!: String, senderId!: String, senderName!: String, serverId!: String, source!: Int32, status!: Int32, textPreview!: String, threadId!: ?String, updatedAt!: UInt64, version!: UInt64, timelineKey!: String, timelineSortTs!: UInt64) {
+    public init(attributes!: String, channelId!: String, clientCreatedAt!: UInt64, clientMsgId!: String, content!: ?MessageContent, conversationId!: String, conversationSeq!: UInt64, conversationType!: Int32, createdAt!: UInt64, extensions!: String, isEdited!: Bool, isRead!: Bool, isRecalled!: Bool, localState!: ?MessageLocalState, mentionAll!: Bool, mentionUsers!: String, messageType!: Int32, quotePreview!: ?String, reactions!: String, replyTo!: ?String, senderAvatar!: String, senderDisplayName!: String, senderId!: String, senderName!: String, serverId!: String, source!: Int32, status!: Int32, textPreview!: String, threadId!: ?String, updatedAt!: UInt64, version!: UInt64, timelineKey!: String, timelineSortTs!: UInt64, receipt!: ?MessageReceiptView) {
         this.attributes = attributes
         this.channelId = channelId
         this.clientCreatedAt = clientCreatedAt
@@ -105,5 +107,6 @@ public class Message {
         this.version = version
         this.timelineKey = timelineKey
         this.timelineSortTs = timelineSortTs
+        this.receipt = receipt
     }
 }

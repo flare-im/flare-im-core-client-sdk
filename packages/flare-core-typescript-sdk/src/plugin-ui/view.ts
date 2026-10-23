@@ -47,13 +47,17 @@ export interface PluginUiChoicesBlock {
   showResults: boolean;
   total?: number;
   inputName: string;
+  /** A multiple choice's limit (1..= option count): stop further ticks at it. Absent: no limit. */
+  maxSelections?: number;
   /** The submit action, while the viewer can choose (absent once closed or hidden). */
   action?: PluginUiAction;
 }
 /** The header of a group of entries ("Option A · 5 votes · 42%"); `percent` 0..=100 when `count` and `total` are known. */
 export interface PluginUiEntryGroup { key: string; label: string; count?: number; total?: number; percent?: number }
+/** An entry's or row's enumerated value as words and a tone (`valueLabels`), such as a ledger line's kind. */
+export interface PluginUiBadge { text: string; tone: PluginUiTone }
 /** `index` is 1-based; in a grouped block it counts within the group. `group` is on the first entry of each group. */
-export interface PluginUiEntry { index: number; text: string; name?: string; userId?: string; group?: PluginUiEntryGroup }
+export interface PluginUiEntry { index: number; text: string; name?: string; userId?: string; group?: PluginUiEntryGroup; badge?: PluginUiBadge }
 /**
  * `more`: the host offers "view all", which opens `detail` (see `PluginUiSession.detail`).
  * `numbered: false` shows no numbers. `grouped`: render one flat list with a header row before every
@@ -72,7 +76,9 @@ export interface PluginUiRowsBlock {
   kind: "rows";
   source: string;
   columns: Array<{ label: string; format: "text" | "time" }>;
-  rows: Array<{ key: string; cells: Array<{ text: string; timeMs?: number }>; actions: Array<{ id: string; input: Record<string, unknown> }>; detailInput?: Record<string, unknown> }>;
+  rows: Array<{ key: string; cells: Array<{ text: string; timeMs?: number }>; actions: Array<{ id: string; input: Record<string, unknown> }>; detailInput?: Record<string, unknown>; badge?: PluginUiBadge }>;
+  /** Ids of the view's `inputs` shown as filters; absent: every input is a filter. */
+  filters?: string[];
   nextCursor?: string;
   actions: PluginUiAction[];
   emptyText?: string;
@@ -148,6 +154,23 @@ export interface PluginDetailPage {
   cursor: string;
   /** The sheet shown so far, as `detail` returned it; the page comes back appended to it. */
   previous: PluginDetailPresentation;
+}
+
+/**
+ * A plugin page (a `page` contribution, such as a wallet): a {@link PluginDetailPresentation} plus
+ * `data`, what it was resolved against, which a page action passes back. An unavailable page is
+ * `{available: false, title: "", unavailableReason}`; the host keeps its own page title.
+ */
+export interface PluginPagePresentation extends PluginDetailPresentation {
+  data?: Record<string, unknown>;
+}
+
+/** Paging options of `PluginUiSession.page`. */
+export interface PluginPagePage {
+  /** The shown page's `nextCursor`. */
+  cursor: string;
+  /** The page shown so far, as `page` returned it; the next page comes back appended to it. */
+  previous: PluginPagePresentation;
 }
 
 /** A presentation for one stored message card. */

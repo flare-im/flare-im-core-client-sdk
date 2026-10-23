@@ -31,6 +31,7 @@ export interface MessagesApi {
   searchMessages(request: MessageSearchQuery): Promise<ListMessagesResponse>;
   searchMessagesByQuery(request: MessageSearchQuery): Promise<ListMessagesResponse>;
   searchMessagesInConversation(request: MessageSearchQuery): Promise<ListMessagesResponse>;
+  readReceiptMembers(request: MessageReadReceiptMembersRequest): Promise<Record<string, Object>>;
   editRichDocByMessageId(request: Record<string, Object>): Promise<void>;
   setTyping(request: Record<string, Object>): Promise<void>;
 }

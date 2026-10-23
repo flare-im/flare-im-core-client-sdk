@@ -1855,6 +1855,14 @@
               "source": "IMMessage::serialize",
               "type": "UInt64",
               "wireName": "timelineSortTs"
+            },
+            {
+              "description": "Core-computed receipt projection (status and, on the viewer's own group messages, the read summary); always present on messages the SDK returns.",
+              "name": "receipt",
+              "required": false,
+              "source": "IMMessage::serialize",
+              "type": "MessageReceiptView",
+              "wireName": "receipt"
             }
           ],
           "name": "Message",
@@ -2857,6 +2865,17 @@
             "custom",
             "placeholder"
           ]
+        },
+        {
+          "description": "Receipt state the core SDK projects for a message: pending (built locally, not yet sending), sending (no server sequence yet, media uploading included), sent (the server has it), read (single chat: the peer read it; group: the read summary says all members read it), failed (retryable). There is no delivered state.",
+          "name": "MessageReceiptStatus",
+          "values": [
+            "pending",
+            "sending",
+            "sent",
+            "read",
+            "failed"
+          ]
         }
       ],
       "group": "messages",
@@ -2880,6 +2899,53 @@
             }
           ],
           "name": "MessageContent"
+        },
+        {
+          "description": "Who read one of the viewer's own messages in a group, the sender excluded: total = readCount + unreadCount, always above 0.",
+          "fields": [
+            {
+              "description": "Members who read the message.",
+              "name": "readCount",
+              "required": true,
+              "type": "UInt32",
+              "wireName": "readCount"
+            },
+            {
+              "description": "Members who have not read it yet.",
+              "name": "unreadCount",
+              "required": true,
+              "type": "UInt32",
+              "wireName": "unreadCount"
+            },
+            {
+              "description": "Members the message counts, the sender excluded.",
+              "name": "total",
+              "required": true,
+              "type": "UInt32",
+              "wireName": "total"
+            }
+          ],
+          "name": "MessageReadSummary"
+        },
+        {
+          "description": "The receipt projection of a message, computed by the core SDK; kits draw it as is (no host mapping from status, isRead or localState). Incoming messages carry one too, kits show no receipt for them.",
+          "fields": [
+            {
+              "description": "Receipt state.",
+              "name": "status",
+              "required": true,
+              "type": "MessageReceiptStatus",
+              "wireName": "status"
+            },
+            {
+              "description": "Only on the viewer's own messages in groups, once the core SDK has read it from Core for a message a view shows (and refreshed on read receipts); absent in single chats, in groups above the large-group threshold, and before it is known. Never a made-up number.",
+              "name": "readSummary",
+              "required": false,
+              "type": "MessageReadSummary",
+              "wireName": "readSummary"
+            }
+          ],
+          "name": "MessageReceiptView"
         },
         {
           "description": "Create a text message draft for a conversation.",
@@ -3029,6 +3095,19 @@
             }
           ],
           "name": "ListMessagesResponse"
+        },
+        {
+          "description": "One page of the members who read, or have not yet read, one of the viewer's own group messages (the read receipt sheet).",
+          "fields": [
+            {
+              "description": "{conversationId, serverMsgId, state: \"read\" | \"unread\", cursor?, limit?}; limit 1..=200 (default 50), cursor the previous page's nextCursor (absent for the first page).",
+              "name": "payload",
+              "required": true,
+              "type": "JsonObject",
+              "wireName": "payload"
+            }
+          ],
+          "name": "MessageReadReceiptMembersRequest"
         }
       ]
     },
@@ -5343,7 +5422,7 @@
         {
           "fields": [
             {
-              "description": "Typed UI evaluation envelope defined by the shared UI protocol. presentPluginMessage, invokePluginAction and pluginDetail accept an optional messageId (server id or clientMsgId) of the message the card belongs to: the card resolves over the shared and local state layers stored on that message, and invoke stores a successful operation's data.sharedState and data.messageState on it. invokePluginAction also takes formValues and selection; pluginDetail also takes cursor and previous for the next page of a paged detail, and refresh with previous to re-read a shown sheet keeping the pages it had loaded.",
+              "description": "Typed UI evaluation envelope defined by the shared UI protocol. presentPluginMessage, invokePluginAction and pluginDetail accept an optional messageId (server id or clientMsgId) of the message the card belongs to: the card resolves over the shared and local state layers stored on that message, and invoke stores a successful operation's data.sharedState and data.messageState on it. invokePluginAction also takes formValues and selection; pluginDetail also takes cursor and previous for the next page of a paged detail, and refresh with previous to re-read a shown sheet keeping the pages it had loaded. pluginPage takes {pluginId, page, platform, locale?, arguments?, filters?, cursor?, previous?, refresh?}; invokePluginAction takes page {pluginId, page}, data and row {key, input} instead of message for a page action.",
               "name": "payload",
               "required": true,
               "type": "JsonObject",
@@ -7253,6 +7332,25 @@
         },
         {
           "cApi": "flare_message_dispatch_json",
+          "description": "Returns {conversationId, serverMsgId, available, summary?, userIds, nextCursor?, hasMore}: one page of the members who read (state read) or have not yet read (state unread) one of the viewer's own messages in a group, user ids ascending; nextCursor while hasMore. available false (and no ids) for a conversation that is not a group or is above the large-group threshold. Core refuses another sender's message (MESSAGE_READ_RECEIPT_NOT_SENDER) and a message not in the conversation or recalled. A summary in the page also refreshes that message's receipt.readSummary in open views.",
+          "dispatchOp": "read_receipt_members",
+          "name": "readReceiptMembers",
+          "nativeBinding": {
+            "asyncReturn": "i32 immediate_submit_code",
+            "callback": "FlareResultCallback",
+            "handlePolicy": "client-handle",
+            "requestEncoding": "json",
+            "responseEncoding": "json-object",
+            "returnMode": "callback"
+          },
+          "operation": "message.read_receipt_members",
+          "request": "MessageReadReceiptMembersRequest",
+          "response": "JsonObject",
+          "stability": "experimental",
+          "transport": "message-dispatch-json"
+        },
+        {
+          "cApi": "flare_message_dispatch_json",
           "dispatchOp": "edit_rich_doc_by_message_id",
           "name": "editRichDocByMessageId",
           "nativeBinding": {
@@ -7977,7 +8075,7 @@
         },
         {
           "cApi": "flare_capability_dispatch_json",
-          "description": "The action input is bound over the merged card data (payload, then the shared layer, then the local layer); a composer-action form binds over {config: <the plugin's client-visible configuration>} instead. An action with a form takes formValues ({inputId: value}); they are validated first against the inputs as resolved over that same data (maxPath and defaultPath apply) and problems return {kind: \"formErrors\", errors: [{input, issue}]} without sending anything (issue: required, unknown, invalidType, tooLong, outOfRange, notAChoice, tooFewItems, tooManyItems, invalidItem, duplicateItem). An action owned by a choices block takes selection (option indices). Operation targets return {kind: \"operation\", response}; page and native targets return {kind: \"host\", target, payload}. With messageId, a successful result's data.sharedState of this card's entity is applied at once as the shared layer (newer versions only) and data.messageState is stored as the local layer by version; then onMessagePluginStateChanged fires once. Calls without messageId ignore both; storage failures never change the result. A card call names its message to Core (messageId, the stored card's server id); Core accepts it only from the message bound to the card's entity, and a card marked as an unbound copy is refused locally with sdk.plugin.card_unbound. A create result's data.posted ({conversationId, serverMsgId, clientMsgId}, the card Core posted) is returned as it is. Plugin failures come back as sdk.plugin.* keys: disabled, not_installed, permission_denied, unsupported_platform, card_unbound, card_platform_only, card_not_posted, message_recalled, rate_limited, outcome_unknown, rejected (the plugin's own code in machineReason), catalog_unreachable, ui_action_unavailable; one meaning the plugin is no longer available re-announces that plugin's recently presented cards (as invalidatePluginCatalog does).",
+          "description": "The action input is bound over the merged card data (payload, then the shared layer, then the local layer); a composer-action form binds over {config: <the plugin's client-visible configuration>} instead. An action with a form takes formValues ({inputId: value}); they are validated first against the inputs as resolved over that same data (maxPath and defaultPath apply) and problems return {kind: \"formErrors\", errors: [{input, issue}]} without sending anything (issue: required, unknown, invalidType, tooLong, outOfRange, notAChoice, tooFewItems, tooManyItems, invalidItem, duplicateItem). An action owned by a choices block takes selection (option indices). Operation targets return {kind: \"operation\", response}; page and native targets return {kind: \"host\", target, payload}. With messageId, a successful result's data.sharedState of this card's entity is applied at once as the shared layer (newer versions only) and data.messageState is stored as the local layer by version; then onMessagePluginStateChanged fires once. Calls without messageId ignore both; storage failures never change the result. A card call names its message to Core (messageId, the stored card's server id); Core accepts it only from the message bound to the card's entity, and a card marked as an unbound copy is refused locally with sdk.plugin.card_unbound. A create result's data.posted ({conversationId, serverMsgId, clientMsgId}, the card Core posted) is returned as it is. Plugin failures come back as sdk.plugin.* keys: disabled, not_installed, permission_denied, unsupported_platform, card_unbound, card_platform_only, card_not_posted, message_recalled, rate_limited, outcome_unknown, rejected (the plugin's own code in machineReason), catalog_unreachable, ui_action_unavailable; one meaning the plugin is no longer available re-announces that plugin's recently presented cards (as invalidatePluginCatalog does). A page action names page {pluginId, page} instead of message: it binds over the page view's data (pass it back as data), a row action takes row {key, input} as the view's rows gave it, and it never carries messageId; a page target's payload is the next page's arguments.",
           "dispatchOp": "plugin_ui_invoke",
           "name": "invokePluginAction",
           "nativeBinding": {
@@ -8101,6 +8199,25 @@
             "returnMode": "callback"
           },
           "operation": "capability.plugin_detail",
+          "request": "PluginUiEvaluationRequest",
+          "response": "JsonObject",
+          "stability": "experimental",
+          "transport": "capability-dispatch-json"
+        },
+        {
+          "cApi": "flare_capability_dispatch_json",
+          "description": "payload {pluginId, page, platform, locale?, arguments?, filters?, cursor?, previous?, refresh?}. A plugin page (a page contribution, such as a wallet) resolved like a detail into a v2 view (available, title, fields, actions, menuActions?, blocks?, inputs?, nextCursor?, unavailableReason?) plus data, what it was resolved against, to pass back with a page action. arguments is the payload of the page target that opened the page ({} from an account entry); the page's source query is called with its input bound from them, and a page without a source resolves against them. filters are the values of the rows block's filter inputs, validated like a form. Paging and refresh follow pluginDetail: cursor (the view's nextCursor) with previous (the view as returned) appends the next page (rows by key, entries numbered on); refresh with previous re-reads from the first page until at least as many entries and rows are back, there is no next page, or 10 pages were read. The first page and a refresh never fail for an unavailable plugin: an unreadable catalog, a disabled, uninstalled or not permitted plugin, another platform or an unknown page give {available: false, title: \"\", unavailableReason}; a next page fails instead (keep showing previous), and any other source failure is an error with the usual sdk.plugin.* keys. Page calls carry no messageId.",
+          "dispatchOp": "plugin_page",
+          "name": "pluginPage",
+          "nativeBinding": {
+            "asyncReturn": "i32 immediate_submit_code",
+            "callback": "FlareResultCallback",
+            "handlePolicy": "client-handle",
+            "requestEncoding": "json",
+            "responseEncoding": "json-object",
+            "returnMode": "callback"
+          },
+          "operation": "capability.plugin_page",
           "request": "PluginUiEvaluationRequest",
           "response": "JsonObject",
           "stability": "experimental",

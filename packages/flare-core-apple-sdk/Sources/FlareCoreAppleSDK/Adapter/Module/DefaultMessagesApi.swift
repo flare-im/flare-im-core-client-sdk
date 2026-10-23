@@ -139,6 +139,10 @@ public final class DefaultMessagesApi: MessagesApiProtocol {
         return try listMessagesResponseFromJson(raw)
     }
 
+    public func readReceiptMembers(_ request: MessageReadReceiptMembersRequest) async throws -> [String: AnySendable] {
+        return try await invokeMap(bridge, descriptor: NativeCallMap.messageReadReceiptMembers, request: messageReadReceiptMembersRequestToMap(request))
+    }
+
     public func editRichDocByMessageId(_ request: [String: AnySendable]) async throws -> Void {
         try await invokeVoid(bridge, descriptor: NativeCallMap.messageEditRichDocByMessageId, request: AnySendable(request))
     }

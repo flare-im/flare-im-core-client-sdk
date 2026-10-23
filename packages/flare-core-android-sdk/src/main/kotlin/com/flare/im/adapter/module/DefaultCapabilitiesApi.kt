@@ -81,6 +81,10 @@ class DefaultCapabilitiesApi(
         return invokeMap(bridge, NativeCallMap.CAPABILITY_PLUGIN_DETAIL, pluginUiEvaluationRequestToMap(request))
     }
 
+    override suspend fun pluginPage(request: PluginUiEvaluationRequest): Map<String, Any?> {
+        return invokeMap(bridge, NativeCallMap.CAPABILITY_PLUGIN_PAGE, pluginUiEvaluationRequestToMap(request))
+    }
+
     override suspend fun pluginAccountEntries(request: PluginUiEvaluationRequest): Map<String, Any?> {
         return invokeMap(bridge, NativeCallMap.CAPABILITY_PLUGIN_ACCOUNT_ENTRIES, pluginUiEvaluationRequestToMap(request))
     }

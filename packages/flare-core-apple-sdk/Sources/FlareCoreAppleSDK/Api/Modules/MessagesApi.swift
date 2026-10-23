@@ -30,6 +30,7 @@ public protocol MessagesApiProtocol: AnyObject {
     func searchMessages(_ request: MessageSearchQuery) async throws -> ListMessagesResponse
     func searchMessagesByQuery(_ request: MessageSearchQuery) async throws -> ListMessagesResponse
     func searchMessagesInConversation(_ request: MessageSearchQuery) async throws -> ListMessagesResponse
+    func readReceiptMembers(_ request: MessageReadReceiptMembersRequest) async throws -> [String: AnySendable]
     func editRichDocByMessageId(_ request: [String: AnySendable]) async throws -> Void
     func setTyping(_ request: [String: AnySendable]) async throws -> Void
 }

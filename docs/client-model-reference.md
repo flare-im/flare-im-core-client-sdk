@@ -210,6 +210,7 @@ SDK 层消息类型：与 message.proto 的 Message 属性一致，content 为�
 | `version` | `version` | `UInt64` | yes |  |
 | `timelineKey` | `timelineKey` | `String` | yes | Core-computed stable row key for timeline rendering. |
 | `timelineSortTs` | `timelineSortTs` | `UInt64` | yes | Core-computed timeline sort timestamp in milliseconds. |
+| `receipt` | `receipt` | `MessageReceiptView` | no | Core-computed receipt projection (status and, on the viewer's own group messages, the read summary); always present on messages the SDK returns. |
 
 ### MessageSearchQuery
 
@@ -568,6 +569,8 @@ Message models mirrored from flare-im-core-sdk/src/model/message.rs and message_
 
 - `MessageContentType`: Decoded message content discriminator. Values: `text`, `image`, `video`, `audio`, `file`, `location`, `card`, `sticker`, `emoji`, `quote`, `link_card`, `forward`, `thread`, `mini_program`, `rich_text`, `image_group`, `system`, `notification`, `vote`, `task`, `schedule`, `announcement`, `custom`, `placeholder`
 
+- `MessageReceiptStatus`: Receipt state the core SDK projects for a message: pending (built locally, not yet sending), sending (no server sequence yet, media uploading included), sent (the server has it), read (single chat: the peer read it; group: the read summary says all members read it), failed (retryable). There is no delivered state. Values: `pending`, `sending`, `sent`, `read`, `failed`
+
 ### MessageContent
 
 Decoded content envelope. Type-specific payload lives in `data` until per-content models are generated.
@@ -576,6 +579,25 @@ Decoded content envelope. Type-specific payload lives in `data` until per-conten
 |-------|-----------|------|----------|-------------|
 | `contentType` | `contentType` | `MessageContentType` | yes | Content discriminator. |
 | `data` | `data` | `JsonObject` | yes | Content payload object. |
+
+### MessageReadSummary
+
+Who read one of the viewer's own messages in a group, the sender excluded: total = readCount + unreadCount, always above 0.
+
+| Field | Wire name | Type | Required | Description |
+|-------|-----------|------|----------|-------------|
+| `readCount` | `readCount` | `UInt32` | yes | Members who read the message. |
+| `unreadCount` | `unreadCount` | `UInt32` | yes | Members who have not read it yet. |
+| `total` | `total` | `UInt32` | yes | Members the message counts, the sender excluded. |
+
+### MessageReceiptView
+
+The receipt projection of a message, computed by the core SDK; kits draw it as is (no host mapping from status, isRead or localState). Incoming messages carry one too, kits show no receipt for them.
+
+| Field | Wire name | Type | Required | Description |
+|-------|-----------|------|----------|-------------|
+| `status` | `status` | `MessageReceiptStatus` | yes | Receipt state. |
+| `readSummary` | `readSummary` | `MessageReadSummary` | no | Only on the viewer's own messages in groups, once the core SDK has read it from Core for a message a view shows (and refreshed on read receipts); absent in single chats, in groups above the large-group threshold, and before it is known. Never a made-up number. |
 
 ### CreateTextMessageRequest
 
@@ -628,6 +650,14 @@ Message page response.
 | Field | Wire name | Type | Required | Description |
 |-------|-----------|------|----------|-------------|
 | `messages` | `messages` | `MessageList` | yes | Returned messages. |
+
+### MessageReadReceiptMembersRequest
+
+One page of the members who read, or have not yet read, one of the viewer's own group messages (the read receipt sheet).
+
+| Field | Wire name | Type | Required | Description |
+|-------|-----------|------|----------|-------------|
+| `payload` | `payload` | `JsonObject` | yes | {conversationId, serverMsgId, state: "read" \| "unread", cursor?, limit?}; limit 1..=200 (default 50), cursor the previous page's nextCursor (absent for the first page). |
 
 ## MessageContentElems
 
@@ -1364,7 +1394,7 @@ Data-only plugin UI evaluation, authoritative types and bounds live in flare-plu
 
 | Field | Wire name | Type | Required | Description |
 |-------|-----------|------|----------|-------------|
-| `payload` | `payload` | `JsonObject` | yes | Typed UI evaluation envelope defined by the shared UI protocol. presentPluginMessage, invokePluginAction and pluginDetail accept an optional messageId (server id or clientMsgId) of the message the card belongs to: the card resolves over the shared and local state layers stored on that message, and invoke stores a successful operation's data.sharedState and data.messageState on it. invokePluginAction also takes formValues and selection; pluginDetail also takes cursor and previous for the next page of a paged detail, and refresh with previous to re-read a shown sheet keeping the pages it had loaded. |
+| `payload` | `payload` | `JsonObject` | yes | Typed UI evaluation envelope defined by the shared UI protocol. presentPluginMessage, invokePluginAction and pluginDetail accept an optional messageId (server id or clientMsgId) of the message the card belongs to: the card resolves over the shared and local state layers stored on that message, and invoke stores a successful operation's data.sharedState and data.messageState on it. invokePluginAction also takes formValues and selection; pluginDetail also takes cursor and previous for the next page of a paged detail, and refresh with previous to re-read a shown sheet keeping the pages it had loaded. pluginPage takes {pluginId, page, platform, locale?, arguments?, filters?, cursor?, previous?, refresh?}; invokePluginAction takes page {pluginId, page}, data and row {key, input} instead of message for a page action. |
 
 ## PluginCommand
 

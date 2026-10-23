@@ -56,6 +56,10 @@ public final class DefaultCapabilitiesApi: CapabilitiesApiProtocol {
         return try await invokeMap(bridge, descriptor: NativeCallMap.capabilityPluginDetail, request: pluginUiEvaluationRequestToMap(request))
     }
 
+    public func pluginPage(_ request: PluginUiEvaluationRequest) async throws -> [String: AnySendable] {
+        return try await invokeMap(bridge, descriptor: NativeCallMap.capabilityPluginPage, request: pluginUiEvaluationRequestToMap(request))
+    }
+
     public func pluginAccountEntries(_ request: PluginUiEvaluationRequest) async throws -> [String: AnySendable] {
         return try await invokeMap(bridge, descriptor: NativeCallMap.capabilityPluginAccountEntries, request: pluginUiEvaluationRequestToMap(request))
     }

@@ -1,6 +1,7 @@
 // GENERATED. Do not edit by hand.
 import 'message_content.dart';
 import 'message_local_state.dart';
+import 'message_receipt_view.dart';
 import 'reaction_entry.dart';
 
 /// SDK 层消息类型：与 message.proto 的 Message 属性一致，content 为解码后的 Elem； 另保留 raw_content 与 proto 一致用于持久化/网络，并增加发送者展示字段。
@@ -71,6 +72,8 @@ final class Message {
   final String timelineKey;
   /// wire: `timelineSortTs`. Core-computed timeline sort timestamp in milliseconds.
   final int timelineSortTs;
+  /// wire: `receipt`. Core-computed receipt projection (status and, on the viewer's own group messages, the read summary); always present on messages the SDK returns.
+  final MessageReceiptView? receipt;
 
   const Message({
     this.attributes = const {},
@@ -106,5 +109,6 @@ final class Message {
     this.version = 0,
     this.timelineKey = '',
     this.timelineSortTs = 0,
+    this.receipt,
   });
 }

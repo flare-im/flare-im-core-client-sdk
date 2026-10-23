@@ -44,6 +44,17 @@
         "audio",
         "file"
       ]
+    },
+    {
+      "name": "MessageReceiptStatus",
+      "description": "Receipt state the core SDK projects for a message: pending (built locally, not yet sending), sending (no server sequence yet, media uploading included), sent (the server has it), read (single chat: the peer read it; group: the read summary says all members read it), failed (retryable). There is no delivered state.",
+      "values": [
+        "pending",
+        "sending",
+        "sent",
+        "read",
+        "failed"
+      ]
     }
   ],
   "models": [
@@ -139,6 +150,53 @@
           "type": "JsonObject",
           "required": true,
           "description": "Content payload object."
+        }
+      ]
+    },
+    {
+      "name": "MessageReadSummary",
+      "description": "Who read one of the viewer's own messages in a group, the sender excluded: total = readCount + unreadCount, always above 0.",
+      "fields": [
+        {
+          "name": "readCount",
+          "wireName": "readCount",
+          "type": "UInt32",
+          "required": true,
+          "description": "Members who read the message."
+        },
+        {
+          "name": "unreadCount",
+          "wireName": "unreadCount",
+          "type": "UInt32",
+          "required": true,
+          "description": "Members who have not read it yet."
+        },
+        {
+          "name": "total",
+          "wireName": "total",
+          "type": "UInt32",
+          "required": true,
+          "description": "Members the message counts, the sender excluded."
+        }
+      ]
+    },
+    {
+      "name": "MessageReceiptView",
+      "description": "The receipt projection of a message, computed by the core SDK; kits draw it as is (no host mapping from status, isRead or localState). Incoming messages carry one too, kits show no receipt for them.",
+      "fields": [
+        {
+          "name": "status",
+          "wireName": "status",
+          "type": "MessageReceiptStatus",
+          "required": true,
+          "description": "Receipt state."
+        },
+        {
+          "name": "readSummary",
+          "wireName": "readSummary",
+          "type": "MessageReadSummary",
+          "required": false,
+          "description": "Only on the viewer's own messages in groups, once the core SDK has read it from Core for a message a view shows (and refreshed on read receipts); absent in single chats, in groups above the large-group threshold, and before it is known. Never a made-up number."
         }
       ]
     },
@@ -615,6 +673,19 @@
           "type": "Boolean",
           "required": true,
           "description": "Whether recalled messages should be included."
+        }
+      ]
+    },
+    {
+      "name": "MessageReadReceiptMembersRequest",
+      "description": "One page of the members who read, or have not yet read, one of the viewer's own group messages (the read receipt sheet).",
+      "fields": [
+        {
+          "name": "payload",
+          "wireName": "payload",
+          "type": "JsonObject",
+          "required": true,
+          "description": "{conversationId, serverMsgId, state: \"read\" | \"unread\", cursor?, limit?}; limit 1..=200 (default 50), cursor the previous page's nextCursor (absent for the first page)."
         }
       ]
     }

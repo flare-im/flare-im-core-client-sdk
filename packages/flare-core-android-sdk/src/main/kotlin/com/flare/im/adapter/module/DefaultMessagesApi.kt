@@ -158,6 +158,10 @@ class DefaultMessagesApi(
         return invokeListMessages(bridge, NativeCallMap.MESSAGE_SEARCH_IN_CONVERSATION, messageSearchQueryToMap(request))
     }
 
+    override suspend fun readReceiptMembers(request: MessageReadReceiptMembersRequest): Map<String, Any?> {
+        return invokeMap(bridge, NativeCallMap.MESSAGE_READ_RECEIPT_MEMBERS, messageReadReceiptMembersRequestToMap(request))
+    }
+
     override suspend fun editRichDocByMessageId(request: Map<String, Any?>): Unit {
         invokeUnit(bridge, NativeCallMap.MESSAGE_EDIT_RICH_DOC_BY_MESSAGE_ID, request)
     }

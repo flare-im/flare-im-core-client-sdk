@@ -301,6 +301,17 @@
       "stability": "stable"
     },
     {
+      "name": "readReceiptMembers",
+      "description": "Returns {conversationId, serverMsgId, available, summary?, userIds, nextCursor?, hasMore}: one page of the members who read (state read) or have not yet read (state unread) one of the viewer's own messages in a group, user ids ascending; nextCursor while hasMore. available false (and no ids) for a conversation that is not a group or is above the large-group threshold. Core refuses another sender's message (MESSAGE_READ_RECEIPT_NOT_SENDER) and a message not in the conversation or recalled. A summary in the page also refreshes that message's receipt.readSummary in open views.",
+      "operation": "message.read_receipt_members",
+      "transport": "message-dispatch-json",
+      "cApi": "flare_message_dispatch_json",
+      "dispatchOp": "read_receipt_members",
+      "request": "MessageReadReceiptMembersRequest",
+      "response": "JsonObject",
+      "stability": "experimental"
+    },
+    {
       "name": "editRichDocByMessageId",
       "operation": "message.edit_rich_doc_by_message_id",
       "transport": "message-dispatch-json",

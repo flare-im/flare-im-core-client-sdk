@@ -56,6 +56,10 @@ export class DefaultCapabilitiesApi implements CapabilitiesApi {
     return await invokeMap(this.bridge, NativeCallMap.capabilityPluginDetail, pluginUiEvaluationRequestToMap(request));
   }
 
+  async pluginPage(request: PluginUiEvaluationRequest): Promise<Record<string, unknown>> {
+    return await invokeMap(this.bridge, NativeCallMap.capabilityPluginPage, pluginUiEvaluationRequestToMap(request));
+  }
+
   async pluginAccountEntries(request: PluginUiEvaluationRequest): Promise<Record<string, unknown>> {
     return await invokeMap(this.bridge, NativeCallMap.capabilityPluginAccountEntries, pluginUiEvaluationRequestToMap(request));
   }

@@ -1,6 +1,7 @@
 // GENERATED. Do not edit by hand.
 import { MessageContent } from './message_content';
 import { MessageLocalState } from './message_local_state';
+import { MessageReceiptView } from './message_receipt_view';
 import { ReactionEntry } from './reaction_entry';
 
 /** SDK 层消息类型：与 message.proto 的 Message 属性一致，content 为解码后的 Elem； 另保留 raw_content 与 proto 一致用于持久化/网络，并增加发送者展示字段。 */
@@ -71,4 +72,6 @@ export interface Message {
   timelineKey: string;
   /** wire: `timelineSortTs`. Core-computed timeline sort timestamp in milliseconds. */
   timelineSortTs: number;
+  /** wire: `receipt`. Core-computed receipt projection (status and, on the viewer's own group messages, the read summary); always present on messages the SDK returns. */
+  receipt?: MessageReceiptView;
 }

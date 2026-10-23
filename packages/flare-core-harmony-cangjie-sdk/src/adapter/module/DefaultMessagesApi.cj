@@ -143,6 +143,10 @@ public class DefaultMessagesApi <: MessagesApi {
         return listMessagesResponseFromJson(raw)
     }
 
+    public func readReceiptMembers(request: MessageReadReceiptMembersRequest): String {
+        return bridge.invoke(descriptor: NativeCallMap.messageReadReceiptMembers, requestJson: wireEncodeRequest(messageReadReceiptMembersRequestToJson(request)))
+    }
+
     public func editRichDocByMessageId(requestJson: String): Unit {
         let _ignored = bridge.invoke(descriptor: NativeCallMap.messageEditRichDocByMessageId, requestJson: wireEncodeRequest(requestJson))
     }

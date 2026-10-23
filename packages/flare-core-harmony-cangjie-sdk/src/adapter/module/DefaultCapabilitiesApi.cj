@@ -60,6 +60,10 @@ public class DefaultCapabilitiesApi <: CapabilitiesApi {
         return bridge.invoke(descriptor: NativeCallMap.capabilityPluginDetail, requestJson: wireEncodeRequest(pluginUiEvaluationRequestToJson(request)))
     }
 
+    public func pluginPage(request: PluginUiEvaluationRequest): String {
+        return bridge.invoke(descriptor: NativeCallMap.capabilityPluginPage, requestJson: wireEncodeRequest(pluginUiEvaluationRequestToJson(request)))
+    }
+
     public func pluginAccountEntries(request: PluginUiEvaluationRequest): String {
         return bridge.invoke(descriptor: NativeCallMap.capabilityPluginAccountEntries, requestJson: wireEncodeRequest(pluginUiEvaluationRequestToJson(request)))
     }

@@ -153,4 +153,33 @@ describe("plugin UI card protocol v2", () => {
       .rejects.toThrow("page and refresh exclude each other");
     expect(requests).toHaveLength(1);
   });
+  it("reads a plugin page through Core and runs its actions without a message", async () => {
+    const api = port(); const sent: Record<string, unknown>[] = [];
+    api.pluginPage = async (request) => {
+      sent.push(request);
+      return { available: true, title: "Wallet", fields: [{ label: "Balance", value: "¥1.00" }], actions: [],
+        blocks: [{ kind: "rows", source: "x.history", columns: [], rows: [{ key: "l1", cells: [], actions: [{ id: "hide", input: { lineId: "l1" } }],
+          badge: { text: "Received", tone: "success" } }], actions: [] }],
+        nextCursor: "c2", data: { currency: "CNY" } };
+    };
+    const opened: Array<[string, unknown]> = [];
+    const host = new PluginUiSession(api, "web", () => "zh-CN", undefined, (page, args) => { opened.push([page, args]); });
+    const view = await host.page("example.poll", "example.poll.wallet", { args: { currency: "CNY" }, filters: { kind: "claim" } });
+    expect(sent[0]).toEqual({ pluginId: "example.poll", page: "example.poll.wallet", platform: "web", locale: "zh-CN",
+      arguments: { currency: "CNY" }, filters: { kind: "claim" } });
+    expect(view.nextCursor).toBe("c2");
+    expect(view.data).toEqual({ currency: "CNY" });
+    await host.page("example.poll", "example.poll.wallet", { page: { cursor: "c2", previous: view } });
+    expect(sent[1]).toMatchObject({ cursor: "c2", previous: view });
+    await expect(host.page("example.poll", "p", { page: { cursor: "c", previous: view }, refresh: view })).rejects.toThrow();
+    const actions: Record<string, unknown>[] = [];
+    api.invokeAction = async (request) => { actions.push(request); return { kind: "host", target: { kind: "page", page: "example.poll.history" }, payload: { currency: "CNY" } }; };
+    await host.invokePageAction("example.poll", "example.poll.wallet", "history", { data: view.data, userGesture: true });
+    expect(actions[0]).toMatchObject({ page: { pluginId: "example.poll", page: "example.poll.wallet" }, data: { currency: "CNY" } });
+    expect(actions[0]).not.toHaveProperty("message");
+    expect(actions[0]).not.toHaveProperty("messageId");
+    expect(opened).toEqual([["example.poll.history", { currency: "CNY" }]]);
+    const bare = new PluginUiSession(port(), "web");
+    await expect(bare.page("example.poll", "example.poll.wallet")).rejects.toThrow("Plugin page unavailable");
+  });
 });
