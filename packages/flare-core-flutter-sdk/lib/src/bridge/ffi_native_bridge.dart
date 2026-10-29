@@ -702,8 +702,8 @@ void _handleResultCallback(
     final detailsJson = decodeFlareString(error.ref.detailsJson);
     final code = error.ref.code;
     _NativeBindings.instance?.errorHeapFree(error);
-    call.completer.completeError(FlareSdkException(
-      code: 'native_error_$code',
+    call.completer.completeError(FlareSdkException.fromNative(
+      nativeCode: code,
       message: message.isEmpty ? 'Native operation failed.' : message,
       operation: call.operation,
       details: parseJsonLenient(detailsJson),

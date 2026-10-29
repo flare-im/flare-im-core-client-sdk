@@ -35,18 +35,59 @@ abstract final class FlareCoreSdk {
 }
 
 /// Stable Dart exception surfaced by the Flutter SDK runtime.
+///
+/// An SDK failure carries the binding's structured error
+/// (`bindings/contract/errors.json`): [code] is the core error code
+/// (`PERMISSION_DENIED`), [reason] the localized key (`sdk.plugin.disabled`),
+/// [params] metadata such as a plugin rejection's `machineReason`. Read these,
+/// never [message].
 final class FlareSdkException implements Exception {
   const FlareSdkException({
     required this.code,
     required this.message,
     this.operation,
     this.details,
+    this.reason,
+    this.params = const {},
+    this.retryable = false,
   });
+
+  /// The exception for a failed native call: the structured error in
+  /// `details_json` when the SDK wrote one, else the C ABI code alone.
+  factory FlareSdkException.fromNative({
+    required int nativeCode,
+    required String message,
+    required String? operation,
+    required Object? details,
+  }) {
+    final structured = details is Map ? details : const <Object?, Object?>{};
+    final code = structured['code'];
+    final reason = structured['reason'];
+    final params = structured['params'];
+    return FlareSdkException(
+      code: code is String && code.isNotEmpty ? code : 'native_error_$nativeCode',
+      message: message,
+      operation: operation,
+      details: details,
+      reason: reason is String ? reason : null,
+      params: params is Map
+          ? {
+              for (final entry in params.entries)
+                if (entry.key is String && entry.value is String)
+                  entry.key as String: entry.value as String,
+            }
+          : const {},
+      retryable: structured['retryable'] == true,
+    );
+  }
 
   final String code;
   final String message;
   final String? operation;
   final Object? details;
+  final String? reason;
+  final Map<String, String> params;
+  final bool retryable;
 
   @override
   String toString() {
