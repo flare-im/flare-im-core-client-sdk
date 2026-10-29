@@ -478,8 +478,7 @@ function selectedChatSearchKinds(): MessageSearchKind[] {
 }
 
 function operationErrorText(error: unknown, fallback: string): string {
-  // 直接透 error.message 会把 wasm 桥的 JSON 信封和核心的 i18n key 甩给用户，
-  // 例如 {"code":"sdk.error","message":"… sdk.message.card.avatar.invalid_url"}。
+  // 直接透 error.message 会把核心的错误文本甩给用户；按 SDK 失败的 i18n key 出文案。
   return describeSdkError(error, fallback);
 }
 

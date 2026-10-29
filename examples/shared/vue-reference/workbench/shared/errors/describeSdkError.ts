@@ -3,30 +3,18 @@ import { translateFlare } from "@flare-im/vue-ui/i18n";
 /**
  * 把 SDK 抛出的错误变成能给用户看的一句话。
  *
- * 核心抛出的是 i18n **key**（`FlareError::localized`），期待客户端翻译；
- * 而 kit 的语言表里没有 `sdk.message.*` 这一族，`resolveFlareMessage` 查不到时
- * 会把原 key 返回。再加上 wasm 桥把整个错误对象序列化进了 `Error.message`，
- * 用户最终看到的是这种东西：
- *
- *   {"code":"sdk.error","message":"错误 [INVALID_PARAMETER] sdk.message.card.avatar.invalid_url",…}
- *
- * 这里做三件事：拆掉 JSON 信封、取出 key、按「字段 + 原因」拼出可读文案。
- * 任何一步失败都退回到一句人话——绝不把原始 JSON 或裸 key 交给用户。
+ * SDK 失败是 `FlareSdkException`：`reason` 是核心给出的 i18n **key**（`FlareError::localized`，
+ * 例如 `sdk.message.card.avatar.invalid_url`），等客户端翻译；`message` 只给人看，不解析。
+ * kit 的语言表里没有 `sdk.message.*` 这一族，所以这里按「字段 + 原因」拼出可读文案；
+ * 任何一步失败都退回到一句人话——绝不把裸 key 交给用户。
  */
 
-const KEY_PATTERN = /\b(sdk(?:\.[a-z0-9_]+)+)\b/i;
+const KEY_PATTERN = /^sdk(?:\.[a-z0-9_]+)+$/i;
 
-/** 从 wasm 桥的 JSON 信封里取出真正的错误信息；不是信封就原样返回。 */
-function unwrapEnvelope(raw: string): string {
-  const text = raw.trim();
-  if (!text.startsWith("{")) return text;
-  try {
-    const parsed = JSON.parse(text) as Record<string, unknown>;
-    const inner = parsed.message;
-    return typeof inner === "string" && inner.trim() ? unwrapEnvelope(inner) : text;
-  } catch {
-    return text;
-  }
+/** SDK 失败的 i18n key（`FlareSdkException.reason`）；不是 key 时返回 undefined。 */
+function reasonKey(error: unknown): string | undefined {
+  const reason = error && typeof error === "object" ? (error as { reason?: unknown }).reason : undefined;
+  return typeof reason === "string" && KEY_PATTERN.test(reason) ? reason : undefined;
 }
 
 /** `sdk.message.card.avatar.invalid_url` -> { field: "card.avatar", reason: "invalid_url" } */
@@ -46,12 +34,12 @@ function translated(key: string): string | null {
 
 export function describeSdkError(error: unknown, fallback?: string): string {
   const generic = fallback ?? translateFlare("error.operationFailed");
-  const raw = error instanceof Error ? error.message : String(error ?? "");
-  if (!raw.trim()) return generic;
-
-  const text = unwrapEnvelope(raw);
-  const key = KEY_PATTERN.exec(text)?.[1];
-  if (!key) return text || generic;
+  const key = reasonKey(error);
+  if (!key) {
+    // 不是带 key 的 SDK 失败（应用自己的错误、桥接失败）：用它自己的说明。
+    const raw = error instanceof Error ? error.message : String(error ?? "");
+    return raw.trim() || generic;
+  }
 
   const whole = translated(key);
   if (whole) return whole;
