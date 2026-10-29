@@ -498,7 +498,7 @@ const sdkLabDefaults: SdkLabState = {
   userIds: "",
   fileId: "",
   reaction: "👍",
-  capability: "rtc.call",
+  capability: "",
   capabilityTargetUserId: "",
   mediaUrl: "",
   mediaCacheRoot: "memory://flare-core-web-app/media-cache",
@@ -2380,22 +2380,6 @@ export function useFlareCoreClient(options: UseFlareCoreClientOptions) {
     });
   }
 
-  function handleCapabilityDesktopNotification(payload: unknown): void {
-    if (!isCallSignalPayload(payload)) return;
-    const event = payload && typeof payload === "object" ? payload as Record<string, unknown> : {};
-    const conversationId = readStringField(event, "conversationId");
-    emitDesktopNotification({
-      kind: "call",
-      title: translateFlare("call.title"),
-      body: translateFlare("call.incoming"),
-      conversationId,
-      unreadCount: Math.max(1, totalUnread.value),
-      requireAttention: true,
-      playSound: true,
-      dedupeKey: `call:${stableNotificationKey(payload)}`,
-    });
-  }
-
   function desktopNotificationKindForMessage(message: Message): DesktopNotificationKind {
     return looksLikeCallMessage(message) ? "call" : "message";
   }
@@ -2408,14 +2392,6 @@ export function useFlareCoreClient(options: UseFlareCoreClientOptions) {
       ...Object.values(message.content?.data ?? {}).map((value) => String(value ?? "")),
     ].join(" ").toLowerCase();
     return /\brtc\.call\b|\bcall\b|\bwebrtc\b|\bsfu\b/.test(text);
-  }
-
-  function isCallSignalPayload(payload: unknown): boolean {
-    const text = stableNotificationKey(payload).toLowerCase();
-    return (
-      /\brtc\.call\b|\bcall\b|\bwebrtc\b|\bsfu\b/.test(text) &&
-      /\binvite\b|\binvited\b|\boffer\b|\bring\b|\bincoming\b|\bsignal\b|call_signal/.test(text)
-    );
   }
 
   function callNotificationBody(message: Message): string {
@@ -4146,14 +4122,6 @@ export function useFlareCoreClient(options: UseFlareCoreClientOptions) {
         });
         return { revoked: sdkLab.capability, userId: sdkLab.capabilityTargetUserId };
       }
-      if (kind === "call_signal") {
-        await client.capabilities.sendCallSignal({
-          conversationId: activeConversationId.value,
-          signalType: "offer",
-          payload: { source: "web-wasm" },
-        });
-        return { sent: true, capability: sdkLab.capability };
-      }
       return await client.capabilities.dispatchCapability({
         operation: "web.echo",
         capability: sdkLab.capability,
@@ -4298,7 +4266,6 @@ export function useFlareCoreClient(options: UseFlareCoreClientOptions) {
       onPresenceChanged: applyPresenceChanged,
       onReactionChanged: applyReactionChanged,
       onViewUpdated: handleViewUpdate,
-      onCapabilityChanged: handleCapabilityDesktopNotification,
     });
   }
 

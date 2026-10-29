@@ -112,7 +112,6 @@ const emit = defineEmits<{
       <FlareButton size="sm" variant="secondary" @click="emit('capability', 'dispatch')">Cap Dispatch</FlareButton>
       <FlareButton size="sm" variant="secondary" @click="emit('capability', 'grant')">Grant</FlareButton>
       <FlareButton size="sm" variant="secondary" @click="emit('capability', 'revoke')">Revoke</FlareButton>
-      <FlareButton size="sm" variant="secondary" @click="emit('capability', 'call_signal')">Call Signal</FlareButton>
     </div>
 
     <div class="lab-field">

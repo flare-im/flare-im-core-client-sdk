@@ -81,7 +81,7 @@ export type RnWorkbenchSdkService = {
     limit?: number,
   ): Promise<TimelineMessage[]>;
   runMediaQuery(op: RnMediaLabOperation, input: SdkLabInputs): Promise<string>;
-  runCapabilityOperation(op: RnCapabilityOperation, input: SdkLabInputs, currentUserId: string, conversationId?: string): Promise<string>;
+  runCapabilityOperation(op: RnCapabilityOperation, input: SdkLabInputs, currentUserId: string): Promise<string>;
   runConnectionOperation(op: RnConnectionOperation, input: SdkLabInputs): Promise<string>;
   runSessionOperation(op: RnSessionOperation, input: SdkLabInputs, form: LoginFormState): Promise<string>;
   subscribeWorkbenchEvents(): Promise<string>;
@@ -122,7 +122,7 @@ export const defaultSdkLabInputs: SdkLabInputs = {
   messageId: '',
   query: '',
   reaction: '👍',
-  capability: 'rtc.call',
+  capability: '',
   capabilityTargetUserId: '',
   fileId: '',
   mediaUrl: '',
@@ -327,7 +327,7 @@ export function createRnWorkbenchSdkService(client: FlareImClient): RnWorkbenchS
       return compactJson(result);
     },
 
-    async runCapabilityOperation(op, input, currentUserId, conversationId = '') {
+    async runCapabilityOperation(op, input, currentUserId) {
       assertKnownOperation(op, RN_CAPABILITY_OPERATIONS, 'capability');
       const params = parseJsonParams(input.jsonParams);
       if (op === 'list') return compactJson(await client.capabilities.listCapabilities({}));
@@ -347,14 +347,6 @@ export function createRnWorkbenchSdkService(client: FlareImClient): RnWorkbenchS
           payload: params,
         });
         return compactJson({ revoked: input.capability, userId: input.capabilityTargetUserId });
-      }
-      if (op === 'call_signal') {
-        await client.capabilities.sendCallSignal({
-          conversationId,
-          signalType: 'offer',
-          payload: { source: 'react-native' },
-        });
-        return compactJson({ sent: true, capability: input.capability });
       }
       return compactJson(await client.capabilities.dispatchCapability({
         operation: 'rn.echo',

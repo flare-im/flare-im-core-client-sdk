@@ -100,7 +100,6 @@ const capabilityLabels: Record<RnCapabilityOperation, string> = {
   dispatch: '能力派发',
   grant: '授权能力',
   revoke: '撤销能力',
-  call_signal: '通话信令',
 };
 
 const connectionLabels: Record<RnConnectionOperation, string> = {

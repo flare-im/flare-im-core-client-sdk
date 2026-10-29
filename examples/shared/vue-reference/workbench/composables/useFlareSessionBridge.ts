@@ -54,8 +54,6 @@ export type SessionBridgeOptions = {
   onReactionChanged?: (hint: ReactionChangedHint) => void;
   /** core observable view 快照更新 */
   onViewUpdated?: (update: ViewUpdate) => void;
-  /** runtime capability/plugin event for desktop shell notifications */
-  onCapabilityChanged?: (payload: unknown) => void;
 };
 
 let nextEventId = 1;
@@ -133,8 +131,9 @@ function dispatchMappedEvent(listener: SessionEventListener, payload: unknown): 
     listener.onViewUpdated?.(payload as never);
     return;
   }
-  if (type === "capability") {
-    listener.onCapabilityChanged?.(payload as never);
+  if (type === "plugin") {
+    if (kind === "realtime") listener.onPluginRealtime?.(payload as never);
+    else if (kind === "catalog_changed") listener.onPluginCatalogChanged?.(payload as never);
   }
 }
 
@@ -291,9 +290,11 @@ export function bindFlareSessionEvents(options: SessionBridgeOptions): () => voi
       const progress = payload as { phase?: string; percent?: number };
       pushEvent(options.events, "sync_progress", `${progress.phase ?? ""} ${progress.percent ?? ""}`.trim());
     },
-    onCapabilityChanged: (payload) => {
-      pushEvent(options.events, "capability_changed", String((payload as { capability?: string }).capability ?? ""));
-      options.onCapabilityChanged?.(payload);
+    onPluginRealtime: (payload) => {
+      pushEvent(options.events, "plugin_realtime", `${payload.pluginId} ${payload.packetType}`);
+    },
+    onPluginCatalogChanged: (payload) => {
+      pushEvent(options.events, "plugin_catalog_changed", payload.version);
     },
     onPresenceChanged: (payload: unknown) => {
       const event = payload as PresenceChangedHint;

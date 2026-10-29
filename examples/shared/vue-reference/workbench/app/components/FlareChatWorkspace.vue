@@ -1646,8 +1646,6 @@ const headerActions = computed<Array<FlareConversationHeaderAction & { icon: Fla
   { id: 'delete', label: t('enhance.opDelete'), icon: 'delete', enabled: selectedMessageIds.value.length > 0 },
 ] : [
   { id: 'search', label: t('workbench.searchMessages'), icon: 'search' },
-  { id: 'audioCall', label: t('workbench.voiceSignal'), icon: 'phone' },
-  { id: 'videoCall', label: t('workbench.videoSignal'), icon: 'video' },
   { id: 'sdkBuild', label: t('workbench.sdkMsgType'), icon: 'file' },
   { id: 'more', label: t('workbench.more'), icon: 'more' },
 ]);
@@ -1655,8 +1653,6 @@ const headerActions = computed<Array<FlareConversationHeaderAction & { icon: Fla
 function handleHeaderAction(action: { id: string }): void {
   switch (action.id) {
     case 'search': workbenchUi.openChatSearch(); break;
-    case 'audioCall':
-    case 'videoCall': void sdk.runCapabilityOperation('call_signal'); break;
     case 'sdkBuild': workbenchUi.openSdkBuild(); break;
     case 'more': workbenchUi.openMore(); break;
     case 'selectAll': interactions.selectAll(); break;

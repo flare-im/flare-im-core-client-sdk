@@ -224,7 +224,7 @@ function back(): void {
       <section v-show="activeTab === 'capability'" class="sdk-lab-pane">
         <div class="lab-field">
           <span>Capability dispatch</span>
-          <FlareInput v-model="sdk.sdkLab.capability" placeholder="rtc.call / plugin capability id" />
+          <FlareInput v-model="sdk.sdkLab.capability" placeholder="plugin capability id" />
           <FlareInput v-model="sdk.sdkLab.capabilityTargetUserId" placeholder="grant/revoke target user id" />
           <FlareInput
             v-model="sdk.sdkLab.jsonParams"
@@ -239,7 +239,6 @@ function back(): void {
           <FlareButton variant="secondary" @click="sdk.runCapabilityOperation('dispatch')">Dispatch</FlareButton>
           <FlareButton variant="secondary" @click="sdk.runCapabilityOperation('grant')">Grant</FlareButton>
           <FlareButton variant="secondary" @click="sdk.runCapabilityOperation('revoke')">Revoke</FlareButton>
-          <FlareButton variant="secondary" @click="sdk.runCapabilityOperation('call_signal')">Call signal</FlareButton>
         </div>
         <pre class="drawer-json">{{ labResultText }}</pre>
       </section>
@@ -308,7 +307,8 @@ function back(): void {
               'onSyncProgress',
               'onUploadProgress',
               'onDownloadProgress',
-              'onCapabilityChanged',
+              'onPluginRealtime',
+              'onPluginCatalogChanged',
             ]"
             :key="name"
             >

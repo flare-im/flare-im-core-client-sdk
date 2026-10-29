@@ -84,7 +84,6 @@ export const RN_CAPABILITY_OPERATIONS = [
   'dispatch',
   'grant',
   'revoke',
-  'call_signal',
 ] as const;
 
 export type RnCapabilityOperation = (typeof RN_CAPABILITY_OPERATIONS)[number];
