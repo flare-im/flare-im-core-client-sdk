@@ -66,6 +66,15 @@ describe("WebProductionBridge session recovery", () => {
     } finally { vi.useRealTimers(); }
   });
 
+  it("installs the storage host as one object whose methods the runtime reads by name", async () => {
+    const host = storageHostStub();
+    const runtime = { invoke: vi.fn(async () => null), setEventCallback: vi.fn(), setStorageHost: vi.fn() };
+    const bridge = new WebProductionBridge({ loadRuntime: async () => ({ runtime: runtime as never }), createStorageHost: () => host as never });
+    await bridge.invoke({ operation: "sdk.login" } as never, {});
+    expect(runtime.setStorageHost).toHaveBeenCalledTimes(1);
+    expect(runtime.setStorageHost).toHaveBeenCalledWith(host);
+  });
+
   it("does not turn an authoritative false into true from cached ready state", async () => {
     const runtime = { invoke: async (op: string) => op === "sdk.login" ? null : false };
     const bridge = new WebProductionBridge({ loadRuntime: async () => ({ runtime: runtime as never }), createStorageHost: () => storageHostStub() as never });

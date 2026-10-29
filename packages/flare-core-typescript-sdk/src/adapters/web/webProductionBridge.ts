@@ -153,16 +153,8 @@ export function isBestEffortControlOperationForTesting(operation: string): boole
 
 type WasmRuntimeWithHost = FlareWasmRuntime & {
   setEventCallback?: (cb: ((event: unknown) => void) | null) => void;
-  setStorageHost?: (
-    loadSnapshot: (payload: unknown) => Promise<string>,
-    saveMessage: (payload: unknown) => Promise<void>,
-    saveConversation: (payload: unknown) => Promise<void>,
-    saveCursor: (payload: unknown) => Promise<void>,
-    savePendingSend: (payload: unknown) => Promise<void>,
-    deleteMessage: (payload: unknown) => Promise<void>,
-    deleteConversation: (payload: unknown) => Promise<void>,
-    deletePendingSend: (payload: unknown) => Promise<void>,
-  ) => void;
+  /** Installs the persistence host; the runtime reads its methods by name and throws when one is missing. */
+  setStorageHost?: (host: WasmStorageHostCallbacks) => void;
 };
 
 /** Browser production bridge: real WASM IMClient + WebSocket transport. */
@@ -211,16 +203,7 @@ export class WebProductionBridge implements NativeBridge {
     const loaded = await this.loadRuntime();
     const runtime = loaded.runtime as WasmRuntimeWithHost;
     const host = await this.createStorageHost();
-    runtime.setStorageHost?.(
-      (payload) => host.loadSnapshot(payload as { userId?: string }),
-      (payload) => host.saveMessage(payload as Parameters<typeof host.saveMessage>[0]),
-      (payload) => host.saveConversation(payload as Parameters<typeof host.saveConversation>[0]),
-      (payload) => host.saveCursor(payload as Parameters<typeof host.saveCursor>[0]),
-      (payload) => host.savePendingSend(payload as Parameters<typeof host.savePendingSend>[0]),
-      (payload) => host.deleteMessage(payload as Parameters<typeof host.deleteMessage>[0]),
-      (payload) => host.deleteConversation(payload as Parameters<typeof host.deleteConversation>[0]),
-      (payload) => host.deletePendingSend(payload as Parameters<typeof host.deletePendingSend>[0]),
-    );
+    runtime.setStorageHost?.(host);
     this.runtime = runtime;
     runtime.setEventCallback?.((raw: unknown) => {
       if (this.runtime === runtime) this.handleWasmEvent(raw);
