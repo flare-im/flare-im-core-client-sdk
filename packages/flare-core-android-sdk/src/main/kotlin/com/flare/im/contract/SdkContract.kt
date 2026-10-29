@@ -132,7 +132,6 @@ object SdkOperations {
     const val CAPABILITY_DISPATCH: String = "capability.dispatch"
     const val CAPABILITY_GRANT: String = "capability.grant"
     const val CAPABILITY_REVOKE: String = "capability.revoke"
-    const val CAPABILITY_SEND_CALL_SIGNAL: String = "capability.send_call_signal"
     const val EVENT_SUBSCRIBE: String = "event.subscribe"
     const val EVENT_SUBSCRIBE_BATCH: String = "event.subscribe_batch"
     const val EVENT_UNSUBSCRIBE: String = "event.unsubscribe"

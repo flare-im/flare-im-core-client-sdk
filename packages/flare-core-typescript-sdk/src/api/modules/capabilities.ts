@@ -4,7 +4,7 @@
  * Module API: `capabilities` — Capability discovery and optional plugin dispatch through capability dispatch ops.
  */
 import type { PluginCommandRequest, PluginUiEvaluationRequest } from '../../model';
-import type { DispatchCapabilityRequest, DispatchCapabilityResponse, GrantCapabilityRequest, JsonObject, ListCapabilitiesRequest, ListCapabilitiesResponse, ListUserCapabilitiesRequest, ListUserCapabilitiesResponse, RevokeCapabilityRequest, SendCallSignalRequest } from '../types';
+import type { DispatchCapabilityRequest, DispatchCapabilityResponse, GrantCapabilityRequest, JsonObject, ListCapabilitiesRequest, ListCapabilitiesResponse, ListUserCapabilitiesRequest, ListUserCapabilitiesResponse, RevokeCapabilityRequest } from '../types';
 
 /** Capability discovery and optional plugin dispatch through capability dispatch ops. */
 export interface CapabilitiesApi {
@@ -48,6 +48,4 @@ export interface CapabilitiesApi {
   grantCapability(request: GrantCapabilityRequest): Promise<void>;
   /** revokeCapability maps to `flare_capability_dispatch_json`, dispatch op `capability_revoke`. Operation: `capability.revoke`. */
   revokeCapability(request: RevokeCapabilityRequest): Promise<void>;
-  /** sendCallSignal maps to `flare_capability_dispatch_json`, dispatch op `send_call_signal`. Operation: `capability.send_call_signal`. */
-  sendCallSignal(request: SendCallSignalRequest): Promise<void>;
 }

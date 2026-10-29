@@ -13,6 +13,6 @@ public enum SdkEventKind: String, Codable, Sendable {
     case extensionEvent = "extension_event"
     case presence = "presence"
     case media = "media"
-    case capability = "capability"
+    case plugin = "plugin"
     case view = "view"
 }

@@ -1,5 +1,5 @@
 // GENERATED. Do not edit by hand.
-import { CapabilityEvent, ConnectionEvent, ConversationEvent, LifecycleEvent, MessageMutationEvent, MessageReceivedBatchEvent, MessageReceivedEvent, MessageSendAckEvent, MessageSendFailedEvent, ProgressEvent, ReactionChangedEvent, ReadReceiptEvent, SyncEvent, TypingAggregateEvent, TypingEvent, ViewUpdate } from '../../model';
+import { ConnectionEvent, ConversationEvent, LifecycleEvent, MessageMutationEvent, MessageReceivedBatchEvent, MessageReceivedEvent, MessageSendAckEvent, MessageSendFailedEvent, PluginCatalogChangedEvent, PluginRealtimeEvent, ProgressEvent, ReactionChangedEvent, ReadReceiptEvent, SyncEvent, TypingAggregateEvent, TypingEvent, ViewUpdate } from '../../model';
 import { EventCallback, EventSubscription, FlareImEventListener, MessageSendCallback } from '../../listener';
 
 /** Typed SDK event stream. */
@@ -52,5 +52,6 @@ export interface EventsApi {
   onSyncProgress(listener: EventCallback<ProgressEvent>): EventSubscription;
   onUploadProgress(listener: EventCallback<ProgressEvent>): EventSubscription;
   onDownloadProgress(listener: EventCallback<ProgressEvent>): EventSubscription;
-  onCapabilityChanged(listener: EventCallback<CapabilityEvent>): EventSubscription;
+  onPluginRealtime(listener: EventCallback<PluginRealtimeEvent>): EventSubscription;
+  onPluginCatalogChanged(listener: EventCallback<PluginCatalogChangedEvent>): EventSubscription;
 }

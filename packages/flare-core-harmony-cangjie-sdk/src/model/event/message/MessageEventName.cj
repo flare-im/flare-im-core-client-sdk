@@ -7,7 +7,6 @@ public enum MessageEventName {
     | ReceivedBatch
     | SendAck
     | SendFailed
-    | Capability
     | Recalled
     | Typing
     | TypingAggregate
@@ -26,7 +25,6 @@ public enum MessageEventName {
     | RetentionExpired
     | RetentionPurged
     | PresenceChanged
-    | CallSignal
     | Custom
     | PluginStateChanged
 }

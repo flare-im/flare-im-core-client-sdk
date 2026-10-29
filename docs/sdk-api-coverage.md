@@ -86,12 +86,12 @@ Legend:
 | `getMediaCacheStats`, `setMediaCacheMaxBytes`, `setMediaCacheRoot`, `clearMediaCache` | Lab | SDK Lab Media Center with runtime diagnostics for cache state, media events, and media failures. |
 | `getUserDownloadSubfolder`, `setUserDownloadSubfolder`, `getUserDownloadSavedPath`, `deleteUserDownloadRecord`, `cancelUserFileDownload`, `downloadFileToDownloads` | Lab | SDK Lab Media Center includes typed user-download controls and operation templates. |
 
-## Capabilities, Calls, Events, Diagnostics
+## Capabilities, Events, Diagnostics
 
 | API | Status | Entry point |
 |-----|--------|-------------|
 | `listCapabilities`, `listUserCapabilities` | Lab | SDK Lab Capability Center. |
-| `dispatchCapability`, `grantCapability`, `revokeCapability`, `sendCallSignal` | Lab | SDK Lab Capability/Call probes; call signal now performs capability discovery first and returns typed unavailable diagnostics when the runtime has no call capability. |
+| `dispatchCapability`, `grantCapability`, `revokeCapability` | Lab | SDK Lab Capability probes. |
 | `subscribeEvents`, typed listeners, local listener unsubscribe | Real | App event bridge and SDK Lab event console. |
 | `unsubscribe`, `unsubscribeAll` | Lab | SDK Lab reset/lifecycle controls. |
 | `getSdkVersion`, `getFfiContractVersion`, `getDataRoot` | Lab | SDK Lab diagnostics. |
@@ -100,4 +100,3 @@ Legend:
 
 1. Generate strongly typed platform forms from sdk-spec/catalog descriptors instead of using generic JSON editors.
 2. Move reusable Flutter app-client/session orchestration into `packages/flare-core-flutter-sdk` when the API stabilizes.
-3. Promote optional call/SFU UI from Lab to chat only after plugin capability contracts are stable.

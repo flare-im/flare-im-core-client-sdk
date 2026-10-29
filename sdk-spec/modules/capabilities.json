@@ -210,16 +210,6 @@
       "request": "RevokeCapabilityRequest",
       "response": "Unit",
       "stability": "stable"
-    },
-    {
-      "name": "sendCallSignal",
-      "operation": "capability.send_call_signal",
-      "transport": "capability-dispatch-json",
-      "cApi": "flare_capability_dispatch_json",
-      "dispatchOp": "send_call_signal",
-      "request": "SendCallSignalRequest",
-      "response": "Unit",
-      "stability": "stable"
     }
   ]
 }

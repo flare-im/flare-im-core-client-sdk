@@ -66,7 +66,7 @@ stub delegates to the generated SDK capability API:
 
 ```ts
 await client.capabilities.dispatchCapability({
-  capabilityId: "rtc.call.audio",
+  capabilityId: "flare.call.start",
   payload,
   conversationId,
   tenantId,
@@ -80,7 +80,9 @@ core.
 
 Current composition-time plugin manifests:
 
-- `sdk.plugin.av` owns the `rtc` namespace for call/SFU capability dispatch.
+- `sdk.plugin.call` owns the `flare.call` namespace: the client side of the
+  managed call plugin, whose operations dispatch to the approved runtime
+  service. Its realtime packets reach apps as the typed `pluginRealtime` event.
 - `sdk.plugin.ai` owns the `ai` namespace for local AI capability dispatch:
   semantic search, message translation, and reply suggestions.
 
@@ -120,6 +122,6 @@ cargo xtask plugin-marketplace
 ```
 
 The gate is also part of `cargo xtask verify`. It checks catalog/schema presence,
-manifest SHA-256 integrity, the RTC and AI plugin manifests, generated platform
+manifest SHA-256 integrity, the call and AI plugin manifests, generated platform
 stubs, core capability registry anchors, strict composition-time/runtime-install
 catalog policy, and plugin codegen guardrails.

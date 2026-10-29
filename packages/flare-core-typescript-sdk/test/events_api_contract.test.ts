@@ -10,12 +10,12 @@ import {
 } from "../src/adapter/module/DefaultEventsApi";
 import type { NativeBridge } from "../src/contract/bridge_contract";
 import {
-  CapabilityEventName,
   ConversationType,
   ConversationEventName,
   ConnectionEventName,
   MessageEventName,
   MessageContentType,
+  PluginEventName,
   SdkConnectionState,
   TimelineSyncState,
 } from "../src/model";
@@ -449,33 +449,47 @@ describe("DefaultEventsApi direct event callbacks", () => {
     ).toThrow("invalid event payload field: action");
   });
 
-  it("decodes capability unavailable golden into the capability listener", () => {
+  it("decodes plugin realtime and catalog goldens into the plugin listeners", () => {
     const events = new DefaultEventsApi(testBridge());
-    const unavailable: string[] = [];
+    const realtime: string[] = [];
+    const catalog: string[] = [];
+    const listened: string[] = [];
 
-    events.onCapabilityChanged((event) => {
-      unavailable.push(`${event.name}:${event.capability}:${event.reason}`);
+    events.onPluginRealtime((event) => {
+      realtime.push(`${event.pluginId}:${event.packetType}:${String(event.payload.callId)}:${event.expiresAtMs}`);
+    });
+    events.onPluginCatalogChanged((event) => {
+      catalog.push(event.version);
+    });
+    events.addEventListener({
+      onPluginRealtime: (event) => listened.push(`realtime:${event.deliveryId}`),
+      onPluginCatalogChanged: (event) => listened.push(`catalog:${event.version}`),
     });
 
+    events.emitNativeEvent(webEventType("im://plugin_realtime"), readEventGolden("plugin_realtime.json"));
     events.emitNativeEvent(
-      webEventType("im://extension"),
-      readEventGolden("capability_unavailable.json"),
+      webEventType("im://plugin_catalog_changed"),
+      readEventGolden("plugin_catalog_changed.json"),
     );
 
-    expect(unavailable).toEqual(["unavailable:sfu.call:plugin_disabled"]);
-
-    const decoded = nativeEventFromCode(
-      webEventType("im://extension"),
-      readEventGolden("capability_unavailable.json"),
-    );
-
-    expect(decoded).toMatchObject({
-      type: "capability",
-      event: CapabilityEventName.Unavailable,
-      name: CapabilityEventName.Unavailable,
-      capability: "sfu.call",
-      reason: "plugin_disabled",
+    expect(realtime).toEqual(["flare.call:call.snapshot:call-1:1730000060000"]);
+    expect(catalog).toEqual(["42"]);
+    expect(listened).toEqual(["realtime:delivery-1", "catalog:42"]);
+    expect(nativeEventFromCode(webEventType("im://plugin_realtime"), readEventGolden("plugin_realtime.json"))).toMatchObject({
+      type: "plugin",
+      event: PluginEventName.Realtime,
+      conversationId: "single-u2",
+      payload: { callId: "call-1", version: 3 },
     });
+  });
+
+  it("rejects a plugin realtime payload that is not a JSON object", () => {
+    expect(() =>
+      nativeEventFromCode(webEventType("im://plugin_realtime"), {
+        ...readEventGolden("plugin_realtime.json"),
+        payload: [1, 2],
+      }),
+    ).toThrow("invalid event payload field: payload");
   });
 
   it("decodes SDK error payloads without filling missing code or message", () => {

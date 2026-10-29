@@ -228,7 +228,6 @@ Capability discovery and optional plugin dispatch through capability dispatch op
 | `dispatchCapability` | `DispatchCapabilityRequest` | `DispatchCapabilityResponse` | `capability-dispatch-json` | `flare_capability_dispatch_json` |
 | `grantCapability` | `GrantCapabilityRequest` | `Unit` | `capability-dispatch-json` | `flare_capability_dispatch_json` |
 | `revokeCapability` | `RevokeCapabilityRequest` | `Unit` | `capability-dispatch-json` | `flare_capability_dispatch_json` |
-| `sendCallSignal` | `SendCallSignalRequest` | `Unit` | `capability-dispatch-json` | `flare_capability_dispatch_json` |
 
 ## client.views
 

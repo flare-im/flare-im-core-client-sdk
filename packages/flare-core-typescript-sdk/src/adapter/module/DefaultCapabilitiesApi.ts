@@ -87,8 +87,4 @@ export class DefaultCapabilitiesApi implements CapabilitiesApi {
   async revokeCapability(request: Record<string, unknown>): Promise<void> {
     await invokeVoid(this.bridge, NativeCallMap.capabilityRevoke, request);
   }
-
-  async sendCallSignal(request: Record<string, unknown>): Promise<void> {
-    await invokeVoid(this.bridge, NativeCallMap.capabilitySendCallSignal, request);
-  }
 }

@@ -128,7 +128,6 @@ export const SdkOperations = {
   capabilityDispatch: 'capability.dispatch',
   capabilityGrant: 'capability.grant',
   capabilityRevoke: 'capability.revoke',
-  capabilitySendCallSignal: 'capability.send_call_signal',
   eventSubscribe: 'event.subscribe',
   eventSubscribeBatch: 'event.subscribe_batch',
   eventUnsubscribe: 'event.unsubscribe',

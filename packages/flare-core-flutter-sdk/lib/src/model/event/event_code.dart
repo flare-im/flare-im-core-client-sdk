@@ -15,7 +15,6 @@ final class EventCode {
   static const int messageSendFailed = 2004;
   static const int messageRecalled = 2005;
   static const int messageTyping = 2006;
-  static const int messageCapability = 2007;
   static const int messageEdited = 2008;
   static const int messageReactionChanged = 2009;
   static const int messageDeleted = 2010;
@@ -47,4 +46,6 @@ final class EventCode {
   static const int syncReadiness = 4008;
   static const int extensionEvent = 5001;
   static const int viewUpdated = 6001;
+  static const int pluginRealtime = 7001;
+  static const int pluginCatalogChanged = 7002;
 }

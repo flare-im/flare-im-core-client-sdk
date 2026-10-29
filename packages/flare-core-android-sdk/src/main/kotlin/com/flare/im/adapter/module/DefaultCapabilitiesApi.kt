@@ -16,11 +16,11 @@ import com.flare.im.model.common.error.*
 import com.flare.im.model.content.*
 import com.flare.im.model.entity.*
 import com.flare.im.model.event.*
-import com.flare.im.model.event.capability.*
 import com.flare.im.model.event.connection.*
 import com.flare.im.model.event.conversation.*
 import com.flare.im.model.event.lifecycle.*
 import com.flare.im.model.event.message.*
+import com.flare.im.model.event.plugin.*
 import com.flare.im.model.event.presence.*
 import com.flare.im.model.event.progress.*
 import com.flare.im.model.event.sync.*
@@ -111,9 +111,5 @@ class DefaultCapabilitiesApi(
 
     override suspend fun revokeCapability(request: Map<String, Any?>): Unit {
         invokeUnit(bridge, NativeCallMap.CAPABILITY_REVOKE, request)
-    }
-
-    override suspend fun sendCallSignal(request: Map<String, Any?>): Unit {
-        invokeUnit(bridge, NativeCallMap.CAPABILITY_SEND_CALL_SIGNAL, request)
     }
 }

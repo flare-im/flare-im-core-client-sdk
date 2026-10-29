@@ -220,12 +220,24 @@ final class DefaultEventsApi implements EventsApi {
       case EventCode.syncStateChanged:
       case EventCode.syncResyncNeeded:
         _emit(syncEventFromCode(eventType, eventPayload));
-      case EventCode.extensionEvent:
-        _emit(CapabilityEvent(
-          name: CapabilityEventName.changed,
-          capability:
-              _optionalEventString(eventPayload['capability'], 'capability'),
-          reason: _optionalEventString(eventPayload['reason'], 'reason'),
+      case EventCode.pluginRealtime:
+        _emit(PluginRealtimeEvent(
+          pluginId: _requiredEventString(eventPayload['pluginId'], 'pluginId'),
+          packetType:
+              _requiredEventString(eventPayload['packetType'], 'packetType'),
+          conversationId: _requiredEventString(
+            eventPayload['conversationId'],
+            'conversationId',
+          ),
+          payload: _requiredEventObject(eventPayload['payload'], 'payload'),
+          deliveryId:
+              _requiredEventString(eventPayload['deliveryId'], 'deliveryId'),
+          expiresAtMs:
+              _requiredEventInt(eventPayload['expiresAtMs'], 'expiresAtMs'),
+        ));
+      case EventCode.pluginCatalogChanged:
+        _emit(PluginCatalogChangedEvent(
+          version: _requiredEventString(eventPayload['version'], 'version'),
         ));
       case EventCode.viewUpdated:
         _emit(viewUpdateFromJson(eventPayload));
@@ -457,8 +469,13 @@ final class DefaultEventsApi implements EventsApi {
       _addWhere(listener,
           (event) => event.name == ProgressEventName.downloadProgress);
   @override
-  EventSubscription onCapabilityChanged(
-    EventCallback<CapabilityEvent> listener,
+  EventSubscription onPluginRealtime(
+    EventCallback<PluginRealtimeEvent> listener,
+  ) =>
+      _addTyped(listener);
+  @override
+  EventSubscription onPluginCatalogChanged(
+    EventCallback<PluginCatalogChangedEvent> listener,
   ) =>
       _addTyped(listener);
 
@@ -572,8 +589,10 @@ final class _ListenerHandler {
         }
       case ProgressEvent():
         listener.onSyncProgress(event);
-      case CapabilityEvent():
-        listener.onCapabilityChanged(event);
+      case PluginRealtimeEvent():
+        listener.onPluginRealtime(event);
+      case PluginCatalogChangedEvent():
+        listener.onPluginCatalogChanged(event);
     }
   }
 
@@ -659,7 +678,6 @@ final class _ListenerHandler {
       case MessageEventName.receivedBatch:
       case MessageEventName.sendAck:
       case MessageEventName.sendFailed:
-      case MessageEventName.capability:
       case MessageEventName.typing:
       case MessageEventName.typingAggregate:
       case MessageEventName.reactionChanged:
@@ -670,7 +688,6 @@ final class _ListenerHandler {
       case MessageEventName.unmarked:
       case MessageEventName.retentionScheduled:
       case MessageEventName.presenceChanged:
-      case MessageEventName.callSignal:
       case MessageEventName.custom:
         break;
     }
@@ -840,6 +857,11 @@ Never _invalidEventField(String field, String expected) {
 Map<dynamic, dynamic> _requiredEventMap(Object? value, String field) {
   if (value is Map) return value;
   _invalidEventField(field, 'object');
+}
+
+Map<String, Object?> _requiredEventObject(Object? value, String field) {
+  return _requiredEventMap(value, field)
+      .map((key, item) => MapEntry(key.toString(), item));
 }
 
 String _requiredEventString(Object? value, String field) {

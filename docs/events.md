@@ -55,20 +55,21 @@ Method return values remain the primary success/failure contract for commands su
 | `onSyncProgress` | `sync` | `progress` | `ProgressEvent` | Server sync progress changed. |
 | `onUploadProgress` | `media` | `upload_progress` | `ProgressEvent` | Media upload progress changed. |
 | `onDownloadProgress` | `media` | `download_progress` | `ProgressEvent` | Media download progress changed. |
-| `onCapabilityChanged` | `capability` | `changed` | `CapabilityEvent` | A runtime capability or plugin availability changed. |
+| `onPluginRealtime` | `plugin` | `realtime` | `PluginRealtimeEvent` | A plugin delivered a realtime packet to this user's online connections (im.realtime.deliver): online only, at most once, never stored. Expired packets and payloads that are not JSON objects never arrive. Route by pluginId and packetType. |
+| `onPluginCatalogChanged` | `plugin` | `catalog_changed` | `PluginCatalogChangedEvent` | The tenant's plugin catalog changed (a plugin enabled, disabled or reconfigured). The SDK has already invalidated its plugin catalog; read plugin entries and configuration again. Arrives a random 0-3 s after the notice, with the notices of 3 s merged into one. |
 
 ## Event Domains
 
 | Domain | Names |
 |--------|-------|
-| `capability` | `changed`, `unavailable` |
 | `connection` | `connecting`, `reconnect_failed`, `ready`, `connected`, `disconnected`, `reconnecting`, `state_changed`, `sync_state_changed`, `server_error`, `kicked_off`, `token_expired` |
 | `conversation` | `synced`, `created`, `updated`, `unread_count_changed`, `deleted` |
 | `extension` | `event` |
 | `lifecycle` | `initializing`, `initialized`, `init_failed`, `login_succeeded`, `login_failed`, `logged_out`, `disposed` |
 | `media` | `cache_changed`, `upload_progress`, `download_progress` |
-| `message` | `burn_scheduled`, `burned`, `hard_deleted`, `call_signal`, `received`, `received_batch`, `send_ack`, `send_failed`, `recalled`, `typing`, `capability`, `edited`, `reaction_changed`, `deleted`, `read_receipt`, `typing_aggregate`, `retention_scheduled`, `retention_expired`, `retention_purged`, `pinned`, `unpinned`, `marked`, `unmarked`, `presence_changed`, `custom`, `plugin_state_changed` |
+| `message` | `burn_scheduled`, `burned`, `hard_deleted`, `received`, `received_batch`, `send_ack`, `send_failed`, `recalled`, `typing`, `edited`, `reaction_changed`, `deleted`, `read_receipt`, `typing_aggregate`, `retention_scheduled`, `retention_expired`, `retention_purged`, `pinned`, `unpinned`, `marked`, `unmarked`, `presence_changed`, `custom`, `plugin_state_changed` |
 | `notification` | `received` |
+| `plugin` | `realtime`, `catalog_changed` |
 | `presence` | `changed` |
 | `sync` | `started`, `finished`, `failed`, `progress`, `task_completed`, `state_changed`, `resync_needed`, `readiness` |
 | `view` | `updated` |

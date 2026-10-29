@@ -4,7 +4,7 @@
  * Module API: `events` — Typed SDK event stream.
  */
 import type { EventCallback, EventSubscription, FlareImEventListener } from '../../listener';
-import type { CapabilityEvent, ConnectionEvent, ConversationEvent, LifecycleEvent, MessageMutationEvent, MessageReceivedBatchEvent, MessageReceivedEvent, MessageSendAckEvent, MessageSendFailedEvent, ProgressEvent, ReactionChangedEvent, ReadReceiptEvent, SyncEvent, TypingAggregateEvent, TypingEvent, ViewUpdate } from '../../model';
+import type { ConnectionEvent, ConversationEvent, LifecycleEvent, MessageMutationEvent, MessageReceivedBatchEvent, MessageReceivedEvent, MessageSendAckEvent, MessageSendFailedEvent, PluginCatalogChangedEvent, PluginRealtimeEvent, ProgressEvent, ReactionChangedEvent, ReadReceiptEvent, SyncEvent, TypingAggregateEvent, TypingEvent, ViewUpdate } from '../../model';
 import type { SubscribeEventsRequest, Subscription, UnsubscribeRequest } from '../types';
 
 /** Typed SDK event stream. */
@@ -105,6 +105,8 @@ export interface EventsApi {
   onUploadProgress(listener: EventCallback<ProgressEvent>): EventSubscription;
   /** Media download progress changed. */
   onDownloadProgress(listener: EventCallback<ProgressEvent>): EventSubscription;
-  /** A runtime capability or plugin availability changed. */
-  onCapabilityChanged(listener: EventCallback<CapabilityEvent>): EventSubscription;
+  /** A plugin delivered a realtime packet to this user's online connections (im.realtime.deliver): online only, at most once, never stored. Expired packets and payloads that are not JSON objects never arrive. Route by pluginId and packetType. */
+  onPluginRealtime(listener: EventCallback<PluginRealtimeEvent>): EventSubscription;
+  /** The tenant's plugin catalog changed (a plugin enabled, disabled or reconfigured). The SDK has already invalidated its plugin catalog; read plugin entries and configuration again. Arrives a random 0-3 s after the notice, with the notices of 3 s merged into one. */
+  onPluginCatalogChanged(listener: EventCallback<PluginCatalogChangedEvent>): EventSubscription;
 }

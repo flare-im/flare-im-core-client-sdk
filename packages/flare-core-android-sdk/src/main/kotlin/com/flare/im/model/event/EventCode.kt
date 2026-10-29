@@ -16,7 +16,6 @@ object EventCode {
     const val MESSAGE_SEND_FAILED: Int = 2004
     const val MESSAGE_RECALLED: Int = 2005
     const val MESSAGE_TYPING: Int = 2006
-    const val MESSAGE_CAPABILITY: Int = 2007
     const val MESSAGE_EDITED: Int = 2008
     const val MESSAGE_REACTION_CHANGED: Int = 2009
     const val MESSAGE_DELETED: Int = 2010
@@ -48,4 +47,6 @@ object EventCode {
     const val SYNC_READINESS: Int = 4008
     const val EXTENSION: Int = 5001
     const val VIEW_UPDATED: Int = 6001
+    const val PLUGIN_REALTIME: Int = 7001
+    const val PLUGIN_CATALOG_CHANGED: Int = 7002
 }

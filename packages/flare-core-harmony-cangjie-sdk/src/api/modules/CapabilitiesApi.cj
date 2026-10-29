@@ -25,5 +25,4 @@ public interface CapabilitiesApi {
     func dispatchCapability(requestJson: String): String
     func grantCapability(requestJson: String): Unit
     func revokeCapability(requestJson: String): Unit
-    func sendCallSignal(requestJson: String): Unit
 }

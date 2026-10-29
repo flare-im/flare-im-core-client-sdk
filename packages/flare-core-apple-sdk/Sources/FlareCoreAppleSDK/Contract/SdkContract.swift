@@ -132,7 +132,6 @@ public enum SdkOperations {
     public static let capabilityDispatch = "capability.dispatch"
     public static let capabilityGrant = "capability.grant"
     public static let capabilityRevoke = "capability.revoke"
-    public static let capabilitySendCallSignal = "capability.send_call_signal"
     public static let eventSubscribe = "event.subscribe"
     public static let eventSubscribeBatch = "event.subscribe_batch"
     public static let eventUnsubscribe = "event.unsubscribe"

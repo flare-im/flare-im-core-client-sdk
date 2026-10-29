@@ -5,7 +5,6 @@ export enum MessageEventName {
   ReceivedBatch = "received_batch",
   SendAck = "send_ack",
   SendFailed = "send_failed",
-  Capability = "capability",
   Recalled = "recalled",
   Typing = "typing",
   TypingAggregate = "typing_aggregate",
@@ -24,7 +23,6 @@ export enum MessageEventName {
   RetentionExpired = "retention_expired",
   RetentionPurged = "retention_purged",
   PresenceChanged = "presence_changed",
-  CallSignal = "call_signal",
   Custom = "custom",
   PluginStateChanged = "plugin_state_changed",
 }

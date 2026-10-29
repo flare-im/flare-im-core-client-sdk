@@ -91,8 +91,4 @@ public class DefaultCapabilitiesApi <: CapabilitiesApi {
     public func revokeCapability(requestJson: String): Unit {
         let _ignored = bridge.invoke(descriptor: NativeCallMap.capabilityRevoke, requestJson: wireEncodeRequest(requestJson))
     }
-
-    public func sendCallSignal(requestJson: String): Unit {
-        let _ignored = bridge.invoke(descriptor: NativeCallMap.capabilitySendCallSignal, requestJson: wireEncodeRequest(requestJson))
-    }
 }

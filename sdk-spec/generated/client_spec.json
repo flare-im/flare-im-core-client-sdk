@@ -167,13 +167,6 @@
   "events": [
     {
       "names": [
-        "changed",
-        "unavailable"
-      ],
-      "type": "capability"
-    },
-    {
-      "names": [
         "connecting",
         "reconnect_failed",
         "ready",
@@ -229,14 +222,12 @@
         "burn_scheduled",
         "burned",
         "hard_deleted",
-        "call_signal",
         "received",
         "received_batch",
         "send_ack",
         "send_failed",
         "recalled",
         "typing",
-        "capability",
         "edited",
         "reaction_changed",
         "deleted",
@@ -260,6 +251,13 @@
         "received"
       ],
       "type": "notification"
+    },
+    {
+      "names": [
+        "realtime",
+        "catalog_changed"
+      ],
+      "type": "plugin"
     },
     {
       "names": [
@@ -623,11 +621,18 @@
       "payload": "ProgressEvent"
     },
     {
-      "description": "A runtime capability or plugin availability changed.",
-      "eventName": "changed",
-      "kind": "capability",
-      "name": "onCapabilityChanged",
-      "payload": "CapabilityEvent"
+      "description": "A plugin delivered a realtime packet to this user's online connections (im.realtime.deliver): online only, at most once, never stored. Expired packets and payloads that are not JSON objects never arrive. Route by pluginId and packetType.",
+      "eventName": "realtime",
+      "kind": "plugin",
+      "name": "onPluginRealtime",
+      "payload": "PluginRealtimeEvent"
+    },
+    {
+      "description": "The tenant's plugin catalog changed (a plugin enabled, disabled or reconfigured). The SDK has already invalidated its plugin catalog; read plugin entries and configuration again. Arrives a random 0-3 s after the notice, with the notices of 3 s merged into one.",
+      "eventName": "catalog_changed",
+      "kind": "plugin",
+      "name": "onPluginCatalogChanged",
+      "payload": "PluginCatalogChangedEvent"
     }
   ],
   "messageBuildCatalog": {
@@ -4657,7 +4662,7 @@
             "extension_event",
             "presence",
             "media",
-            "capability",
+            "plugin",
             "view"
           ]
         },
@@ -4710,7 +4715,6 @@
             "received_batch",
             "send_ack",
             "send_failed",
-            "capability",
             "recalled",
             "typing",
             "typing_aggregate",
@@ -4729,7 +4733,6 @@
             "retention_expired",
             "retention_purged",
             "presence_changed",
-            "call_signal",
             "custom",
             "plugin_state_changed"
           ]
@@ -4769,11 +4772,11 @@
           ]
         },
         {
-          "description": "Capability and plugin event notification name.",
-          "name": "CapabilityEventName",
+          "description": "Plugin event notification name.",
+          "name": "PluginEventName",
           "values": [
-            "changed",
-            "unavailable"
+            "realtime",
+            "catalog_changed"
           ]
         }
       ],
@@ -5386,31 +5389,65 @@
           "name": "SyncEvent"
         },
         {
-          "description": "Capability/plugin notification payload.",
+          "description": "A plugin realtime packet (im.realtime.deliver). Online only, at most once, never stored; the SDK drops expired packets and payloads that are not JSON objects.",
           "fields": [
             {
-              "description": "Capability event name.",
-              "name": "name",
+              "description": "Delivering plugin id, e.g. flare.call.",
+              "name": "pluginId",
               "required": true,
-              "type": "CapabilityEventName",
-              "wireName": "name"
+              "type": "String",
+              "wireName": "pluginId"
             },
             {
-              "description": "Capability key.",
-              "name": "capability",
-              "required": false,
+              "description": "Plugin packet type, e.g. call.snapshot.",
+              "name": "packetType",
+              "required": true,
               "type": "String",
-              "wireName": "capability"
+              "wireName": "packetType"
             },
             {
-              "description": "Unavailable/change reason.",
-              "name": "reason",
-              "required": false,
+              "description": "Conversation the plugin delivered to.",
+              "name": "conversationId",
+              "required": true,
               "type": "String",
-              "wireName": "reason"
+              "wireName": "conversationId"
+            },
+            {
+              "description": "Plugin-defined JSON object payload.",
+              "name": "payload",
+              "required": true,
+              "type": "JsonObject",
+              "wireName": "payload"
+            },
+            {
+              "description": "Core delivery id of this packet.",
+              "name": "deliveryId",
+              "required": true,
+              "type": "String",
+              "wireName": "deliveryId"
+            },
+            {
+              "description": "Wall-clock milliseconds after which the packet is stale.",
+              "name": "expiresAtMs",
+              "required": true,
+              "type": "UInt64",
+              "wireName": "expiresAtMs"
             }
           ],
-          "name": "CapabilityEvent"
+          "name": "PluginRealtimeEvent"
+        },
+        {
+          "description": "The tenant's plugin catalog changed; the SDK has already invalidated its plugin catalog.",
+          "fields": [
+            {
+              "description": "Plugin authorization projection version Core announced.",
+              "name": "version",
+              "required": true,
+              "type": "String",
+              "wireName": "version"
+            }
+          ],
+          "name": "PluginCatalogChangedEvent"
         }
       ]
     },
@@ -8347,24 +8384,6 @@
           },
           "operation": "capability.revoke",
           "request": "RevokeCapabilityRequest",
-          "response": "Unit",
-          "stability": "stable",
-          "transport": "capability-dispatch-json"
-        },
-        {
-          "cApi": "flare_capability_dispatch_json",
-          "dispatchOp": "send_call_signal",
-          "name": "sendCallSignal",
-          "nativeBinding": {
-            "asyncReturn": "i32 immediate_submit_code",
-            "callback": "FlareResultCallback",
-            "handlePolicy": "client-handle",
-            "requestEncoding": "json",
-            "responseEncoding": "unit",
-            "returnMode": "callback-unit"
-          },
-          "operation": "capability.send_call_signal",
-          "request": "SendCallSignalRequest",
           "response": "Unit",
           "stability": "stable",
           "transport": "capability-dispatch-json"

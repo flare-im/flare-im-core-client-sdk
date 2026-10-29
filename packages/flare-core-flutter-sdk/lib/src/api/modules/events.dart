@@ -101,6 +101,8 @@ abstract interface class EventsApi {
   EventSubscription onUploadProgress(EventCallback<ProgressEvent> listener);
   /// Media download progress changed.
   EventSubscription onDownloadProgress(EventCallback<ProgressEvent> listener);
-  /// A runtime capability or plugin availability changed.
-  EventSubscription onCapabilityChanged(EventCallback<CapabilityEvent> listener);
+  /// A plugin delivered a realtime packet to this user's online connections (im.realtime.deliver): online only, at most once, never stored. Expired packets and payloads that are not JSON objects never arrive. Route by pluginId and packetType.
+  EventSubscription onPluginRealtime(EventCallback<PluginRealtimeEvent> listener);
+  /// The tenant's plugin catalog changed (a plugin enabled, disabled or reconfigured). The SDK has already invalidated its plugin catalog; read plugin entries and configuration again. Arrives a random 0-3 s after the notice, with the notices of 3 s merged into one.
+  EventSubscription onPluginCatalogChanged(EventCallback<PluginCatalogChangedEvent> listener);
 }

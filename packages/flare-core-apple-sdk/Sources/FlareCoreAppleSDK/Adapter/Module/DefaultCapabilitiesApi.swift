@@ -87,8 +87,4 @@ public final class DefaultCapabilitiesApi: CapabilitiesApiProtocol {
     public func revokeCapability(_ request: [String: AnySendable]) async throws -> Void {
         try await invokeVoid(bridge, descriptor: NativeCallMap.capabilityRevoke, request: AnySendable(request))
     }
-
-    public func sendCallSignal(_ request: [String: AnySendable]) async throws -> Void {
-        try await invokeVoid(bridge, descriptor: NativeCallMap.capabilitySendCallSignal, request: AnySendable(request))
-    }
 }

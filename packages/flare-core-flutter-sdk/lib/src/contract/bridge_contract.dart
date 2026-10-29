@@ -2133,20 +2133,6 @@ abstract final class NativeCallMap {
       dispatchOp: "capability_revoke",
       callback: "FlareResultCallback");
 
-  /// sendCallSignal maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `send_call_signal`. Operation: `capability.send_call_signal`.
-  static const capabilitySendCallSignal = NativeCallDescriptor(
-      module: "capabilities",
-      method: "sendCallSignal",
-      operation: "capability.send_call_signal",
-      transport: "capability-dispatch-json",
-      cApi: "flare_capability_dispatch_json",
-      requestEncoding: "json",
-      responseEncoding: "unit",
-      returnMode: "callback-unit",
-      handlePolicy: "client-handle",
-      dispatchOp: "send_call_signal",
-      callback: "FlareResultCallback");
-
   /// openTimeline maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `view.timeline.open`.
   static const viewTimelineOpen = NativeCallDescriptor(
       module: "views",

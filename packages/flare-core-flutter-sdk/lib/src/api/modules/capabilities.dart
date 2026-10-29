@@ -44,6 +44,4 @@ abstract interface class CapabilitiesApi {
   Future<void> grantCapability(Map<String, Object?> request);
   /// revokeCapability maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `capability_revoke`. Operation: `capability.revoke`.
   Future<void> revokeCapability(Map<String, Object?> request);
-  /// sendCallSignal maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `send_call_signal`. Operation: `capability.send_call_signal`.
-  Future<void> sendCallSignal(Map<String, Object?> request);
 }

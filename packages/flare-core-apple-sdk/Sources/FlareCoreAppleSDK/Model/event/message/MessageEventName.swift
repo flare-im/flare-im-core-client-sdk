@@ -7,7 +7,6 @@ public enum MessageEventName: String, Codable, Sendable {
     case receivedBatch = "received_batch"
     case sendAck = "send_ack"
     case sendFailed = "send_failed"
-    case capability = "capability"
     case recalled = "recalled"
     case typing = "typing"
     case typingAggregate = "typing_aggregate"
@@ -26,7 +25,6 @@ public enum MessageEventName: String, Codable, Sendable {
     case retentionExpired = "retention_expired"
     case retentionPurged = "retention_purged"
     case presenceChanged = "presence_changed"
-    case callSignal = "call_signal"
     case custom = "custom"
     case pluginStateChanged = "plugin_state_changed"
 }

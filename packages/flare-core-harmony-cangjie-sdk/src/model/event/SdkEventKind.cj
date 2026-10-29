@@ -13,6 +13,6 @@ public enum SdkEventKind {
     | ExtensionEvent
     | Presence
     | Media
-    | Capability
+    | Plugin
     | View
 }

@@ -168,7 +168,6 @@ abstract final class SdkOperations {
   static const String capabilityDispatch = 'capability.dispatch';
   static const String capabilityGrant = 'capability.grant';
   static const String capabilityRevoke = 'capability.revoke';
-  static const String capabilitySendCallSignal = 'capability.send_call_signal';
   static const String eventSubscribe = 'event.subscribe';
   static const String eventSubscribeBatch = 'event.subscribe_batch';
   static const String eventUnsubscribe = 'event.unsubscribe';

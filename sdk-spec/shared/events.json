@@ -3,13 +3,6 @@
   "events": [
     {
       "names": [
-        "changed",
-        "unavailable"
-      ],
-      "type": "capability"
-    },
-    {
-      "names": [
         "connecting",
         "reconnect_failed",
         "ready",
@@ -65,14 +58,12 @@
         "burn_scheduled",
         "burned",
         "hard_deleted",
-        "call_signal",
         "received",
         "received_batch",
         "send_ack",
         "send_failed",
         "recalled",
         "typing",
-        "capability",
         "edited",
         "reaction_changed",
         "deleted",
@@ -96,6 +87,13 @@
         "received"
       ],
       "type": "notification"
+    },
+    {
+      "names": [
+        "realtime",
+        "catalog_changed"
+      ],
+      "type": "plugin"
     },
     {
       "names": [

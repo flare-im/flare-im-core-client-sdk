@@ -1,0 +1,11 @@
+{
+  "pluginId": "flare.call",
+  "packetType": "call.snapshot",
+  "conversationId": "single-u2",
+  "payload": {
+    "callId": "call-1",
+    "version": 3
+  },
+  "deliveryId": "delivery-1",
+  "expiresAtMs": 1730000060000
+}

@@ -588,6 +588,53 @@ void main() {
       expect(edited, isEmpty);
     });
 
+    test('plugin realtime and catalog events reach their typed listeners',
+        () async {
+      final bridge = _RecordingBridge();
+      final client = FlareCoreSdk.createClientWithBridge(bridge);
+      final realtime = <PluginRealtimeEvent>[];
+      final catalog = <PluginCatalogChangedEvent>[];
+      client.events.onPluginRealtime(realtime.add);
+      client.events.onPluginCatalogChanged(catalog.add);
+
+      await client.events.subscribeEvents(const {});
+      bridge.emitEvent(EventCode.pluginRealtime, {
+        'pluginId': 'flare.call',
+        'packetType': 'call.snapshot',
+        'conversationId': 'c1',
+        'payload': {'callId': 'call-1', 'version': 3},
+        'deliveryId': 'd1',
+        'expiresAtMs': 1730000060000,
+      });
+      bridge.emitEvent(EventCode.pluginCatalogChanged, {'version': '42'});
+
+      expect(realtime, hasLength(1));
+      expect(realtime.single.pluginId, 'flare.call');
+      expect(realtime.single.packetType, 'call.snapshot');
+      expect(realtime.single.conversationId, 'c1');
+      expect(realtime.single.payload, {'callId': 'call-1', 'version': 3});
+      expect(realtime.single.deliveryId, 'd1');
+      expect(realtime.single.expiresAtMs, 1730000060000);
+      expect(catalog.single.version, '42');
+      expect(
+        () => bridge.emitEvent(EventCode.pluginRealtime, {
+          'pluginId': 'flare.call',
+          'packetType': 'call.snapshot',
+          'conversationId': 'c1',
+          'payload': [1, 2],
+          'deliveryId': 'd1',
+          'expiresAtMs': 1730000060000,
+        }),
+        throwsA(
+          isA<FormatException>().having(
+            (error) => error.message,
+            'message',
+            'invalid event payload field: payload',
+          ),
+        ),
+      );
+    });
+
     test('read receipt event rejects malformed payloads', () async {
       final bridge = _RecordingBridge();
       final client = FlareCoreSdk.createClientWithBridge(bridge);

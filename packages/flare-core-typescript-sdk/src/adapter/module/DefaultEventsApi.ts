@@ -4,8 +4,6 @@ import type { EventsApi } from '../../api/modules/events';
 import type { SubscribeEventsRequest, Subscription, UnsubscribeRequest } from '../../api/types';
 import type { EventCallback, EventSubscription, FlareImEventListener } from '../../listener';
 import {
-  CapabilityEvent,
-  CapabilityEventName,
   ConnectionEvent,
   ConnectionEventName,
   ConversationEvent,
@@ -18,6 +16,9 @@ import {
   MessageReceivedEvent,
   MessageSendAckEvent,
   MessageSendFailedEvent,
+  PluginCatalogChangedEvent,
+  PluginEventName,
+  PluginRealtimeEvent,
   PresenceChangedEvent,
   ProgressEventName,
   ReactionChangedEvent,
@@ -48,7 +49,6 @@ const EVENT_CODE_MESSAGE_SEND_ACK = 2003;
 const EVENT_CODE_MESSAGE_SEND_FAILED = 2004;
 const EVENT_CODE_MESSAGE_RECALLED = 2005;
 const EVENT_CODE_MESSAGE_TYPING = 2006;
-const EVENT_CODE_MESSAGE_CAPABILITY = 2007;
 const EVENT_CODE_MESSAGE_EDITED = 2008;
 const EVENT_CODE_MESSAGE_REACTION_CHANGED = 2009;
 const EVENT_CODE_MESSAGE_DELETED = 2010;
@@ -80,6 +80,8 @@ const EVENT_CODE_SYNC_RESYNC_NEEDED = 4007;
 const EVENT_CODE_SYNC_READINESS = 4008;
 const EVENT_CODE_EXTENSION_EVENT = 5001;
 const EVENT_CODE_VIEW_UPDATED = 6001;
+const EVENT_CODE_PLUGIN_REALTIME = 7001;
+const EVENT_CODE_PLUGIN_CATALOG_CHANGED = 7002;
 
 const WEB_EVENT_TYPE_BY_CHANNEL: Record<string, number> = {
   "im://connected": EVENT_CODE_CONNECTION_CONNECTED,
@@ -96,7 +98,6 @@ const WEB_EVENT_TYPE_BY_CHANNEL: Record<string, number> = {
   "im://send_failed": EVENT_CODE_MESSAGE_SEND_FAILED,
   "im://message_recalled": EVENT_CODE_MESSAGE_RECALLED,
   "im://typing": EVENT_CODE_MESSAGE_TYPING,
-  "im://message_capability": EVENT_CODE_MESSAGE_CAPABILITY,
   "im://message_edited": EVENT_CODE_MESSAGE_EDITED,
   "im://message_reaction_changed": EVENT_CODE_MESSAGE_REACTION_CHANGED,
   "im://message_deleted": EVENT_CODE_MESSAGE_DELETED,
@@ -128,6 +129,8 @@ const WEB_EVENT_TYPE_BY_CHANNEL: Record<string, number> = {
   "im://sync_readiness": EVENT_CODE_SYNC_READINESS,
   "im://extension": EVENT_CODE_EXTENSION_EVENT,
   "im://view_updated": EVENT_CODE_VIEW_UPDATED,
+  "im://plugin_realtime": EVENT_CODE_PLUGIN_REALTIME,
+  "im://plugin_catalog_changed": EVENT_CODE_PLUGIN_CATALOG_CHANGED,
 };
 
 export const WEB_EVENT_CHANNELS = Object.freeze(Object.keys(WEB_EVENT_TYPE_BY_CHANNEL));
@@ -327,12 +330,25 @@ function presenceChangedEvent(payload: unknown): PresenceChangedEvent & Record<s
   return { ...record, type: 'presence', event: 'changed', conversationId: optionalString(record.conversationId, 'conversationId'), userId: requiredString(record.userId, 'userId'), status: requiredString(record.status, 'status'), extra: stringRecord(record.extra, 'extra') };
 }
 
-function capabilityEvent(payload: unknown): CapabilityEvent & Record<string, unknown> {
+function pluginRealtimeEvent(payload: unknown): PluginRealtimeEvent & Record<string, unknown> {
   const record = eventPayloadRecord(payload);
-  const eventName = String(record.name ?? record.event ?? '').trim() === CapabilityEventName.Unavailable
-    ? CapabilityEventName.Unavailable
-    : CapabilityEventName.Changed;
-  return { ...record, type: 'capability', event: eventName, name: eventName, capability: optionalString(record.capability, 'capability'), reason: optionalString(record.reason, 'reason') };
+  const body = record.payload;
+  if (!body || typeof body !== 'object' || Array.isArray(body)) invalidEventField('payload', 'object');
+  return {
+    type: 'plugin',
+    event: PluginEventName.Realtime,
+    pluginId: requiredString(record.pluginId, 'pluginId'),
+    packetType: requiredString(record.packetType, 'packetType'),
+    conversationId: requiredString(record.conversationId, 'conversationId'),
+    payload: body as Record<string, unknown>,
+    deliveryId: requiredString(record.deliveryId, 'deliveryId'),
+    expiresAtMs: requiredNumber(record.expiresAtMs, 'expiresAtMs'),
+  };
+}
+
+function pluginCatalogChangedEvent(payload: unknown): PluginCatalogChangedEvent & Record<string, unknown> {
+  const record = eventPayloadRecord(payload);
+  return { type: 'plugin', event: PluginEventName.CatalogChanged, version: requiredString(record.version, 'version') };
 }
 
 function conversationEvent(name: ConversationEventName, event: string, payload: unknown): ConversationEvent & Record<string, unknown> {
@@ -431,7 +447,6 @@ export function nativeEventFromCode(eventType: number, payload: unknown): unknow
     case EVENT_CODE_MESSAGE_SEND_FAILED: return messageSendFailedEvent(payload);
     case EVENT_CODE_MESSAGE_RECALLED: return messageMutationEvent(MessageEventName.Recalled, "recalled", payload);
     case EVENT_CODE_MESSAGE_TYPING: return typingEvent(payload);
-    case EVENT_CODE_MESSAGE_CAPABILITY: return contractEvent("message", "capability", payload);
     case EVENT_CODE_MESSAGE_EDITED: return messageMutationEvent(MessageEventName.Edited, "edited", payload);
     case EVENT_CODE_MESSAGE_REACTION_CHANGED: return reactionChangedEvent(payload);
     case EVENT_CODE_MESSAGE_DELETED: return messageMutationEvent(MessageEventName.Deleted, "deleted", payload);
@@ -461,8 +476,10 @@ export function nativeEventFromCode(eventType: number, payload: unknown): unknow
     case EVENT_CODE_SYNC_STATE_CHANGED: return syncEvent(SyncEventName.StateChanged, "state_changed", payload);
     case EVENT_CODE_SYNC_RESYNC_NEEDED: return syncEvent(SyncEventName.ResyncNeeded, "resync_needed", payload);
     case EVENT_CODE_SYNC_READINESS: return undefined;
-    case EVENT_CODE_EXTENSION_EVENT: return capabilityEvent(payload);
+    case EVENT_CODE_EXTENSION_EVENT: return contractEvent("extension", "event", payload);
     case EVENT_CODE_VIEW_UPDATED: return viewUpdatedEvent(payload);
+    case EVENT_CODE_PLUGIN_REALTIME: return pluginRealtimeEvent(payload);
+    case EVENT_CODE_PLUGIN_CATALOG_CHANGED: return pluginCatalogChangedEvent(payload);
     default: return {
       type: 'unknown',
       name: 'unknown',
@@ -721,8 +738,12 @@ export class DefaultEventsApi implements EventsApi {
     return this.registerWhere(listener, (event) => eventNameIs(event, 'progress', ProgressEventName.DownloadProgress));
   }
 
-  onCapabilityChanged(listener: EventCallback<CapabilityEvent>): EventSubscription {
-    return this.registerWhere(listener, (event) => eventTypeIs(event, 'capability'));
+  onPluginRealtime(listener: EventCallback<PluginRealtimeEvent>): EventSubscription {
+    return this.registerWhere(listener, (event) => eventEventIs(event, 'plugin', PluginEventName.Realtime));
+  }
+
+  onPluginCatalogChanged(listener: EventCallback<PluginCatalogChangedEvent>): EventSubscription {
+    return this.registerWhere(listener, (event) => eventEventIs(event, 'plugin', PluginEventName.CatalogChanged));
   }
 
   private requestWithDefaultHandler(request: SubscribeEventsRequest): SubscribeEventsRequest {
@@ -890,9 +911,17 @@ export class DefaultEventsApi implements EventsApi {
       listener.onViewUpdated?.(event as ViewUpdate);
       return;
     }
-    if (type === 'capability') {
-      listener.onCapabilityChanged?.(event as CapabilityEvent);
-      return;
+    if (type === 'plugin') {
+      switch (eventName) {
+        case PluginEventName.Realtime:
+          listener.onPluginRealtime?.(event as PluginRealtimeEvent);
+          return;
+        case PluginEventName.CatalogChanged:
+          listener.onPluginCatalogChanged?.(event as PluginCatalogChangedEvent);
+          return;
+        default:
+          return;
+      }
     }
     if ((event as LifecycleEvent).name !== undefined) {
       const lifecycle = event as LifecycleEvent;

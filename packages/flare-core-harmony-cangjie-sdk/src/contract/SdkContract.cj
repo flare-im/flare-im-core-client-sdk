@@ -142,7 +142,6 @@ public class SdkOperations {
     public static let capabilityDispatch: String = "capability.dispatch"
     public static let capabilityGrant: String = "capability.grant"
     public static let capabilityRevoke: String = "capability.revoke"
-    public static let capabilitySendCallSignal: String = "capability.send_call_signal"
     public static let eventSubscribe: String = "event.subscribe"
     public static let eventSubscribeBatch: String = "event.subscribe_batch"
     public static let eventUnsubscribe: String = "event.unsubscribe"

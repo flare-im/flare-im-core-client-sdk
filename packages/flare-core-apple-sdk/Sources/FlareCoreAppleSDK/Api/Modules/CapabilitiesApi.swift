@@ -23,5 +23,4 @@ public protocol CapabilitiesApiProtocol: AnyObject {
     func dispatchCapability(_ request: [String: AnySendable]) async throws -> [String: AnySendable]
     func grantCapability(_ request: [String: AnySendable]) async throws -> Void
     func revokeCapability(_ request: [String: AnySendable]) async throws -> Void
-    func sendCallSignal(_ request: [String: AnySendable]) async throws -> Void
 }

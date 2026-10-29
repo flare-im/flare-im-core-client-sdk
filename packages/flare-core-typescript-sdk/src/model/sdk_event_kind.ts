@@ -11,6 +11,6 @@ export enum SdkEventKind {
   ExtensionEvent = "extension_event",
   Presence = "presence",
   Media = "media",
-  Capability = "capability",
+  Plugin = "plugin",
   View = "view",
 }

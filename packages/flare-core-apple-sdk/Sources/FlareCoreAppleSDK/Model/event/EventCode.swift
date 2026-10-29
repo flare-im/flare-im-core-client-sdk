@@ -16,7 +16,6 @@ public enum EventCode {
     public static let messageSendFailed: Int = 2004
     public static let messageRecalled: Int = 2005
     public static let messageTyping: Int = 2006
-    public static let messageCapability: Int = 2007
     public static let messageEdited: Int = 2008
     public static let messageReactionChanged: Int = 2009
     public static let messageDeleted: Int = 2010
@@ -48,4 +47,6 @@ public enum EventCode {
     public static let syncReadiness: Int = 4008
     public static let extensionEvent: Int = 5001
     public static let viewUpdated: Int = 6001
+    public static let pluginRealtime: Int = 7001
+    public static let pluginCatalogChanged: Int = 7002
 }

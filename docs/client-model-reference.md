@@ -1165,7 +1165,7 @@ Typed SDK event and notification models for cross-platform subscriptions.
 
 ### Enums
 
-- `SdkEventKind`: Top-level event domain. Values: `lifecycle`, `connection`, `message`, `notification`, `conversation`, `sync`, `extension`, `extension_event`, `presence`, `media`, `capability`, `view`
+- `SdkEventKind`: Top-level event domain. Values: `lifecycle`, `connection`, `message`, `notification`, `conversation`, `sync`, `extension`, `extension_event`, `presence`, `media`, `plugin`, `view`
 
 - `LifecycleEventName`: Client SDK lifecycle notification name. Values: `initializing`, `initialized`, `init_failed`, `login_succeeded`, `login_failed`, `logged_out`, `disposed`
 
@@ -1173,7 +1173,7 @@ Typed SDK event and notification models for cross-platform subscriptions.
 
 - `ConnectionEventName`: Connection event notification name. Values: `connecting`, `connected`, `ready`, `disconnected`, `reconnecting`, `reconnect_failed`, `state_changed`, `sync_state_changed`, `server_error`, `kicked_off`, `token_expired`
 
-- `MessageEventName`: Message event notification name. Values: `received`, `received_batch`, `send_ack`, `send_failed`, `capability`, `recalled`, `typing`, `typing_aggregate`, `edited`, `reaction_changed`, `deleted`, `read_receipt`, `burn_scheduled`, `burned`, `hard_deleted`, `pinned`, `unpinned`, `marked`, `unmarked`, `retention_scheduled`, `retention_expired`, `retention_purged`, `presence_changed`, `call_signal`, `custom`, `plugin_state_changed`
+- `MessageEventName`: Message event notification name. Values: `received`, `received_batch`, `send_ack`, `send_failed`, `recalled`, `typing`, `typing_aggregate`, `edited`, `reaction_changed`, `deleted`, `read_receipt`, `burn_scheduled`, `burned`, `hard_deleted`, `pinned`, `unpinned`, `marked`, `unmarked`, `retention_scheduled`, `retention_expired`, `retention_purged`, `presence_changed`, `custom`, `plugin_state_changed`
 
 - `ConversationEventName`: Conversation event notification name. Values: `synced`, `created`, `updated`, `unread_count_changed`, `deleted`
 
@@ -1181,7 +1181,7 @@ Typed SDK event and notification models for cross-platform subscriptions.
 
 - `ProgressEventName`: Progress notification name. Values: `sync_progress`, `upload_progress`, `download_progress`
 
-- `CapabilityEventName`: Capability and plugin event notification name. Values: `changed`, `unavailable`
+- `PluginEventName`: Plugin event notification name. Values: `realtime`, `catalog_changed`
 
 ### SdkErrorPayload
 
@@ -1374,15 +1374,26 @@ Sync orchestration notification payload.
 | `progress` | `progress` | `UInt32` | no | Progress percentage from 0 to 100. |
 | `error` | `error` | `SdkErrorPayload` | no | Failure details for failed sync events. |
 
-### CapabilityEvent
+### PluginRealtimeEvent
 
-Capability/plugin notification payload.
+A plugin realtime packet (im.realtime.deliver). Online only, at most once, never stored; the SDK drops expired packets and payloads that are not JSON objects.
 
 | Field | Wire name | Type | Required | Description |
 |-------|-----------|------|----------|-------------|
-| `name` | `name` | `CapabilityEventName` | yes | Capability event name. |
-| `capability` | `capability` | `String` | no | Capability key. |
-| `reason` | `reason` | `String` | no | Unavailable/change reason. |
+| `pluginId` | `pluginId` | `String` | yes | Delivering plugin id, e.g. flare.call. |
+| `packetType` | `packetType` | `String` | yes | Plugin packet type, e.g. call.snapshot. |
+| `conversationId` | `conversationId` | `String` | yes | Conversation the plugin delivered to. |
+| `payload` | `payload` | `JsonObject` | yes | Plugin-defined JSON object payload. |
+| `deliveryId` | `deliveryId` | `String` | yes | Core delivery id of this packet. |
+| `expiresAtMs` | `expiresAtMs` | `UInt64` | yes | Wall-clock milliseconds after which the packet is stale. |
+
+### PluginCatalogChangedEvent
+
+The tenant's plugin catalog changed; the SDK has already invalidated its plugin catalog.
+
+| Field | Wire name | Type | Required | Description |
+|-------|-----------|------|----------|-------------|
+| `version` | `version` | `String` | yes | Plugin authorization projection version Core announced. |
 
 ## PluginUi
 

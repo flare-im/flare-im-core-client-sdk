@@ -229,7 +229,11 @@ export class DefaultEventsApi implements EventsApi {
     return this.registerTyped(listener);
   }
 
-  onCapabilityChanged(listener: EventCallback<CapabilityEvent>): EventSubscription {
+  onPluginRealtime(listener: EventCallback<PluginRealtimeEvent>): EventSubscription {
+    return this.registerTyped(listener);
+  }
+
+  onPluginCatalogChanged(listener: EventCallback<PluginCatalogChangedEvent>): EventSubscription {
     return this.registerTyped(listener);
   }
 

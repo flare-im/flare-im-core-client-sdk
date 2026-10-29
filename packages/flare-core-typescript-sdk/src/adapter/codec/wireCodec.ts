@@ -30,8 +30,6 @@ import {
   BuildVideoMessageRequest,
   BuildVoteMessageRequest,
   BuildWithContentMessageRequest,
-  CapabilityEvent,
-  CapabilityEventName,
   ClearPushTokenRequest,
   CloseViewRequest,
   CloseViewResponse,
@@ -94,7 +92,10 @@ import {
   OpenConversationListViewRequest,
   OpenConversationTimelineRequest,
   OpenTimelineViewRequest,
+  PluginCatalogChangedEvent,
   PluginCommandRequest,
+  PluginEventName,
+  PluginRealtimeEvent,
   PluginUiEvaluationRequest,
   PresenceChangedEvent,
   ProgressEvent,
@@ -1147,11 +1148,20 @@ export function syncEventToMap(request: SyncEvent): Record<string, unknown> {
   };
 }
 
-export function capabilityEventToMap(request: CapabilityEvent): Record<string, unknown> {
+export function pluginRealtimeEventToMap(request: PluginRealtimeEvent): Record<string, unknown> {
   return {
-  name: request.name,
-  ...(request.capability !== undefined ? { capability: request.capability } : {}),
-  ...(request.reason !== undefined ? { reason: request.reason } : {}),
+  pluginId: request.pluginId,
+  packetType: request.packetType,
+  conversationId: request.conversationId,
+  payload: request.payload,
+  deliveryId: request.deliveryId,
+  expiresAtMs: request.expiresAtMs,
+  };
+}
+
+export function pluginCatalogChangedEventToMap(request: PluginCatalogChangedEvent): Record<string, unknown> {
+  return {
+  version: request.version,
   };
 }
 

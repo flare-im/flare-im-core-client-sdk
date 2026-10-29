@@ -12,11 +12,11 @@ import com.flare.im.model.common.error.*
 import com.flare.im.model.content.*
 import com.flare.im.model.entity.*
 import com.flare.im.model.event.*
-import com.flare.im.model.event.capability.*
 import com.flare.im.model.event.connection.*
 import com.flare.im.model.event.conversation.*
 import com.flare.im.model.event.lifecycle.*
 import com.flare.im.model.event.message.*
+import com.flare.im.model.event.plugin.*
 import com.flare.im.model.event.presence.*
 import com.flare.im.model.event.progress.*
 import com.flare.im.model.event.sync.*
@@ -67,6 +67,4 @@ interface CapabilitiesApi {
     suspend fun grantCapability(request: Map<String, Any?>): Unit
     /** revokeCapability maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `capability_revoke`. Operation: `capability.revoke`. */
     suspend fun revokeCapability(request: Map<String, Any?>): Unit
-    /** sendCallSignal maps to `flare_capability_dispatch_json` via `capability-dispatch-json`, dispatch op `send_call_signal`. Operation: `capability.send_call_signal`. */
-    suspend fun sendCallSignal(request: Map<String, Any?>): Unit
 }

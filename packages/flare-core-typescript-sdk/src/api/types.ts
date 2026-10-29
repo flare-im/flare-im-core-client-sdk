@@ -94,7 +94,6 @@ export type RecallMessageRequest = FlareJsonObject;
 export type ResolveMediaAccessRequest = FlareJsonObject;
 export type RevokeCapabilityRequest = FlareJsonObject;
 export type SdkVersion = FlareJsonObject;
-export type SendCallSignalRequest = FlareJsonObject;
 export type SetConversationArchivedRequest = FlareJsonObject;
 export type SetConversationMutedRequest = FlareJsonObject;
 export type SetConversationPinnedRequest = FlareJsonObject;
