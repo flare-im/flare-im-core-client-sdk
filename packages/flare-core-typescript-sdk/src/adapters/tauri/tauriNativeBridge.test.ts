@@ -65,8 +65,9 @@ describe('Tauri TypeScript SDK adapter', () => {
       throw {
         code: 'OPERATION_FAILED',
         reason: 'sdk.plugin.rejected',
-        params: { machineReason: 'CALL_FULL', httpStatus: '422' },
         retryable: false,
+        httpStatus: 422,
+        machineReason: 'CALL_FULL',
         message: '错误 [OPERATION_FAILED] sdk.plugin.rejected',
         operation: 'sdk.is_connected',
       };
@@ -78,8 +79,9 @@ describe('Tauri TypeScript SDK adapter', () => {
     expect(error).toMatchObject({
       code: 'OPERATION_FAILED',
       reason: 'sdk.plugin.rejected',
-      params: { machineReason: 'CALL_FULL', httpStatus: '422' },
       retryable: false,
+      httpStatus: 422,
+      machineReason: 'CALL_FULL',
       operation: 'sdk.is_connected',
     });
   });

@@ -39,8 +39,8 @@ abstract final class FlareCoreSdk {
 /// An SDK failure carries the binding's structured error
 /// (`bindings/contract/errors.json`): [code] is the core error code
 /// (`PERMISSION_DENIED`), [reason] the localized key (`sdk.plugin.disabled`),
-/// [params] metadata such as a plugin rejection's `machineReason`. Read these,
-/// never [message].
+/// [machineReason] Core's or the plugin's code (`PLUGIN_DISABLED`, `CALL_FULL`),
+/// [httpStatus] and [remoteCode] Core's answer. Read these, never [message].
 final class FlareSdkException implements Exception {
   const FlareSdkException({
     required this.code,
@@ -48,8 +48,10 @@ final class FlareSdkException implements Exception {
     this.operation,
     this.details,
     this.reason,
-    this.params = const {},
     this.retryable = false,
+    this.httpStatus,
+    this.remoteCode,
+    this.machineReason,
   });
 
   /// The exception for a failed native call: the structured error in
@@ -63,21 +65,19 @@ final class FlareSdkException implements Exception {
     final structured = details is Map ? details : const <Object?, Object?>{};
     final code = structured['code'];
     final reason = structured['reason'];
-    final params = structured['params'];
+    final httpStatus = structured['httpStatus'];
+    final remoteCode = structured['remoteCode'];
+    final machineReason = structured['machineReason'];
     return FlareSdkException(
       code: code is String && code.isNotEmpty ? code : 'native_error_$nativeCode',
       message: message,
       operation: operation,
       details: details,
       reason: reason is String ? reason : null,
-      params: params is Map
-          ? {
-              for (final entry in params.entries)
-                if (entry.key is String && entry.value is String)
-                  entry.key as String: entry.value as String,
-            }
-          : const {},
       retryable: structured['retryable'] == true,
+      httpStatus: httpStatus is int ? httpStatus : null,
+      remoteCode: remoteCode is int ? remoteCode : null,
+      machineReason: machineReason is String ? machineReason : null,
     );
   }
 
@@ -86,8 +86,10 @@ final class FlareSdkException implements Exception {
   final String? operation;
   final Object? details;
   final String? reason;
-  final Map<String, String> params;
   final bool retryable;
+  final int? httpStatus;
+  final int? remoteCode;
+  final String? machineReason;
 
   @override
   String toString() {

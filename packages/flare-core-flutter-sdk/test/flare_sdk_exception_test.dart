@@ -10,13 +10,15 @@ void main() {
       details: {
         'code': 'OPERATION_FAILED',
         'reason': 'sdk.plugin.rejected',
-        'params': {'machineReason': 'CALL_FULL', 'httpStatus': '422'},
         'retryable': false,
+        'httpStatus': 422,
+        'machineReason': 'CALL_FULL',
       },
     );
     expect(error.code, 'OPERATION_FAILED');
     expect(error.reason, 'sdk.plugin.rejected');
-    expect(error.params, {'machineReason': 'CALL_FULL', 'httpStatus': '422'});
+    expect(error.machineReason, 'CALL_FULL');
+    expect(error.httpStatus, 422);
     expect(error.retryable, isFalse);
     expect(error.operation, 'capability.dispatch');
   });
@@ -30,6 +32,6 @@ void main() {
     );
     expect(error.code, 'native_error_5');
     expect(error.reason, isNull);
-    expect(error.params, isEmpty);
+    expect(error.machineReason, isNull);
   });
 }
