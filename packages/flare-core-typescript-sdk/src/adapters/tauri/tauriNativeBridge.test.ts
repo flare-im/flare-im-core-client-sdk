@@ -54,6 +54,36 @@ describe('Tauri TypeScript SDK adapter', () => {
     });
   });
 
+  it('rejects with the structured SDK error the command rejected with', async () => {
+    const { TauriNativeBridge } = await import('./index');
+    const { FlareSdkException } = await import('../../bridge/flareSdkException');
+    const bridge = new TauriNativeBridge();
+    tauri.invoke.mockImplementation(async (command: string) => {
+      if (command === 'sdk_ffi_contract_version') {
+        return { version: ffiContractVersion };
+      }
+      throw {
+        code: 'OPERATION_FAILED',
+        reason: 'sdk.plugin.rejected',
+        params: { machineReason: 'CALL_FULL', httpStatus: '422' },
+        retryable: false,
+        message: '错误 [OPERATION_FAILED] sdk.plugin.rejected',
+        operation: 'sdk.is_connected',
+      };
+    });
+
+    const error = await bridge.invoke(NativeCallMap.sdkIsConnected).catch((e: unknown) => e);
+
+    expect(error).toBeInstanceOf(FlareSdkException);
+    expect(error).toMatchObject({
+      code: 'OPERATION_FAILED',
+      reason: 'sdk.plugin.rejected',
+      params: { machineReason: 'CALL_FULL', httpStatus: '422' },
+      retryable: false,
+      operation: 'sdk.is_connected',
+    });
+  });
+
   it('connects Tauri event channels to DefaultEventsApi when creating the default client', async () => {
     const { FlareCoreSdk } = await import('./index');
     const unlisten = vi.fn();

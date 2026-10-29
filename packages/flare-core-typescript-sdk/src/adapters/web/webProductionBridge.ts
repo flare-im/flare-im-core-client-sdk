@@ -422,8 +422,9 @@ export class WebProductionBridge implements NativeBridge {
         if (operation === "sdk.login") {
           this.lastConnectionState = "disconnected";
         }
-        if (error instanceof FlareSdkException) {
-          throw error;
+        const structured = FlareSdkException.fromBindingError(error, operation);
+        if (structured) {
+          throw structured;
         }
         throw new FlareSdkException(
           "wasm.invoke_failed",
