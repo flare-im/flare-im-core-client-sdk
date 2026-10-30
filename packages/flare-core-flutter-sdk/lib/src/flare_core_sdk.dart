@@ -40,7 +40,8 @@ abstract final class FlareCoreSdk {
 /// (`bindings/contract/errors.json`): [code] is the core error code
 /// (`PERMISSION_DENIED`), [reason] the localized key (`sdk.plugin.disabled`),
 /// [machineReason] Core's or the plugin's code (`PLUGIN_DISABLED`, `CALL_FULL`),
-/// [httpStatus] and [remoteCode] Core's answer. Read these, never [message].
+/// [httpStatus] and [remoteCode] Core's answer, [refusedMessageIds] the
+/// messages the operation refused. Read these, never [message].
 final class FlareSdkException implements Exception {
   const FlareSdkException({
     required this.code,
@@ -52,6 +53,7 @@ final class FlareSdkException implements Exception {
     this.httpStatus,
     this.remoteCode,
     this.machineReason,
+    this.refusedMessageIds,
   });
 
   /// The exception for a failed native call: the structured error in
@@ -78,8 +80,15 @@ final class FlareSdkException implements Exception {
       httpStatus: httpStatus is int ? httpStatus : null,
       remoteCode: remoteCode is int ? remoteCode : null,
       machineReason: machineReason is String ? machineReason : null,
+      refusedMessageIds: _stringList(structured['refusedMessageIds']),
     );
   }
+
+  /// [value] when it is a non-empty list of strings, else null.
+  static List<String>? _stringList(Object? value) =>
+      value is List && value.isNotEmpty && value.every((item) => item is String)
+          ? List<String>.unmodifiable(value.cast<String>())
+          : null;
 
   final String code;
   final String message;
@@ -90,6 +99,10 @@ final class FlareSdkException implements Exception {
   final int? httpStatus;
   final int? remoteCode;
   final String? machineReason;
+
+  /// The messages the operation refused, by id (a forward whose sources cannot
+  /// all be forwarded).
+  final List<String>? refusedMessageIds;
 
   @override
   String toString() {

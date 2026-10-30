@@ -33,6 +33,27 @@ final class FlareSdkExceptionTests: XCTestCase {
         XCTAssertNil(error.httpStatus)
     }
 
+    func testARefusalNamesTheRefusedMessagesAsATypedList() {
+        let error = FlareSdkException.fromNative(
+            nativeCode: 2,
+            message: "错误 [INVALID_PARAMETER] sdk.message.forward.not_forwardable: s-2, s-3",
+            operation: "message_builder.create_forward",
+            detailsJson: #"{"code":"INVALID_PARAMETER","reason":"sdk.message.forward.not_forwardable: s-2, s-3","retryable":false,"refusedMessageIds":["s-2","s-3"]}"#
+        )
+        XCTAssertEqual(error.code, "INVALID_PARAMETER")
+        XCTAssertEqual(error.refusedMessageIds, ["s-2", "s-3"])
+
+        for odd in [#"[]"#, #"["s-2",3]"#, #""s-2,s-3""#, "null"] {
+            let other = FlareSdkException.fromNative(
+                nativeCode: 2,
+                message: "x",
+                operation: nil,
+                detailsJson: #"{"code":"INVALID_PARAMETER","refusedMessageIds":"# + odd + "}"
+            )
+            XCTAssertNil(other.refusedMessageIds, odd)
+        }
+    }
+
     func testRetryableComesFromCore() {
         let error = FlareSdkException.fromNative(
             nativeCode: 4,

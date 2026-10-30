@@ -23,6 +23,36 @@ void main() {
     expect(error.operation, 'capability.dispatch');
   });
 
+  test('a refusal names the refused messages as a typed list', () {
+    final error = FlareSdkException.fromNative(
+      nativeCode: 2,
+      message: '错误 [INVALID_PARAMETER] sdk.message.forward.not_forwardable: s-2, s-3',
+      operation: 'message_builder.create_forward',
+      details: {
+        'code': 'INVALID_PARAMETER',
+        'reason': 'sdk.message.forward.not_forwardable: s-2, s-3',
+        'retryable': false,
+        'refusedMessageIds': ['s-2', 's-3'],
+      },
+    );
+    expect(error.code, 'INVALID_PARAMETER');
+    expect(error.refusedMessageIds, ['s-2', 's-3']);
+    for (final odd in [
+      <Object?>[],
+      ['s-2', 3],
+      's-2,s-3',
+      null,
+    ]) {
+      final other = FlareSdkException.fromNative(
+        nativeCode: 2,
+        message: 'x',
+        operation: null,
+        details: {'code': 'INVALID_PARAMETER', 'refusedMessageIds': odd},
+      );
+      expect(other.refusedMessageIds, isNull, reason: '$odd');
+    }
+  });
+
   test('a native error without details keeps the C ABI code', () {
     final error = FlareSdkException.fromNative(
       nativeCode: 5,
