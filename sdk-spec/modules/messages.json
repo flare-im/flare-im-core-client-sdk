@@ -302,7 +302,7 @@
     },
     {
       "name": "readReceiptMembers",
-      "description": "Returns {conversationId, serverMsgId, available, summary?, userIds, nextCursor?, hasMore}: one page of the members who read (state read) or have not yet read (state unread) one of the viewer's own messages in a group, user ids ascending; nextCursor while hasMore. available false (and no ids) for a conversation that is not a group or is above the large-group threshold. Core refuses another sender's message (MESSAGE_READ_RECEIPT_NOT_SENDER) and a message not in the conversation or recalled. A summary in the page also refreshes that message's receipt.readSummary in open views.",
+      "description": "Returns {conversationId, serverMsgId, available, summary?, userIds, nextCursor?, hasMore}: one page of the members who read (state read) or have not yet read (state unread) one of the viewer's own messages in a group, user ids ascending; nextCursor while hasMore. available false (and no ids) for a conversation that is not a group or is above the large-group threshold. Core answers another sender's message the same as a message that is not in the conversation, recalled or deleted (NOT_FOUND), so the answer does not tell whether such a message exists. A summary in the page also refreshes that message's receipt.readSummary in open views.",
       "operation": "message.read_receipt_members",
       "transport": "message-dispatch-json",
       "cApi": "flare_message_dispatch_json",

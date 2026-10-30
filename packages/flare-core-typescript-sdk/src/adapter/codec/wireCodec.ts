@@ -17,7 +17,6 @@ import {
   BuildMiniProgramMessageRequest,
   BuildNotificationMessageRequest,
   BuildPlaceholderMessageRequest,
-  BuildPluginMessageRequest,
   BuildQuoteMessageRequest,
   BuildRichDocMessageRequest,
   BuildScheduleMessageRequest,
@@ -981,13 +980,6 @@ export function buildWithContentMessageRequestToMap(request: BuildWithContentMes
   return {
   conversationId: request.conversationId,
   content: messageContentToWireMap(request.content),
-  };
-}
-
-export function buildPluginMessageRequestToMap(request: BuildPluginMessageRequest): Record<string, unknown> {
-  return {
-  conversationId: request.conversationId,
-  payload: request.payload,
   };
 }
 

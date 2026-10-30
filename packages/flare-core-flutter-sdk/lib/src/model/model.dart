@@ -102,7 +102,6 @@ export 'command/message/build/build_announcement_message_request.dart';
 export 'command/message/build/build_custom_message_request.dart';
 export 'command/message/build/build_placeholder_message_request.dart';
 export 'command/message/build/build_with_content_message_request.dart';
-export 'command/message/build/build_plugin_message_request.dart';
 export 'event/sdk_event_kind.dart';
 export 'event/lifecycle/lifecycle_event_name.dart';
 export 'common/enums/sdk_connection_state.dart';

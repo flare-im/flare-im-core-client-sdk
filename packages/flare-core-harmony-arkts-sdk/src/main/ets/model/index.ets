@@ -102,7 +102,6 @@ export * from './command/message/build/build_announcement_message_request';
 export * from './command/message/build/build_custom_message_request';
 export * from './command/message/build/build_placeholder_message_request';
 export * from './command/message/build/build_with_content_message_request';
-export * from './command/message/build/build_plugin_message_request';
 export * from './event/sdk_event_kind';
 export * from './event/lifecycle/lifecycle_event_name';
 export * from './common/enums/sdk_connection_state';

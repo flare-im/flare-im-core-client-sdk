@@ -64,6 +64,7 @@ const EVENT_CODE_MESSAGE_PRESENCE_CHANGED = 2019;
 const EVENT_CODE_MESSAGE_CUSTOM = 2020;
 const EVENT_CODE_MESSAGE_TYPING_AGGREGATE = 2021;
 const EVENT_CODE_MESSAGE_PLUGIN_STATE_CHANGED = 2022;
+const EVENT_CODE_MESSAGE_READ_SUMMARIES_CHANGED = 2023;
 const EVENT_CODE_CONVERSATION_SYNCED = 3001;
 const EVENT_CODE_CONVERSATION_CREATED = 3002;
 const EVENT_CODE_CONVERSATION_UPDATED = 3003;
@@ -113,6 +114,7 @@ const WEB_EVENT_TYPE_BY_CHANNEL: Record<string, number> = {
   "im://message_custom_event": EVENT_CODE_MESSAGE_CUSTOM,
   "im://message_typing_aggregate": EVENT_CODE_MESSAGE_TYPING_AGGREGATE,
   "im://message_plugin_state_changed": EVENT_CODE_MESSAGE_PLUGIN_STATE_CHANGED,
+  "im://message_read_summaries_changed": EVENT_CODE_MESSAGE_READ_SUMMARIES_CHANGED,
   "im://conversations_synced": EVENT_CODE_CONVERSATION_SYNCED,
   "im://conversation_created": EVENT_CODE_CONVERSATION_CREATED,
   "im://conversation_updated": EVENT_CODE_CONVERSATION_UPDATED,
@@ -462,6 +464,7 @@ export function nativeEventFromCode(eventType: number, payload: unknown): unknow
     case EVENT_CODE_MESSAGE_CUSTOM: return contractEvent("message", "custom", payload);
     case EVENT_CODE_MESSAGE_TYPING_AGGREGATE: return typingAggregateEvent(payload);
     case EVENT_CODE_MESSAGE_PLUGIN_STATE_CHANGED: return messageMutationEvent(MessageEventName.PluginStateChanged, "plugin_state_changed", payload);
+    case EVENT_CODE_MESSAGE_READ_SUMMARIES_CHANGED: return undefined;
     case EVENT_CODE_CONVERSATION_SYNCED: return conversationEvent(ConversationEventName.Synced, "synced", payload);
     case EVENT_CODE_CONVERSATION_CREATED: return conversationEvent(ConversationEventName.Created, "created", payload);
     case EVENT_CODE_CONVERSATION_UPDATED: return conversationEvent(ConversationEventName.Updated, "updated", payload);

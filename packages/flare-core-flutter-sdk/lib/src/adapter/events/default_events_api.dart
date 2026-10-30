@@ -689,6 +689,7 @@ final class _ListenerHandler {
       case MessageEventName.retentionScheduled:
       case MessageEventName.presenceChanged:
       case MessageEventName.custom:
+      case MessageEventName.readSummariesChanged:
         break;
     }
   }

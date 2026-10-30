@@ -119,11 +119,6 @@ class DefaultMessageBuilderApi(
         return messageFromJson(raw["message"] ?: raw)
     }
 
-    override suspend fun buildPluginMessage(request: BuildPluginMessageRequest): Message {
-        val raw = invokeMap(bridge, NativeCallMap.MESSAGE_BUILDER_CREATE_PLUGIN_MESSAGE, buildPluginMessageRequestToMap(request))
-        return messageFromJson(raw["message"] ?: raw)
-    }
-
     override suspend fun buildQuote(request: BuildQuoteMessageRequest): Message {
         val raw = invokeMap(bridge, NativeCallMap.MESSAGE_BUILDER_CREATE_QUOTE, buildQuoteMessageRequestToMap(request))
         return messageFromJson(raw["message"] ?: raw)

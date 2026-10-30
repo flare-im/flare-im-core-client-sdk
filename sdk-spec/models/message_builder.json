@@ -30,8 +30,7 @@
         "create_announcement",
         "create_custom",
         "create_placeholder",
-        "create_with_content",
-        "create_plugin_message"
+        "create_with_content"
       ]
     }
   ],
@@ -1095,26 +1094,6 @@
           "type": "MessageContent",
           "required": true,
           "description": "Decoded content envelope."
-        }
-      ]
-    },
-    {
-      "name": "BuildPluginMessageRequest",
-      "description": "Generic safe plugin message over the existing AppCard envelope.",
-      "fields": [
-        {
-          "name": "conversationId",
-          "type": "String",
-          "required": true,
-          "wireName": "conversationId",
-          "description": "Target conversation id."
-        },
-        {
-          "name": "payload",
-          "type": "JsonObject",
-          "required": true,
-          "wireName": "payload",
-          "description": "Validated generic plugin message envelope defined by flare-plugin-protocol."
         }
       ]
     }

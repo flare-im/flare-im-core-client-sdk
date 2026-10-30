@@ -31,6 +31,7 @@ public enum EventCode {
     public static let messageCustom: Int = 2020
     public static let messageTypingAggregate: Int = 2021
     public static let messagePluginStateChanged: Int = 2022
+    public static let messageReadSummariesChanged: Int = 2023
     public static let conversationSynced: Int = 3001
     public static let conversationCreated: Int = 3002
     public static let conversationUpdated: Int = 3003

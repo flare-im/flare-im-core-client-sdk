@@ -21,7 +21,6 @@ public protocol MessageBuilderApiProtocol: AnyObject {
     func buildMiniProgram(_ request: BuildMiniProgramMessageRequest) async throws -> Message
     func buildNotification(_ request: BuildNotificationMessageRequest) async throws -> Message
     func buildPlaceholder(_ request: BuildPlaceholderMessageRequest) async throws -> Message
-    func buildPluginMessage(_ request: BuildPluginMessageRequest) async throws -> Message
     func buildQuote(_ request: BuildQuoteMessageRequest) async throws -> Message
     func buildRichDoc(_ request: BuildRichDocMessageRequest) async throws -> Message
     func buildSchedule(_ request: BuildScheduleMessageRequest) async throws -> Message

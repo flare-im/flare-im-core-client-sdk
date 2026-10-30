@@ -30,6 +30,7 @@ final class EventCode {
   static const int messageCustom = 2020;
   static const int messageTypingAggregate = 2021;
   static const int messagePluginStateChanged = 2022;
+  static const int messageReadSummariesChanged = 2023;
   static const int conversationSynced = 3001;
   static const int conversationCreated = 3002;
   static const int conversationUpdated = 3003;

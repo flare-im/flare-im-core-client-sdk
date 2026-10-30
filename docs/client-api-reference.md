@@ -92,7 +92,6 @@ Typed quick-build APIs for all supported message content kinds. Prefer these ove
 | `buildMiniProgram` | `BuildMiniProgramMessageRequest` | `Message` | `dispatch-json` | `flare_message_build_json` |
 | `buildNotification` | `BuildNotificationMessageRequest` | `Message` | `dispatch-json` | `flare_message_build_json` |
 | `buildPlaceholder` | `BuildPlaceholderMessageRequest` | `Message` | `dispatch-json` | `flare_message_build_json` |
-| `buildPluginMessage` | `BuildPluginMessageRequest` | `Message` | `dispatch-json` | `flare_message_build_json` |
 | `buildQuote` | `BuildQuoteMessageRequest` | `Message` | `dispatch-json` | `flare_message_build_json` |
 | `buildRichDoc` | `BuildRichDocMessageRequest` | `Message` | `dispatch-json` | `flare_message_build_json` |
 | `buildSchedule` | `BuildScheduleMessageRequest` | `Message` | `dispatch-json` | `flare_message_build_json` |

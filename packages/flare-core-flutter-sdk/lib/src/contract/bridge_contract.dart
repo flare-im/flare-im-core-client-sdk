@@ -839,20 +839,6 @@ abstract final class NativeCallMap {
       dispatchOp: "create_placeholder",
       callback: "FlareResultCallback");
 
-  /// buildPluginMessage maps to `flare_message_build_json` via `dispatch-json`, dispatch op `create_plugin_message`. Operation: `message_builder.create_plugin_message`.
-  static const messageBuilderCreatePluginMessage = NativeCallDescriptor(
-      module: "message_builder",
-      method: "buildPluginMessage",
-      operation: "message_builder.create_plugin_message",
-      transport: "dispatch-json",
-      cApi: "flare_message_build_json",
-      requestEncoding: "json",
-      responseEncoding: "json-object",
-      returnMode: "callback",
-      handlePolicy: "client-handle",
-      dispatchOp: "create_plugin_message",
-      callback: "FlareResultCallback");
-
   /// buildQuote maps to `flare_message_build_json` via `dispatch-json`, dispatch op `create_quote`. Operation: `message_builder.create_quote`.
   static const messageBuilderCreateQuote = NativeCallDescriptor(
       module: "message_builder",

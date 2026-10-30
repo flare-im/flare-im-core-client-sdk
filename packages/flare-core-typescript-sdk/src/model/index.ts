@@ -111,7 +111,6 @@ export * from './build_announcement_message_request';
 export * from './build_custom_message_request';
 export * from './build_placeholder_message_request';
 export * from './build_with_content_message_request';
-export * from './build_plugin_message_request';
 export * from './sdk_error_payload';
 export * from './sdk_event_envelope';
 export * from './lifecycle_event';

@@ -28,5 +28,4 @@ public enum MessageBuildOp {
     | CreateCustom
     | CreatePlaceholder
     | CreateWithContent
-    | CreatePluginMessage
 }

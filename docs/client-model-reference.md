@@ -800,7 +800,7 @@ Typed requests for messageBuilder quick-build APIs and catalog metadata.
 
 ### Enums
 
-- `MessageBuildOp`: Dispatch op passed to flare_message_build_json. Values: `create_text`, `create_quote`, `create_thread_reply`, `create_forward`, `create_image`, `create_image_group`, `create_video`, `create_audio`, `create_file`, `create_emoji`, `create_location`, `create_sticker`, `create_link_card`, `create_card`, `create_mini_program`, `create_rich_doc`, `create_system`, `create_notification`, `create_vote`, `create_task`, `create_schedule`, `create_announcement`, `create_custom`, `create_placeholder`, `create_with_content`, `create_plugin_message`
+- `MessageBuildOp`: Dispatch op passed to flare_message_build_json. Values: `create_text`, `create_quote`, `create_thread_reply`, `create_forward`, `create_image`, `create_image_group`, `create_video`, `create_audio`, `create_file`, `create_emoji`, `create_location`, `create_sticker`, `create_link_card`, `create_card`, `create_mini_program`, `create_rich_doc`, `create_system`, `create_notification`, `create_vote`, `create_task`, `create_schedule`, `create_announcement`, `create_custom`, `create_placeholder`, `create_with_content`
 
 ### MessageBuildCatalogEntry
 
@@ -1150,15 +1150,6 @@ Build from an existing MessageContent envelope.
 | `conversationId` | `conversationId` | `String` | yes | Target conversation id. |
 | `content` | `content` | `MessageContent` | yes | Decoded content envelope. |
 
-### BuildPluginMessageRequest
-
-Generic safe plugin message over the existing AppCard envelope.
-
-| Field | Wire name | Type | Required | Description |
-|-------|-----------|------|----------|-------------|
-| `conversationId` | `conversationId` | `String` | yes | Target conversation id. |
-| `payload` | `payload` | `JsonObject` | yes | Validated generic plugin message envelope defined by flare-plugin-protocol. |
-
 ## Events
 
 Typed SDK event and notification models for cross-platform subscriptions.
@@ -1173,7 +1164,7 @@ Typed SDK event and notification models for cross-platform subscriptions.
 
 - `ConnectionEventName`: Connection event notification name. Values: `connecting`, `connected`, `ready`, `disconnected`, `reconnecting`, `reconnect_failed`, `state_changed`, `sync_state_changed`, `server_error`, `kicked_off`, `token_expired`
 
-- `MessageEventName`: Message event notification name. Values: `received`, `received_batch`, `send_ack`, `send_failed`, `recalled`, `typing`, `typing_aggregate`, `edited`, `reaction_changed`, `deleted`, `read_receipt`, `burn_scheduled`, `burned`, `hard_deleted`, `pinned`, `unpinned`, `marked`, `unmarked`, `retention_scheduled`, `retention_expired`, `retention_purged`, `presence_changed`, `custom`, `plugin_state_changed`
+- `MessageEventName`: Message event notification name. Values: `received`, `received_batch`, `send_ack`, `send_failed`, `recalled`, `typing`, `typing_aggregate`, `edited`, `reaction_changed`, `deleted`, `read_receipt`, `burn_scheduled`, `burned`, `hard_deleted`, `pinned`, `unpinned`, `marked`, `unmarked`, `retention_scheduled`, `retention_expired`, `retention_purged`, `presence_changed`, `custom`, `plugin_state_changed`, `read_summaries_changed`
 
 - `ConversationEventName`: Conversation event notification name. Values: `synced`, `created`, `updated`, `unread_count_changed`, `deleted`
 

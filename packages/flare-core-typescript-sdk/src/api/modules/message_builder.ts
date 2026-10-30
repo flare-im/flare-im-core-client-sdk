@@ -3,7 +3,7 @@
  *
  * Module API: `message_builder` — Typed quick-build APIs for all supported message content kinds. Prefer these over raw JSON in adapters.
  */
-import type { BuildAnnouncementMessageRequest, BuildAudioMessageRequest, BuildCardMessageRequest, BuildCustomMessageRequest, BuildEmojiMessageRequest, BuildFileMessageRequest, BuildForwardMessageRequest, BuildImageGroupMessageRequest, BuildImageMessageRequest, BuildLinkCardMessageRequest, BuildLocationMessageRequest, BuildMiniProgramMessageRequest, BuildNotificationMessageRequest, BuildPlaceholderMessageRequest, BuildPluginMessageRequest, BuildQuoteMessageRequest, BuildRichDocMessageRequest, BuildScheduleMessageRequest, BuildStickerMessageRequest, BuildSystemMessageRequest, BuildTaskMessageRequest, BuildTextMessageRequest, BuildThreadReplyMessageRequest, BuildVideoMessageRequest, BuildVoteMessageRequest, BuildWithContentMessageRequest, ListMessageBuildCatalogResponse, Message, NormalizeRichDocFromDocJsonRequest, NormalizeRichDocFromHtmlRequest, NormalizeRichDocFromMarkdownRequest, RichDocV2Normalized } from '../../model';
+import type { BuildAnnouncementMessageRequest, BuildAudioMessageRequest, BuildCardMessageRequest, BuildCustomMessageRequest, BuildEmojiMessageRequest, BuildFileMessageRequest, BuildForwardMessageRequest, BuildImageGroupMessageRequest, BuildImageMessageRequest, BuildLinkCardMessageRequest, BuildLocationMessageRequest, BuildMiniProgramMessageRequest, BuildNotificationMessageRequest, BuildPlaceholderMessageRequest, BuildQuoteMessageRequest, BuildRichDocMessageRequest, BuildScheduleMessageRequest, BuildStickerMessageRequest, BuildSystemMessageRequest, BuildTaskMessageRequest, BuildTextMessageRequest, BuildThreadReplyMessageRequest, BuildVideoMessageRequest, BuildVoteMessageRequest, BuildWithContentMessageRequest, ListMessageBuildCatalogResponse, Message, NormalizeRichDocFromDocJsonRequest, NormalizeRichDocFromHtmlRequest, NormalizeRichDocFromMarkdownRequest, RichDocV2Normalized } from '../../model';
 
 /** Typed quick-build APIs for all supported message content kinds. Prefer these over raw JSON in adapters. */
 export interface MessageBuilderApi {
@@ -43,8 +43,6 @@ export interface MessageBuilderApi {
   buildNotification(request: BuildNotificationMessageRequest): Promise<Message>;
   /** buildPlaceholder maps to `flare_message_build_json`, dispatch op `create_placeholder`. Operation: `message_builder.create_placeholder`. */
   buildPlaceholder(request: BuildPlaceholderMessageRequest): Promise<Message>;
-  /** buildPluginMessage maps to `flare_message_build_json`, dispatch op `create_plugin_message`. Operation: `message_builder.create_plugin_message`. */
-  buildPluginMessage(request: BuildPluginMessageRequest): Promise<Message>;
   /** buildQuote maps to `flare_message_build_json`, dispatch op `create_quote`. Operation: `message_builder.create_quote`. */
   buildQuote(request: BuildQuoteMessageRequest): Promise<Message>;
   /** buildRichDoc maps to `flare_message_build_json`, dispatch op `create_rich_doc`. Operation: `message_builder.create_rich_doc`. */

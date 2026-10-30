@@ -172,13 +172,6 @@ final class DefaultMessageBuilderApi implements MessageBuilderApi {
     });
 
   @override
-  Future<Message> buildPluginMessage(BuildPluginMessageRequest request) => _dispatchBuildMap({
-      'op': "create_plugin_message",
-      'conversationId': request.conversationId,
-      'payload': request.payload,
-    });
-
-  @override
   Future<Message> buildQuote(BuildQuoteMessageRequest request) => _dispatchBuildMap({
       'op': "create_quote",
       'conversationId': request.conversationId,

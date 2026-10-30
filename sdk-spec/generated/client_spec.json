@@ -242,7 +242,8 @@
         "unmarked",
         "presence_changed",
         "custom",
-        "plugin_state_changed"
+        "plugin_state_changed",
+        "read_summaries_changed"
       ],
       "type": "message"
     },
@@ -777,16 +778,6 @@
         "sourceOperation": "message_builder.create_placeholder",
         "stability": "stable",
         "summary": "Build placeholder message"
-      },
-      {
-        "contentType": "custom",
-        "messageType": 14,
-        "method": "buildPluginMessage",
-        "op": "create_plugin_message",
-        "request": "BuildPluginMessageRequest",
-        "sourceOperation": "message_builder.create_plugin_message",
-        "stability": "stable",
-        "summary": "Build plugin message message"
       },
       {
         "contentType": "quote",
@@ -3554,8 +3545,7 @@
             "create_announcement",
             "create_custom",
             "create_placeholder",
-            "create_with_content",
-            "create_plugin_message"
+            "create_with_content"
           ]
         }
       ],
@@ -4622,26 +4612,6 @@
             }
           ],
           "name": "BuildWithContentMessageRequest"
-        },
-        {
-          "description": "Generic safe plugin message over the existing AppCard envelope.",
-          "fields": [
-            {
-              "description": "Target conversation id.",
-              "name": "conversationId",
-              "required": true,
-              "type": "String",
-              "wireName": "conversationId"
-            },
-            {
-              "description": "Validated generic plugin message envelope defined by flare-plugin-protocol.",
-              "name": "payload",
-              "required": true,
-              "type": "JsonObject",
-              "wireName": "payload"
-            }
-          ],
-          "name": "BuildPluginMessageRequest"
         }
       ]
     },
@@ -4734,7 +4704,8 @@
             "retention_purged",
             "presence_changed",
             "custom",
-            "plugin_state_changed"
+            "plugin_state_changed",
+            "read_summaries_changed"
           ]
         },
         {
@@ -6271,8 +6242,7 @@
           "create_announcement",
           "create_custom",
           "create_placeholder",
-          "create_with_content",
-          "create_plugin_message"
+          "create_with_content"
         ]
       },
       "catalog": "shared/message_build_catalog.json",
@@ -6615,25 +6585,6 @@
           },
           "operation": "message_builder.create_placeholder",
           "request": "BuildPlaceholderMessageRequest",
-          "response": "Message",
-          "stability": "stable",
-          "transport": "dispatch-json"
-        },
-        {
-          "cApi": "flare_message_build_json",
-          "description": "Build plugin message message",
-          "dispatchOp": "create_plugin_message",
-          "name": "buildPluginMessage",
-          "nativeBinding": {
-            "asyncReturn": "i32 immediate_submit_code",
-            "callback": "FlareResultCallback",
-            "handlePolicy": "client-handle",
-            "requestEncoding": "json",
-            "responseEncoding": "json-object",
-            "returnMode": "callback"
-          },
-          "operation": "message_builder.create_plugin_message",
-          "request": "BuildPluginMessageRequest",
           "response": "Message",
           "stability": "stable",
           "transport": "dispatch-json"
@@ -7369,7 +7320,7 @@
         },
         {
           "cApi": "flare_message_dispatch_json",
-          "description": "Returns {conversationId, serverMsgId, available, summary?, userIds, nextCursor?, hasMore}: one page of the members who read (state read) or have not yet read (state unread) one of the viewer's own messages in a group, user ids ascending; nextCursor while hasMore. available false (and no ids) for a conversation that is not a group or is above the large-group threshold. Core refuses another sender's message (MESSAGE_READ_RECEIPT_NOT_SENDER) and a message not in the conversation or recalled. A summary in the page also refreshes that message's receipt.readSummary in open views.",
+          "description": "Returns {conversationId, serverMsgId, available, summary?, userIds, nextCursor?, hasMore}: one page of the members who read (state read) or have not yet read (state unread) one of the viewer's own messages in a group, user ids ascending; nextCursor while hasMore. available false (and no ids) for a conversation that is not a group or is above the large-group threshold. Core answers another sender's message the same as a message that is not in the conversation, recalled or deleted (NOT_FOUND), so the answer does not tell whether such a message exists. A summary in the page also refreshes that message's receipt.readSummary in open views.",
           "dispatchOp": "read_receipt_members",
           "name": "readReceiptMembers",
           "nativeBinding": {

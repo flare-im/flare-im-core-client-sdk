@@ -101,11 +101,6 @@ public class DefaultMessageBuilderApi <: MessageBuilderApi {
         return messageFromEnvelopeJson(raw)
     }
 
-    public func buildPluginMessage(request: BuildPluginMessageRequest): Message {
-        let raw = bridge.invoke(descriptor: NativeCallMap.messageBuilderCreatePluginMessage, requestJson: wireEncodeRequest(buildPluginMessageRequestToJson(request)))
-        return messageFromEnvelopeJson(raw)
-    }
-
     public func buildQuote(request: BuildQuoteMessageRequest): Message {
         let raw = bridge.invoke(descriptor: NativeCallMap.messageBuilderCreateQuote, requestJson: wireEncodeRequest(buildQuoteMessageRequestToJson(request)))
         return messageFromEnvelopeJson(raw)

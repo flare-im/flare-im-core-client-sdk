@@ -97,11 +97,6 @@ public final class DefaultMessageBuilderApi: MessageBuilderApiProtocol {
         return try messageFromJson(raw["message"] ?? raw)
     }
 
-    public func buildPluginMessage(_ request: BuildPluginMessageRequest) async throws -> Message {
-        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.messageBuilderCreatePluginMessage, request: buildPluginMessageRequestToMap(request))
-        return try messageFromJson(raw["message"] ?? raw)
-    }
-
     public func buildQuote(_ request: BuildQuoteMessageRequest) async throws -> Message {
         let raw = try await invokeMap(bridge, descriptor: NativeCallMap.messageBuilderCreateQuote, request: buildQuoteMessageRequestToMap(request))
         return try messageFromJson(raw["message"] ?? raw)

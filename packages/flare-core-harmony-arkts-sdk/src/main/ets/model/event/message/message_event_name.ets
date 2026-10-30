@@ -25,4 +25,5 @@ export enum MessageEventName {
   PresenceChanged = "presence_changed",
   Custom = "custom",
   PluginStateChanged = "plugin_state_changed",
+  ReadSummariesChanged = "read_summaries_changed",
 }

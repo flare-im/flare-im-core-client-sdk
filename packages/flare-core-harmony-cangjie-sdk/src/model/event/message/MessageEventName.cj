@@ -27,4 +27,5 @@ public enum MessageEventName {
     | PresenceChanged
     | Custom
     | PluginStateChanged
+    | ReadSummariesChanged
 }

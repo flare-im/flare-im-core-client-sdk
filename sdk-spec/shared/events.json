@@ -78,7 +78,8 @@
         "unmarked",
         "presence_changed",
         "custom",
-        "plugin_state_changed"
+        "plugin_state_changed",
+        "read_summaries_changed"
       ],
       "type": "message"
     },

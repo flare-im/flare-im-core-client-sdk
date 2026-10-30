@@ -29,8 +29,7 @@
       "create_announcement",
       "create_custom",
       "create_placeholder",
-      "create_with_content",
-      "create_plugin_message"
+      "create_with_content"
     ]
   },
   "catalog": "shared/message_build_catalog.json",
