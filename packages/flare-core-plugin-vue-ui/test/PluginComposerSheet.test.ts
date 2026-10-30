@@ -3,14 +3,15 @@ import { h, nextTick } from "vue";
 import { flushPromises } from "@vue/test-utils";
 import { FlareDangerConfirm, FlarePluginForm, FlarePluginView } from "@flare-im/vue-ui";
 import {
-  CLOSED_COMPOSER_MENU, PluginComposerSheet, composerPanelActions, parseComposerMenu, pluginMessageFromResult,
+  CLOSED_COMPOSER_MENU, PluginComposerSheet, composerPanelActions, parseComposerMenu, pluginPostedCard,
   routeComposerAction, useComposerMenu, type ComposerPluginItem,
 } from "../src/index";
 import { deferred, fakePort, mountWithSession, unmountAll } from "./support";
 
 const item: ComposerPluginItem = { id: "plugin:acme.task.create", kind: "plugin", pluginId: "acme.task", contributionId: "acme.task.create", label: "Task", order: 130 };
 const synthesized = { pluginId: "acme.task", contributionId: "acme.task.create", schemaVersion: 1, summary: "Task", payload: { conversationId: "group-1" } };
-const posted = { pluginId: "acme.task", contributionId: "acme.task.card", schemaVersion: 1, summary: "Ship it", payload: { taskId: "t1" } };
+/** What Core answers once it has posted the card in the user's name: the plugin's own `message` never reaches the client. */
+const posted = { conversationId: "group-1", serverMsgId: "srv-77", clientMsgId: "pcard-1" };
 const inputs = [
   { id: "title", kind: "text", label: "Title", required: true },
   { id: "assignees", kind: "members", label: "Assignees" },
@@ -25,19 +26,19 @@ const formView = (extra: Record<string, unknown> = {}) => ({
 afterEach(unmountAll);
 
 function render(port = fakePort(), props: Record<string, unknown> = {}, directory?: Parameters<typeof mountWithSession>[2]) {
-  const deliver = vi.fn(async () => {});
+  const onPosted = vi.fn();
   const close = vi.fn();
-  const { wrapper } = mountWithSession(port, () => h(PluginComposerSheet, { item, conversationId: "group-1", deliver, onClose: close, ...props }), directory);
-  return { port, wrapper, deliver, close };
+  const { wrapper } = mountWithSession(port, () => h(PluginComposerSheet, { item, conversationId: "group-1", onPosted, onClose: close, ...props }), directory);
+  return { port, wrapper, onPosted, close };
 }
 
 describe("PluginComposerSheet", () => {
   it("draws a contribution without inputs embedded in the sheet and runs its keys", async () => {
     const port = fakePort({
       presentMessage: vi.fn(async () => ({ available: true, title: "Quick vote", fields: [{ label: "Question", value: "Lunch?" }], actions: [{ id: "send", label: "Send" }], stateVersion: 0 })),
-      invokeAction: vi.fn(async () => ({ kind: "operation", response: { success: true, requestId: "req-7", data: { message: { ...posted } } } })),
+      invokeAction: vi.fn(async () => ({ kind: "operation", response: { success: true, requestId: "req-7", data: { posted } } })),
     });
-    const { wrapper, deliver, close } = render(port);
+    const { wrapper, onPosted, close } = render(port);
     await flushPromises();
     expect(port.presentMessage).toHaveBeenCalledWith(expect.objectContaining({ message: synthesized, kind: "composer-action" }));
     const view = wrapper.getComponent(FlarePluginView);
@@ -48,7 +49,9 @@ describe("PluginComposerSheet", () => {
     view.vm.$emit("action", "send");
     await flushPromises();
     expect(port.invokeAction).toHaveBeenCalledWith(expect.objectContaining({ message: synthesized, actionId: "send", conversationId: "group-1", userGesture: true }));
-    expect(deliver).toHaveBeenCalledWith(posted, "plugin_req-7");
+    // Nothing is sent from here: the sheet names the card Core posted and closes; the card comes with the push.
+    expect(onPosted).toHaveBeenCalledWith(posted);
+    expect(port.dispatch).not.toHaveBeenCalled();
     expect(close).toHaveBeenCalledTimes(1);
   });
 
@@ -56,7 +59,7 @@ describe("PluginComposerSheet", () => {
     const answer = deferred<unknown>();
     const port = fakePort({ presentMessage: vi.fn(async () => formView()), invokeAction: vi.fn(() => answer.promise) });
     const members = [{ userId: "u-1", name: "Ann" }];
-    const { wrapper, deliver, close } = render(port, {}, { members: () => members });
+    const { wrapper, onPosted, close } = render(port, {}, { members: () => members });
     await flushPromises();
     const form = () => wrapper.getComponent(FlarePluginForm);
     expect(wrapper.findComponent(FlarePluginView).exists()).toBe(false);
@@ -70,9 +73,9 @@ describe("PluginComposerSheet", () => {
       message: synthesized, actionId: "create", conversationId: "group-1", userGesture: true, formValues: { title: "Ship it", assignees: ["u-1"] },
     }));
     expect(form().props("busy")).toBe(true);
-    answer.resolve({ kind: "operation", response: { success: true, requestId: "req-9", data: { message: posted } } });
+    answer.resolve({ kind: "operation", response: { success: true, requestId: "req-9", data: { posted } } });
     await flushPromises();
-    expect(deliver).toHaveBeenCalledWith(posted, "plugin_req-9");
+    expect(onPosted).toHaveBeenCalledWith(posted);
     expect(close).toHaveBeenCalledTimes(1);
   });
 
@@ -82,7 +85,7 @@ describe("PluginComposerSheet", () => {
       .mockResolvedValueOnce({ kind: "formErrors", errors: [{ input: "title", issue: "required" }] })
       .mockResolvedValueOnce({ kind: "operation", response: { success: false } })
       .mockImplementationOnce(() => new Promise(() => {}));
-    const { wrapper, deliver, close } = render(port);
+    const { wrapper, onPosted, close } = render(port);
     await flushPromises();
     const form = () => wrapper.getComponent(FlarePluginForm);
     form().vm.$emit("submit", { title: " " });
@@ -97,7 +100,7 @@ describe("PluginComposerSheet", () => {
     await nextTick();
     expect(form().props("error")).toBeUndefined();
     expect(form().props("busy")).toBe(true);
-    expect(deliver).not.toHaveBeenCalled();
+    expect(onPosted).not.toHaveBeenCalled();
     expect(close).not.toHaveBeenCalled();
   });
 
@@ -168,7 +171,10 @@ describe("composer menu exports", () => {
     expect(routeComposerAction(menu, item.id, { features: {}, plugins: {}, fallback })).toBe(true);
     expect(fallback).toHaveBeenCalledWith(expect.objectContaining({ pluginId: "acme.task" }));
     expect(parseComposerMenu(null)).toBe(CLOSED_COMPOSER_MENU);
-    expect(pluginMessageFromResult({ message: posted }, "acme.task")).toEqual(posted);
+    expect(pluginPostedCard({ posted })).toEqual(posted);
+    expect(pluginPostedCard({ posted: { conversationId: "group-1" } })).toBeNull();
+    // A plugin's envelope is not something a client posts any more.
+    expect(pluginPostedCard({ message: { pluginId: "acme.task" } })).toBeNull();
     expect(typeof useComposerMenu).toBe("function");
   });
 });

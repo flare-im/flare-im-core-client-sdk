@@ -1,5 +1,4 @@
 import { onBeforeUnmount, shallowRef, watch } from "vue";
-import type { PluginMessageEnvelope } from "@flare-im/sdk/plugin-ui";
 
 /**
  * The composer's toolbar and "+" panel as the social SDK's `composerMenu` describes them: built-in
@@ -128,16 +127,20 @@ export function useComposerMenu(load: (conversationId: string) => Promise<unknow
   return { menu, refresh };
 }
 
+/** The card Core posted for a create result, in the user's name: where it went and its ids. */
+export interface PluginPostedCard {
+  conversationId: string;
+  serverMsgId: string;
+  clientMsgId: string;
+}
+
 /**
- * The message an action result asks the host to post (design §4): `data.message`, when it is a
- * well-formed plugin message of the plugin that ran the action. Anything else posts nothing.
+ * The card a create result says Core posted (`data.posted`). The card itself reaches the timeline like any message
+ * pushed to the conversation; the host only uses this to point at it. Clients never post plugin cards.
  */
-export function pluginMessageFromResult(data: unknown, pluginId: string): PluginMessageEnvelope | null {
-  const message = (data as { message?: unknown } | null | undefined)?.message as Partial<PluginMessageEnvelope> | undefined;
-  if (!message || typeof message !== "object") return null;
-  if (message.pluginId !== pluginId || !text(message.contributionId) || typeof message.summary !== "string") return null;
-  if (!Number.isInteger(message.schemaVersion) || (message.schemaVersion as number) < 1) return null;
-  if (!message.payload || typeof message.payload !== "object" || Array.isArray(message.payload)) return null;
-  return { pluginId, contributionId: message.contributionId, schemaVersion: message.schemaVersion as number,
-    summary: message.summary.slice(0, 256), payload: message.payload as Record<string, unknown> };
+export function pluginPostedCard(data: unknown): PluginPostedCard | null {
+  const posted = (data as { posted?: unknown } | null | undefined)?.posted as Partial<PluginPostedCard> | undefined;
+  if (!posted || typeof posted !== "object") return null;
+  if (!text(posted.conversationId) || !text(posted.serverMsgId)) return null;
+  return { conversationId: posted.conversationId, serverMsgId: posted.serverMsgId, clientMsgId: text(posted.clientMsgId) ? posted.clientMsgId : "" };
 }

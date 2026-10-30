@@ -11,7 +11,7 @@ export type PluginUiTone = "neutral" | "info" | "success" | "warning" | "danger"
 export interface PluginUiAction {
   id: string;
   label: string;
-  target?: { kind: "operation"; operation: string } | { kind: "page"; page: string } | { kind: "native"; capability: string };
+  target?: { kind: "operation"; operation: string } | { kind: "page"; page: string; pluginId?: string } | { kind: "native"; capability: string };
   input?: Record<string, string>;
   /** Ids of `inputs` the host collects first; their values go to `invokeAction` as `formValues`. */
   form?: string[];
@@ -122,6 +122,7 @@ export type PluginUnavailableReason =
 
 /** A resolved document: a card, a composer form, or a detail sheet. */
 export interface PluginPresentation {
+  presentation?: { renderer: string; props: Record<string, unknown>; actions: Record<string, string> };
   available: boolean;
   unavailableReason?: PluginUnavailableReason;
   title: string;
@@ -208,8 +209,11 @@ const UNAVAILABLE_REASONS: ReadonlySet<string> = new Set<PluginUnavailableReason
 ]);
 
 /** The v2 members of a resolved view, copied only when present and well-typed. */
-export function pluginViewExtras(view: Record<string, unknown>): Pick<PluginPresentation, "blocks" | "inputs" | "detail" | "menuActions" | "unavailableReason"> {
+export function pluginViewExtras(view: Record<string, unknown>): Pick<PluginPresentation, "presentation" | "blocks" | "inputs" | "detail" | "menuActions" | "unavailableReason"> {
+  const p = view.presentation as PluginPresentation["presentation"];
   return {
+    ...(view.available === true && p && typeof p.renderer === "string" && p.props && typeof p.props === "object"
+      && p.actions && typeof p.actions === "object" ? { presentation: p } : {}),
     ...(Array.isArray(view.blocks) && view.blocks.length ? { blocks: view.blocks as PluginUiBlock[] } : {}),
     ...(Array.isArray(view.inputs) && view.inputs.length ? { inputs: view.inputs as PluginUiInput[] } : {}),
     ...(view.detail === true ? { detail: true } : {}),

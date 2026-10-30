@@ -12,7 +12,7 @@ import {
   type FlarePluginViewModel,
 } from "@flare-im/vue-ui";
 import type { PluginDetailPresentation } from "@flare-im/sdk/plugin-ui";
-import { pluginUiConversationKey, pluginUiDirectoryKey, pluginUiSessionKey } from "./context";
+import { pluginUiConversationKey, pluginUiDirectoryKey, pluginUiErrorTextKey, pluginUiSessionKey, pluginUiStateFeedKey } from "./context";
 
 // The kit hands renderers more than these (isSelf, listeners); a card with a detail sheet has two roots.
 defineOptions({ inheritAttrs: false });
@@ -23,11 +23,6 @@ const props = defineProps<{
   messageId?: string;
   /** The timeline's conversation, when the kit hands it to renderers. */
   conversationId?: string;
-  /**
-   * Message attributes. `pluginStateVersion` (the viewer's layer) and `pluginSharedStateVersion`
-   * (the layer Core publishes for the card's entity) move when Core stores new card state.
-   */
-  messageExtra?: Record<string, unknown>;
   /** Overrides the provided directory's resolver for this card. */
   resolveUser?: FlarePluginResolveUser;
   /** Overrides the provided directory's conversation members for this card. */
@@ -36,10 +31,14 @@ const props = defineProps<{
 const session = inject(pluginUiSessionKey, ref(null));
 const hostConversation = inject(pluginUiConversationKey, () => undefined);
 const directory = inject(pluginUiDirectoryKey, {});
+const stateChanges = inject(pluginUiStateFeedKey, null);
+const errorText = inject(pluginUiErrorTextKey, () => undefined);
 const resolver = computed(() => props.resolveUser ?? directory.resolveUser);
 const members = computed(() => props.members ?? directory.members?.() ?? []);
 const conversation = () => props.conversationId || hostConversation();
 
+/** The plugin's name the platform wrote on the card: an inert card says which plugin it is from. */
+const displayName = computed(() => session.value?.envelope(props.content)?.displayName ?? undefined);
 const placeholder = (): FlarePluginViewModel => ({
   available: false, title: typeof props.content.description === "string" ? props.content.description : "", fields: [], actions: [],
 });
@@ -48,7 +47,7 @@ let viewGeneration = 0;
 /**
  * Core merges the stored card state before it resolves the view; nothing is merged here. A view
  * equal to the one shown is not assigned again: a new view resets the kit's optimistic choice and
- * an unsent multiple-choice draft, and periodic or duplicate refreshes must not.
+ * an unsent multiple-choice draft, and a repeated announcement of the same state must not.
  */
 async function refresh(reset: boolean): Promise<void> {
   const mine = ++viewGeneration, host = session.value;
@@ -94,8 +93,8 @@ async function runAction(surface: ActionSurface, id: string, payload: FlarePlugi
     else if (outcome.kind === "operation" && outcome.response.success === false) surface.error = t("pluginRuntime.rejected");
     // Core has stored the state the plugin returned on this message: show it without waiting for the event.
     else changed = true;
-  } catch {
-    if (scope === actionScope) surface.error = t("pluginRuntime.unavailable");
+  } catch (failure) {
+    if (scope === actionScope) surface.error = errorText(failure) ?? t("pluginRuntime.unavailable");
   } finally {
     if (scope === actionScope) {
       // The outcome is set: settle it (closes a submitted form, keeps or reverts the optimistic choice).
@@ -133,8 +132,8 @@ async function loadDetail(quiet = false): Promise<void> {
     if (!host || !message) throw new Error("Plugin detail unavailable");
     const result = await host.detail(message, { ...detailRequest(), ...(quiet && shown ? { refresh: shown } : {}) });
     if (mine === detailGeneration) detailView.value = result;
-  } catch {
-    if (mine === detailGeneration && !(quiet && detailView.value)) detailError.value = t("pluginRuntime.unavailable");
+  } catch (failure) {
+    if (mine === detailGeneration && !(quiet && detailView.value)) detailError.value = errorText(failure) ?? t("pluginRuntime.unavailable");
   } finally {
     if (mine === detailGeneration) detailLoading.value = false;
   }
@@ -152,8 +151,8 @@ async function loadMoreDetail(cursor: string): Promise<void> {
   try {
     const merged = await host.detail(message, { ...detailRequest(), page: { cursor, previous } });
     if (mine === detailGeneration) detailView.value = merged;
-  } catch {
-    if (mine === detailGeneration) inDetail.error = t("pluginRuntime.unavailable");
+  } catch (failure) {
+    if (mine === detailGeneration) inDetail.error = errorText(failure) ?? t("pluginRuntime.unavailable");
   } finally {
     if (mine === detailGeneration) detailLoadingMore.value = false;
   }
@@ -178,18 +177,19 @@ watch([() => props.messageId ?? props.content, () => session.value], () => {
   closeDetail();
   void refresh(true);
 }, { immediate: true });
-// New card state on either layer (the viewer's own, or the shared one others change in real time).
-watch([() => props.messageExtra?.pluginStateVersion, () => props.messageExtra?.pluginSharedStateVersion], () => {
+// New card state on either layer (the viewer's own, the shared one others change in real time) or a catalog the SDK
+// invalidated: the SDK announces the card's message, and only then is it presented again. Nothing is polled.
+const stopStateChanges = stateChanges?.((change) => {
+  if (!props.messageId || change.messageId !== props.messageId) return;
   void refresh(false);
   if (detailOpen.value && detailView.value) void loadDetail(true);
 });
-// Expiry and revocation remove historical actions even while a timeline stays open.
-const timer = setInterval(() => { if (!onCard.busyActionId && !inDetail.busyActionId) void refresh(false); }, 30000);
-onBeforeUnmount(() => { viewGeneration++; actionScope++; detailGeneration++; clearInterval(timer); });
+onBeforeUnmount(() => { viewGeneration++; actionScope++; detailGeneration++; stopStateChanges?.(); });
 </script>
 <template>
   <FlarePluginView
     :view="view"
+    :display-name="displayName"
     :busy-action-id="onCard.busyActionId"
     :error="onCard.error || undefined"
     :form-errors="onCard.formErrors"

@@ -19,11 +19,12 @@ const card = (extra: Record<string, unknown> = {}) => ({
 
 afterEach(unmountAll);
 
-function renderCard(port = fakePort({ presentMessage: vi.fn(async () => card()) }), props: Record<string, unknown> = {}, directory?: Parameters<typeof mountWithSession>[2]) {
+function renderCard(port = fakePort({ presentMessage: vi.fn(async () => card()) }), props: Record<string, unknown> = {},
+  directory?: Parameters<typeof mountWithSession>[2], host?: Parameters<typeof mountWithSession>[3]) {
   const state = reactive({ messageExtra: { pluginStateVersion: "1" } as Record<string, unknown> });
-  const { wrapper } = mountWithSession(port, () => h(CorePluginMessage, { content, messageId: "srv-1", messageExtra: state.messageExtra, ...props }), directory);
+  const { wrapper, feed } = mountWithSession(port, () => h(CorePluginMessage, { content, messageId: "srv-1", messageExtra: state.messageExtra, ...props }), directory, host);
   const view = () => wrapper.getComponent(FlarePluginView);
-  return { port, wrapper, view, state };
+  return { port, wrapper, view, state, feed };
 }
 
 describe("CorePluginMessage", () => {
@@ -129,27 +130,56 @@ describe("CorePluginMessage", () => {
     ]);
   });
 
-  it("presents again when either state layer moves, and keeps an unchanged view as it is", async () => {
-    const port = fakePort({ presentMessage: vi.fn(async () => card()) });
-    const { view, state } = renderCard(port);
+  it("presents again when the SDK announces its message, keeps an unchanged view as it is, and never polls", async () => {
+    vi.useFakeTimers();
+    try {
+      const port = fakePort({ presentMessage: vi.fn(async () => card()) });
+      const { view, state, feed } = renderCard(port);
+      await flushPromises();
+      const first = view().props("view");
+      feed.announce("srv-1");
+      await flushPromises();
+      expect(port.presentMessage).toHaveBeenCalledTimes(2);
+      expect(view().props("view")).toBe(first);
+      port.presentMessage.mockResolvedValue(card({ sharedStateVersion: 8, blocks: [{ ...choices, voted: true, showResults: true }] }));
+      feed.announce("srv-1");
+      await flushPromises();
+      expect(port.presentMessage).toHaveBeenCalledTimes(3);
+      expect(view().props("view")).toMatchObject({ sharedStateVersion: 8, blocks: [{ voted: true }] });
+      // Another card's message, a reloaded row's attributes and minutes of an open timeline are no new state here.
+      feed.announce("srv-2");
+      state.messageExtra = { ...state.messageExtra, pluginSharedStateVersion: "9" };
+      await flushPromises();
+      await vi.advanceTimersByTimeAsync(5 * 60_000);
+      expect(port.presentMessage).toHaveBeenCalledTimes(3);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("names the plugin an inert card is from, as the platform wrote it on the card", async () => {
+    const port = fakePort({ presentMessage: vi.fn(async () => ({ available: false, unavailableReason: "disabled", title: "", fields: [], actions: [], stateVersion: 0 })) });
+    const { view } = renderCard(port, { content: cardContent({ ...envelope, displayName: "Poll" }) });
     await flushPromises();
-    const first = view().props("view");
-    state.messageExtra = { ...state.messageExtra, pluginSharedStateVersion: "7" };
+    expect(view().props()).toMatchObject({ displayName: "Poll", view: { available: false, unavailableReason: "disabled" } });
+  });
+
+  it("stops listening once the card leaves the timeline", async () => {
+    const { feed, wrapper } = renderCard();
     await flushPromises();
-    expect(port.presentMessage).toHaveBeenCalledTimes(2);
-    expect(view().props("view")).toBe(first);
-    port.presentMessage.mockResolvedValue(card({ sharedStateVersion: 8, blocks: [{ ...choices, voted: true, showResults: true }] }));
-    state.messageExtra = { ...state.messageExtra, pluginSharedStateVersion: "8" };
+    expect(feed.listening()).toBe(1);
+    wrapper.unmount();
+    expect(feed.listening()).toBe(0);
+  });
+
+  it("words a failed call with the host's copy for the SDK's key", async () => {
+    const port = fakePort({ presentMessage: vi.fn(async () => card()), invokeAction: vi.fn(async () => { throw new Error("错误 [PERMISSION_DENIED] sdk.plugin.disabled"); }) });
+    const errorText = (error: unknown) => (String((error as Error).message).includes("sdk.plugin.disabled") ? "The plugin is off" : undefined);
+    const { view } = renderCard(port, {}, undefined, { errorText });
     await flushPromises();
-    expect(port.presentMessage).toHaveBeenCalledTimes(3);
-    expect(view().props("view")).toMatchObject({ sharedStateVersion: 8, blocks: [{ voted: true }] });
-    state.messageExtra = { ...state.messageExtra, pluginStateVersion: "2" };
+    view().vm.$emit("action", "vote", { selection: [0] });
     await flushPromises();
-    expect(port.presentMessage).toHaveBeenCalledTimes(4);
-    // Other attributes changing is not new card state.
-    state.messageExtra = { ...state.messageExtra, unrelated: "x" };
-    await flushPromises();
-    expect(port.presentMessage).toHaveBeenCalledTimes(4);
+    expect(view().props("error")).toBe("The plugin is off");
   });
 
   it("opens 'see all' in the kit detail sheet: loading, the detail view, an error with retry", async () => {
@@ -236,7 +266,7 @@ describe("CorePluginMessage", () => {
       blocks: [{ kind: "entries", items: [{ index: 1, text: "Ann" }, { index: 2, text: "Bob" }], numbered: true, total: 2, more: false }] };
     const page = deferred<unknown>();
     const port = fakePort({ presentMessage: vi.fn(async () => card({ detail: true })), pluginDetail: vi.fn(async () => first) });
-    const { view, wrapper, state } = renderCard(port);
+    const { view, wrapper, feed } = renderCard(port);
     await flushPromises();
     view().vm.$emit("openDetail");
     await flushPromises();
@@ -265,7 +295,7 @@ describe("CorePluginMessage", () => {
     const loaded = sheet().props("view");
     const refreshed = { ...merged, blocks: [{ ...merged.blocks[0], items: [{ index: 1, text: "Cy" }, { index: 2, text: "Ann" }] }], nextCursor: "100" };
     port.pluginDetail.mockResolvedValueOnce(refreshed);
-    state.messageExtra = { ...state.messageExtra, pluginSharedStateVersion: "9" };
+    feed.announce("srv-1");
     await flushPromises();
     const [refresh] = port.pluginDetail.mock.calls.at(-1)!;
     expect(refresh).toMatchObject({ refresh: true });

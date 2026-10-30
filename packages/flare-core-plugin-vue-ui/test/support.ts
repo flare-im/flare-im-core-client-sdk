@@ -3,7 +3,9 @@ import { defineComponent, h, shallowRef, type Component } from "vue";
 import { mount } from "@vue/test-utils";
 import { useFlareI18nProvider } from "@flare-im/vue-ui/i18n";
 import { PluginUiSession, type PluginMessageEnvelope, type PluginUiPort } from "@flare-im/sdk/plugin-ui";
-import { provideCorePluginDirectory, provideCorePluginUi, type CorePluginDirectory } from "../src/index";
+import {
+  provideCorePluginDirectory, provideCorePluginUi, type CorePluginDirectory, type CorePluginErrorText, type CorePluginStateChange,
+} from "../src/index";
 
 type Call = (request: Record<string, unknown>) => Promise<unknown>;
 /** A port whose calls the test answers (each a spy over the given implementation). */
@@ -35,15 +37,27 @@ export function deferred<T>() {
 const mounted: Array<{ unmount(): void }> = [];
 export function unmountAll(): void { mounted.splice(0).forEach((wrapper) => wrapper.unmount()); }
 
+/** The host's side of the SDK's `onMessagePluginStateChanged`: the test announces a message, cards listening hear it. */
+export function stateFeed() {
+  const listeners = new Set<(change: CorePluginStateChange) => void>();
+  return {
+    subscribe: (listener: (change: CorePluginStateChange) => void) => { listeners.add(listener); return () => { listeners.delete(listener); }; },
+    announce: (messageId: string) => { for (const listener of [...listeners]) listener({ messageId, conversationId: "conv-1" }); },
+    listening: () => listeners.size,
+  };
+}
+
 /** Mounts `child` under the kit i18n provider and the Core plugin UI over `port`. */
-export function mountWithSession(port: PluginUiPort, child: () => ReturnType<typeof h>, directory?: CorePluginDirectory) {
+export function mountWithSession(port: PluginUiPort, child: () => ReturnType<typeof h>, directory?: CorePluginDirectory,
+  host: { feed?: ReturnType<typeof stateFeed>; errorText?: CorePluginErrorText } = {}) {
   const session = shallowRef<PluginUiSession | null>(new PluginUiSession(port, "web", () => "en-US"));
+  const feed = host.feed ?? stateFeed();
   const Host = defineComponent({ setup() {
-    provideCorePluginUi(session, { conversationId: () => "conv-1" });
+    provideCorePluginUi(session, { conversationId: () => "conv-1", stateChanges: feed.subscribe, errorText: host.errorText });
     if (directory) provideCorePluginDirectory(directory);
     return child;
   } });
   const wrapper = mount(defineComponent({ setup() { useFlareI18nProvider("en-US"); return () => h(Host as Component); } }));
   mounted.push(wrapper);
-  return { wrapper, session };
+  return { wrapper, session, feed };
 }

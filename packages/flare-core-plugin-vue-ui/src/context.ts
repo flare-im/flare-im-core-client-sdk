@@ -16,3 +16,23 @@ export interface CorePluginDirectory {
   members?: () => FlarePluginMember[] | undefined;
 }
 export const pluginUiDirectoryKey: InjectionKey<CorePluginDirectory> = Symbol("core-plugin-ui-directory");
+
+/**
+ * One card whose stored state moved: the core SDK's `onMessagePluginStateChanged` (an action result, the shared layer
+ * pushed by Core, the viewer layer read in the background, or the catalog invalidated). `messageId` is the id the card
+ * was presented with (the server id).
+ */
+export interface CorePluginStateChange {
+  messageId: string;
+  conversationId?: string;
+}
+/** Subscribes to card state changes; returns the unsubscribe. The host forwards the SDK event into it. */
+export type CorePluginStateFeed = (listener: (change: CorePluginStateChange) => void) => () => void;
+export const pluginUiStateFeedKey: InjectionKey<CorePluginStateFeed> = Symbol("core-plugin-ui-state-feed");
+
+/**
+ * The host's words for a failed plugin call (the SDK reports `sdk.plugin.*` keys, the host owns their copy).
+ * Undefined keeps the kit's generic line.
+ */
+export type CorePluginErrorText = (error: unknown) => string | undefined;
+export const pluginUiErrorTextKey: InjectionKey<CorePluginErrorText> = Symbol("core-plugin-ui-error-text");

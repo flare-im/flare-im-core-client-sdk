@@ -2,7 +2,8 @@
 // 通用插件入口:「+」面板里没有原生处理器的插件项。Kit 底部面板里画这个 composer-action 贡献
 // (标题、字段、块、动作都来自贡献的文档),动作经 Core 带会话 ID 调用。贡献带输入时,收集表单的
 // 那个动作(创建)直接在面板里用 Kit PluginForm 收集,不再弹第二层面板;Core 校验不过时把
-// formErrors 交回表单。结果的 data.message 是这个插件的合法插件消息时,交给宿主发到当前会话(design §4)。
+// formErrors 交回表单。卡片由平台以用户名义代发:结果带 data.posted 时把它交给宿主定位,卡片本身
+// 随会话推送进时间线,这里从不发消息。
 import { computed, inject, ref, shallowRef, watch } from "vue";
 import {
   FlareBottomSheet, FlareDangerConfirm, FlarePluginForm, FlarePluginView, useFlareI18n,
@@ -10,25 +11,28 @@ import {
   type FlarePluginMember, type FlarePluginResolveUser, type FlarePluginViewModel,
 } from "@flare-im/vue-ui";
 import type { PluginMessageEnvelope } from "@flare-im/sdk/plugin-ui";
-import { pluginUiDirectoryKey, pluginUiSessionKey } from "./context";
-import { pluginMessageFromResult, type ComposerPluginItem } from "./composerMenu";
+import { pluginUiDirectoryKey, pluginUiErrorTextKey, pluginUiSessionKey } from "./context";
+import { pluginPostedCard, type ComposerPluginItem, type PluginPostedCard } from "./composerMenu";
 
 const props = defineProps<{
   /** The tapped plugin item; the sheet is open while there is one. */
   item: ComposerPluginItem | null;
   conversationId: string;
-  /** Posts a plugin message to the conversation under the given client message id. */
-  deliver: (message: PluginMessageEnvelope, clientMsgId: string) => Promise<void>;
   /** Overrides the provided directory's conversation members (members inputs). */
   members?: FlarePluginMember[];
   /** Overrides the provided directory's resolver. */
   resolveUser?: FlarePluginResolveUser;
 }>();
-const emit = defineEmits<{ close: [] }>();
+const emit = defineEmits<{
+  close: [];
+  /** The action created something whose card Core posted; the card arrives with the conversation's next push. */
+  posted: [card: PluginPostedCard];
+}>();
 
 const { t } = useFlareI18n();
 const session = inject(pluginUiSessionKey, ref(null));
 const directory = inject(pluginUiDirectoryKey, {});
+const errorText = inject(pluginUiErrorTextKey, () => undefined);
 const members = computed(() => props.members ?? directory.members?.() ?? []);
 const resolver = computed(() => props.resolveUser ?? directory.resolveUser);
 const view = shallowRef<FlarePluginViewModel>({ available: false, title: "", fields: [], actions: [] });
@@ -83,16 +87,12 @@ async function invoke(id: string, payload: FlarePluginActionPayload): Promise<vo
     if (outcome.kind === "formErrors") { formErrors.value = outcome.errors; return; }
     if (outcome.kind === "operation") {
       if (outcome.response.success === false) { error.value = t("pluginRuntime.rejected"); return; }
-      const posted = pluginMessageFromResult(outcome.response.data, item.pluginId);
-      if (posted) {
-        // One id per action result: resending after a lost acknowledgement does not post twice.
-        const requestId = typeof outcome.response.requestId === "string" && outcome.response.requestId ? outcome.response.requestId : crypto.randomUUID();
-        await props.deliver(posted, `plugin_${requestId}`);
-      }
+      const posted = pluginPostedCard(outcome.response.data);
+      if (posted) emit("posted", posted);
     }
     done = mine === generation;
-  } catch {
-    if (mine === generation) error.value = t("pluginRuntime.unavailable");
+  } catch (failure) {
+    if (mine === generation) error.value = errorText(failure) ?? t("pluginRuntime.unavailable");
   } finally {
     // The outcome is set: settle it, then let the keys go.
     if (mine === generation) { settleToken.value++; busyActionId.value = undefined; }

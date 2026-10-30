@@ -35,6 +35,17 @@ export interface PluginMessageEnvelope {
   displayName?: string;
 }
 export type PluginPlatform = "web" | "tauri" | "android" | "ios" | "flutter" | "harmonyos";
+/** The locales plugin manifests translate into: `zh-CN` (the base text) and `en-US`. */
+export type PluginManifestLocale = "zh-CN" | "en-US";
+/**
+ * The manifest locale for the host's UI language tag (BCP-47): any English tag is `en-US`, everything else the base
+ * `zh-CN`, the way the kit falls back. Pass it as the `locale` of plugin calls.
+ */
+export function pluginManifestLocale(tag: string | null | undefined): PluginManifestLocale {
+  return String(tag ?? "").trim().toLowerCase().startsWith("en") ? "en-US" : "zh-CN";
+}
+/** A page target: the plugin page an action opens, always of the plugin that declared the action. */
+export interface PluginPageTarget { pluginId: string; page: string }
 /** Core's rule for a card's `messageId`: non-empty, at most 256 bytes, no whitespace or control characters. */
 export function validPluginMessageId(id: string): boolean {
   return id.length > 0 && new TextEncoder().encode(id).length <= 256 && !/[\s\p{Cc}]/u.test(id);
@@ -48,8 +59,9 @@ export class PluginUiSession {
   private catalogInFlight: Promise<unknown> | null = null;
   constructor(private readonly port: PluginUiPort, readonly platform: PluginPlatform,
     private readonly locale: () => string = () => "en-US", private readonly native?: NativePluginBridge,
-    /** Opens a plugin page with its arguments (the payload the opening action bound). */
-    private readonly navigate?: (page: string, args?: Record<string, unknown>) => void) {}
+    /** Opens a plugin page (of the plugin whose card or page ran the action) with its arguments (the payload the
+     * opening action bound). */
+    private readonly navigate?: (target: PluginPageTarget, args?: Record<string, unknown>) => void) {}
   reset(): void { this.generation++; this.catalogInFlight = null; }
   private catalogForView(): Promise<unknown> {
     if (this.catalogInFlight) return this.catalogInFlight;
@@ -127,13 +139,15 @@ export class PluginUiSession {
       ...(conversationId ? { conversationId } : {}), platform: this.platform, actionId, userGesture, nativeAllowlist: this.native?.capabilities ?? [],
       ...(formValues ? { formValues } : {}), ...(selection ? { selection } : {}) });
     if (generation !== this.generation) throw new Error("Plugin session changed");
-    const result = value as { kind?: unknown; response?: unknown; errors?: unknown; target?: { kind: string; page?: string; capability?: string }; payload?: Record<string, unknown> } | null;
+    const result = value as { kind?: unknown; response?: unknown; errors?: unknown; target?: { kind: string; page?: string; pluginId?: string; capability?: string }; payload?: Record<string, unknown> } | null;
     if (result?.kind === "operation" && result.response && typeof result.response === "object") {
       return { kind: "operation", response: result.response as Extract<PluginActionOutcome, { kind: "operation" }>["response"] };
     }
     if (result?.kind === "formErrors") return { kind: "formErrors", errors: pluginFormErrors(result.errors) };
     const target = result?.kind === "host" ? result.target : undefined;
-    if (target?.kind === "page" && typeof target.page === "string" && this.navigate) return { kind: "host", result: this.navigate(target.page, result?.payload ?? {}) };
+    if (target?.kind === "page" && typeof target.page === "string" && this.navigate) {
+      return { kind: "host", result: this.navigate({ pluginId: typeof target.pluginId === "string" ? target.pluginId : message.pluginId, page: target.page }, result?.payload ?? {}) };
+    }
     if (target?.kind === "native" && typeof target.capability === "string" && this.native?.capabilities.includes(target.capability as never)) {
       return { kind: "host", result: await this.native.invoke(target.capability, result?.payload ?? {}) };
     }
@@ -179,13 +193,15 @@ export class PluginUiSession {
       nativeAllowlist: this.native?.capabilities ?? [], ...(data ? { data } : {}), ...(row ? { row } : {}),
       ...(conversationId ? { conversationId } : {}), ...(formValues ? { formValues } : {}), ...(selection ? { selection } : {}) });
     if (generation !== this.generation) throw new Error("Plugin session changed");
-    const result = value as { kind?: unknown; response?: unknown; errors?: unknown; target?: { kind: string; page?: string; capability?: string }; payload?: Record<string, unknown> } | null;
+    const result = value as { kind?: unknown; response?: unknown; errors?: unknown; target?: { kind: string; page?: string; pluginId?: string; capability?: string }; payload?: Record<string, unknown> } | null;
     if (result?.kind === "operation" && result.response && typeof result.response === "object") {
       return { kind: "operation", response: result.response as Extract<PluginActionOutcome, { kind: "operation" }>["response"] };
     }
     if (result?.kind === "formErrors") return { kind: "formErrors", errors: pluginFormErrors(result.errors) };
     const target = result?.kind === "host" ? result.target : undefined;
-    if (target?.kind === "page" && typeof target.page === "string" && this.navigate) return { kind: "host", result: this.navigate(target.page, result?.payload ?? {}) };
+    if (target?.kind === "page" && typeof target.page === "string" && this.navigate) {
+      return { kind: "host", result: this.navigate({ pluginId: typeof target.pluginId === "string" ? target.pluginId : pluginId, page: target.page }, result?.payload ?? {}) };
+    }
     if (target?.kind === "native" && typeof target.capability === "string" && this.native?.capabilities.includes(target.capability as never)) {
       return { kind: "host", result: await this.native.invoke(target.capability, result?.payload ?? {}) };
     }
@@ -227,7 +243,7 @@ export class PluginUiSession {
     const value = await this.port.action({ catalog, platform: this.platform, pluginId: message.pluginId,
       contributionId: message.contributionId, actionId, userGesture, payload: message.payload, nativeAllowlist: this.native?.capabilities ?? [] });
     if (generation !== this.generation) throw new Error("Plugin session changed");
-    const prepared = value as { target: { kind: string; operation?: string; page?: string; capability?: string }; payload: Record<string, unknown> };
+    const prepared = value as { target: { kind: string; operation?: string; page?: string; pluginId?: string; capability?: string }; payload: Record<string, unknown> };
     const target = prepared.target;
     switch (target.kind) {
       case "operation":
@@ -235,7 +251,7 @@ export class PluginUiSession {
         return this.port.dispatch({ capabilityId: target.operation, payload: prepared.payload });
       case "page":
         if (typeof target.page !== "string" || !this.navigate) break;
-        return this.navigate(target.page);
+        return this.navigate({ pluginId: typeof target.pluginId === "string" ? target.pluginId : message.pluginId, page: target.page });
       case "native":
         if (typeof target.capability !== "string" || !this.native || !this.native.capabilities.includes(target.capability as never)) break;
         return this.native.invoke(target.capability, prepared.payload);

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { PluginUiSession, type PluginUiPort } from "./index";
+import { PluginUiSession, pluginManifestLocale, type PluginUiPort } from "./index";
 const message = { pluginId: "example.poll", contributionId: "example.poll.card", schemaVersion: 1, summary: "Poll", payload: { packetId: "one", injected: "unused" } };
 function port(): PluginUiPort { return { catalog: async () => ({}), resolveMessage: async () => ({ available: true, title: "Poll", fields: [], actions: [{ id: "vote", label: "Vote" }] }), action: async () => ({ target: { kind: "operation", operation: "example.poll.vote" }, payload: { packetId: "one" } }),
   presentMessage: async () => ({ available: true, title: "Poll", fields: [], actions: [], data: { packetId: "one", status: "completed" }, stateVersion: 3 }),
@@ -59,10 +59,11 @@ describe("plugin UI runtime adapter", () => {
     expect(request).toEqual({ message, messageId: "server-9", conversationId: "group-1", platform: "tauri", actionId: "vote", userGesture: true, nativeAllowlist: [] });
     api.invokeAction = async () => ({ kind: "host", target: { kind: "page", page: "wallet" }, payload: {} });
     await expect(host.invokeAction(message, "vote", { userGesture: true })).rejects.toThrow("Plugin target unavailable");
-    const pages: string[] = [];
-    const navigating = new PluginUiSession(api, "web", undefined, undefined, (page) => { pages.push(page); });
+    const pages: unknown[] = [];
+    const navigating = new PluginUiSession(api, "web", undefined, undefined, (page, args) => { pages.push([page, args]); });
     await navigating.invokeAction(message, "vote", { userGesture: true });
-    expect(pages).toEqual(["wallet"]);
+    // A card's page target opens a page of the card's plugin, whatever page stack the host has open.
+    expect(pages).toEqual([[{ pluginId: message.pluginId, page: "wallet" }, {}]]);
   });
   it("drops an action result from a previous session", async () => {
     const api = port(); let release!: (value: unknown) => void;
@@ -162,7 +163,7 @@ describe("plugin UI card protocol v2", () => {
           badge: { text: "Received", tone: "success" } }], actions: [] }],
         nextCursor: "c2", data: { currency: "CNY" } };
     };
-    const opened: Array<[string, unknown]> = [];
+    const opened: Array<[unknown, unknown]> = [];
     const host = new PluginUiSession(api, "web", () => "zh-CN", undefined, (page, args) => { opened.push([page, args]); });
     const view = await host.page("example.poll", "example.poll.wallet", { args: { currency: "CNY" }, filters: { kind: "claim" } });
     expect(sent[0]).toEqual({ pluginId: "example.poll", page: "example.poll.wallet", platform: "web", locale: "zh-CN",
@@ -178,8 +179,12 @@ describe("plugin UI card protocol v2", () => {
     expect(actions[0]).toMatchObject({ page: { pluginId: "example.poll", page: "example.poll.wallet" }, data: { currency: "CNY" } });
     expect(actions[0]).not.toHaveProperty("message");
     expect(actions[0]).not.toHaveProperty("messageId");
-    expect(opened).toEqual([["example.poll.history", { currency: "CNY" }]]);
+    expect(opened).toEqual([[{ pluginId: "example.poll", page: "example.poll.history" }, { currency: "CNY" }]]);
     const bare = new PluginUiSession(port(), "web");
     await expect(bare.page("example.poll", "example.poll.wallet")).rejects.toThrow("Plugin page unavailable");
+  });
+  it("maps the host's UI language onto the manifest locales", () => {
+    for (const tag of ["en", "en-US", "en-GB", " EN-au "]) expect(pluginManifestLocale(tag)).toBe("en-US");
+    for (const tag of ["zh-CN", "zh-Hant-TW", "ja-JP", "", undefined, null]) expect(pluginManifestLocale(tag)).toBe("zh-CN");
   });
 });
