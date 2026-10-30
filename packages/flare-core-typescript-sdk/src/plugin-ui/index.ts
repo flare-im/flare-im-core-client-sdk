@@ -24,10 +24,24 @@ export interface PluginUiPort {
   /** `capability.plugin_page`: a plugin page. Request: `{pluginId, page, platform, locale, arguments?,
    * filters?, cursor?, previous?, refresh?}`; returns the resolved view plus `data`, with `nextCursor`
    * while its source has more. Paging and refresh as for `pluginDetail`. A page action goes through
-   * `invokeAction` with `page: {pluginId, page}`, `data` and `row?` instead of `message`. */
+   * `invokePageAction`. */
   pluginPage?(request: Record<string, unknown>): Promise<unknown>;
+  /** `capability.plugin_ui_invoke` for an action run on a plugin page: the host's plugin facade frames the request,
+   * naming the page `{pluginId, page}` in place of a message, and returns Core's answer as `invokeAction` does. */
+  invokePageAction(request: PluginPageActionRequest): Promise<unknown>;
   dispatch(request: { capabilityId: string; payload: unknown; conversationId?: string; tenantId?: string; userId?: string }): Promise<unknown>;
 }
+/**
+ * An action run on a plugin page, as the port takes it: no message is named, so Core writes no card state. A document
+ * action binds over the page's `data`; a rows action takes `row` as the view's rows gave it (`{key, input}`); `formValues`
+ * and `selection` go to Core as for a card.
+ */
+export type PluginPageActionRequest = {
+  pluginId: string; page: string; actionId: string; platform: PluginPlatform; userGesture: boolean;
+  nativeAllowlist: readonly string[];
+  data?: Record<string, unknown>; row?: { key: string; input: Record<string, unknown> }; conversationId?: string;
+  formValues?: Record<string, unknown>; selection?: readonly number[];
+};
 export interface PluginMessageEnvelope {
   pluginId: string; contributionId: string; schemaVersion: number;
   summary: string; payload: Record<string, unknown>;
@@ -139,19 +153,7 @@ export class PluginUiSession {
       ...(conversationId ? { conversationId } : {}), platform: this.platform, actionId, userGesture, nativeAllowlist: this.native?.capabilities ?? [],
       ...(formValues ? { formValues } : {}), ...(selection ? { selection } : {}) });
     if (generation !== this.generation) throw new Error("Plugin session changed");
-    const result = value as { kind?: unknown; response?: unknown; errors?: unknown; target?: { kind: string; page?: string; pluginId?: string; capability?: string }; payload?: Record<string, unknown> } | null;
-    if (result?.kind === "operation" && result.response && typeof result.response === "object") {
-      return { kind: "operation", response: result.response as Extract<PluginActionOutcome, { kind: "operation" }>["response"] };
-    }
-    if (result?.kind === "formErrors") return { kind: "formErrors", errors: pluginFormErrors(result.errors) };
-    const target = result?.kind === "host" ? result.target : undefined;
-    if (target?.kind === "page" && typeof target.page === "string" && this.navigate) {
-      return { kind: "host", result: this.navigate({ pluginId: typeof target.pluginId === "string" ? target.pluginId : message.pluginId, page: target.page }, result?.payload ?? {}) };
-    }
-    if (target?.kind === "native" && typeof target.capability === "string" && this.native?.capabilities.includes(target.capability as never)) {
-      return { kind: "host", result: await this.native.invoke(target.capability, result?.payload ?? {}) };
-    }
-    throw new Error("Plugin target unavailable");
+    return this.actionOutcome(value, message.pluginId);
   }
   /**
    * A plugin page (a `page` contribution, such as a wallet) through Core: its source query is called
@@ -182,17 +184,22 @@ export class PluginUiSession {
   /**
    * Run a page action through Core: a document action binds over the page's `data`, a row action
    * takes `row` as the view's rows gave it (`{key, input}`), with `formValues` and `selection` as for
-   * a card. No message is named. Page targets open through `navigate` with the bound payload as the
-   * next page's arguments; native targets run here.
+   * a card. No message is named. The port's `invokePageAction` frames the request. Page targets open
+   * through `navigate` with the bound payload as the next page's arguments; native targets run here.
    */
   async invokePageAction(pluginId: string, page: string, actionId: string,
     options: { data?: Record<string, unknown>; row?: { key: string; input: Record<string, unknown> }; conversationId?: string; userGesture: boolean; formValues?: Record<string, unknown>; selection?: number[] }): Promise<PluginActionOutcome> {
     const generation = this.generation;
     const { data, row, conversationId, userGesture, formValues, selection } = options;
-    const value = await this.port.invokeAction({ page: { pluginId, page }, platform: this.platform, actionId, userGesture,
+    const value = await this.port.invokePageAction({ pluginId, page, actionId, platform: this.platform, userGesture,
       nativeAllowlist: this.native?.capabilities ?? [], ...(data ? { data } : {}), ...(row ? { row } : {}),
       ...(conversationId ? { conversationId } : {}), ...(formValues ? { formValues } : {}), ...(selection ? { selection } : {}) });
     if (generation !== this.generation) throw new Error("Plugin session changed");
+    return this.actionOutcome(value, pluginId);
+  }
+  /** Core's answer to a card or page action: an operation's response, form problems, or a host target run here (a
+   * page target of the plugin that declared the action, unless it names another, or an allowed native capability). */
+  private async actionOutcome(value: unknown, pluginId: string): Promise<PluginActionOutcome> {
     const result = value as { kind?: unknown; response?: unknown; errors?: unknown; target?: { kind: string; page?: string; pluginId?: string; capability?: string }; payload?: Record<string, unknown> } | null;
     if (result?.kind === "operation" && result.response && typeof result.response === "object") {
       return { kind: "operation", response: result.response as Extract<PluginActionOutcome, { kind: "operation" }>["response"] };

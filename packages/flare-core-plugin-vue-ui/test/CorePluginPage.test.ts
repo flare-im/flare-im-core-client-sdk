@@ -20,8 +20,8 @@ const page = (extra: Record<string, unknown> = {}) => ({
   data: { balanceText: "¥12.30" }, nextCursor: "c2", ...extra,
 });
 
-function pagePort(pluginPage: (request: Record<string, unknown>) => Promise<unknown>, invokeAction?: (request: Record<string, unknown>) => Promise<unknown>) {
-  const port = fakePort(invokeAction ? { invokeAction } : {});
+function pagePort(pluginPage: (request: Record<string, unknown>) => Promise<unknown>, invokePageAction?: (request: Record<string, unknown>) => Promise<unknown>) {
+  const port = fakePort(invokePageAction ? { invokePageAction } : {});
   return { ...port, pluginPage: vi.fn(pluginPage) };
 }
 type PagePort = ReturnType<typeof pagePort>;
@@ -96,11 +96,10 @@ describe("CorePluginPage", () => {
     host().vm.$emit("action", "open", { page: { pluginId: root.pluginId, page: root.page }, data: { balanceText: "¥12.30" },
       row: { key: "l1", input: { packetId: "p1" } } });
     await flushPromises();
-    const request = port.invokeAction.mock.calls[0][0];
-    expect(request).toMatchObject({ page: { pluginId: root.pluginId, page: root.page }, actionId: "open", userGesture: true, platform: "web",
+    const request = port.invokePageAction.mock.calls[0][0];
+    expect(request).toEqual({ pluginId: root.pluginId, page: root.page, actionId: "open", userGesture: true, platform: "web", nativeAllowlist: [],
       data: { balanceText: "¥12.30" }, row: { key: "l1", input: { packetId: "p1" } } });
-    expect(request).not.toHaveProperty("message");
-    expect(request).not.toHaveProperty("messageId");
+    expect(port.invokeAction).not.toHaveBeenCalled();
     expect(host().props()).toMatchObject({ busyActionId: undefined, settleToken: 1 });
     expect(calls(port)).toHaveLength(2);
     expect(calls(port)[1]).toMatchObject({ refresh: true });
@@ -113,7 +112,7 @@ describe("CorePluginPage", () => {
     host().vm.$emit("action", "open", { page: { pluginId: root.pluginId, page: root.page }, data: {} });
     await flushPromises();
     expect(host().props("actionError")).toBe("Plugin command rejected. Check permission and business state.");
-    port.invokeAction.mockImplementationOnce(async () => { throw new Error("denied"); });
+    port.invokePageAction.mockImplementationOnce(async () => { throw new Error("denied"); });
     host().vm.$emit("action", "open", { page: { pluginId: root.pluginId, page: root.page }, data: {} });
     await flushPromises();
     expect(host().props("actionError")).toBe("Not permitted");

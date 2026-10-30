@@ -4,6 +4,7 @@ const message = { pluginId: "example.poll", contributionId: "example.poll.card",
 function port(): PluginUiPort { return { catalog: async () => ({}), resolveMessage: async () => ({ available: true, title: "Poll", fields: [], actions: [{ id: "vote", label: "Vote" }] }), action: async () => ({ target: { kind: "operation", operation: "example.poll.vote" }, payload: { packetId: "one" } }),
   presentMessage: async () => ({ available: true, title: "Poll", fields: [], actions: [], data: { packetId: "one", status: "completed" }, stateVersion: 3 }),
   invokeAction: async () => ({ kind: "operation", response: { success: true, data: { messageState: { version: 4, values: { status: "completed" } } } } }),
+  invokePageAction: async () => ({ kind: "operation", response: { success: true, data: {} } }),
   dispatch: async () => ({ success: true }) }; }
 describe("plugin UI runtime adapter", () => {
   it("coalesces simultaneous timeline reads while actions still refresh", async () => {
@@ -174,14 +175,32 @@ describe("plugin UI card protocol v2", () => {
     expect(sent[1]).toMatchObject({ cursor: "c2", previous: view });
     await expect(host.page("example.poll", "p", { page: { cursor: "c", previous: view }, refresh: view })).rejects.toThrow();
     const actions: Record<string, unknown>[] = [];
-    api.invokeAction = async (request) => { actions.push(request); return { kind: "host", target: { kind: "page", page: "example.poll.history" }, payload: { currency: "CNY" } }; };
+    api.invokePageAction = async (request) => { actions.push({ ...request }); return { kind: "host", target: { kind: "page", page: "example.poll.history" }, payload: { currency: "CNY" } }; };
     await host.invokePageAction("example.poll", "example.poll.wallet", "history", { data: view.data, userGesture: true });
-    expect(actions[0]).toMatchObject({ page: { pluginId: "example.poll", page: "example.poll.wallet" }, data: { currency: "CNY" } });
-    expect(actions[0]).not.toHaveProperty("message");
-    expect(actions[0]).not.toHaveProperty("messageId");
+    expect(actions[0]).toEqual({ pluginId: "example.poll", page: "example.poll.wallet", actionId: "history", platform: "web", userGesture: true,
+      nativeAllowlist: [], data: { currency: "CNY" } });
     expect(opened).toEqual([[{ pluginId: "example.poll", page: "example.poll.history" }, { currency: "CNY" }]]);
     const bare = new PluginUiSession(port(), "web");
     await expect(bare.page("example.poll", "example.poll.wallet")).rejects.toThrow("Plugin page unavailable");
+  });
+  it("hands a page action to the port's page action call, which frames it; the card action call is never used for it", async () => {
+    const api = port(); const card: unknown[] = []; const pages: unknown[] = [];
+    api.invokeAction = async (request) => { card.push(request); return {}; };
+    api.invokePageAction = async (request) => { pages.push({ ...request }); return { kind: "formErrors", errors: [{ input: "amount", issue: "required" }] }; };
+    const native = { capabilities: ["clipboardWrite"] as const, invoke: async () => null };
+    const host = new PluginUiSession(api, "android", () => "en-US", native);
+    const outcome = await host.invokePageAction("flare.wallet", "flare.wallet.history", "open", { row: { key: "e-1", input: { entryId: "e-1" } },
+      conversationId: "conv-1", userGesture: true, formValues: { note: "hi" }, selection: [0] });
+    expect(outcome).toEqual({ kind: "formErrors", errors: [{ input: "amount", issue: "required" }] });
+    expect(card).toEqual([]);
+    expect(pages).toEqual([{ pluginId: "flare.wallet", page: "flare.wallet.history", actionId: "open", platform: "android", userGesture: true,
+      nativeAllowlist: ["clipboardWrite"], row: { key: "e-1", input: { entryId: "e-1" } }, conversationId: "conv-1", formValues: { note: "hi" }, selection: [0] }]);
+    // An answer that arrives after the session changed (sign-out, another account) is not acted on.
+    let release!: (value: unknown) => void;
+    api.invokePageAction = () => new Promise((resolve) => { release = resolve; });
+    const pending = host.invokePageAction("flare.wallet", "flare.wallet.home", "refresh", { userGesture: false });
+    host.reset(); release({ kind: "operation", response: { success: true } });
+    await expect(pending).rejects.toThrow("Plugin session changed");
   });
   it("maps the host's UI language onto the manifest locales", () => {
     for (const tag of ["en", "en-US", "en-GB", " EN-au "]) expect(pluginManifestLocale(tag)).toBe("en-US");

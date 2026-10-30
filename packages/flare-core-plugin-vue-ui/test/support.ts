@@ -9,7 +9,7 @@ import {
 
 type Call = (request: Record<string, unknown>) => Promise<unknown>;
 /** A port whose calls the test answers (each a spy over the given implementation). */
-export function fakePort(overrides: Partial<Record<"presentMessage" | "invokeAction" | "pluginDetail", Call>> = {}) {
+export function fakePort(overrides: Partial<Record<"presentMessage" | "invokeAction" | "invokePageAction" | "pluginDetail", Call>> = {}) {
   return {
     catalog: vi.fn(async (): Promise<unknown> => ({})),
     resolveMessage: vi.fn(async (): Promise<unknown> => ({})),
@@ -17,6 +17,7 @@ export function fakePort(overrides: Partial<Record<"presentMessage" | "invokeAct
     dispatch: vi.fn(async (): Promise<unknown> => ({})),
     presentMessage: vi.fn<Call>(overrides.presentMessage ?? (async () => ({ available: false, title: "", fields: [], actions: [], stateVersion: 0 }))),
     invokeAction: vi.fn<Call>(overrides.invokeAction ?? (async () => ({ kind: "operation", response: { success: true, data: {} } }))),
+    invokePageAction: vi.fn<Call>(overrides.invokePageAction ?? (async () => ({ kind: "operation", response: { success: true, data: {} } }))),
     pluginDetail: vi.fn<Call>(overrides.pluginDetail ?? (async () => ({ available: true, title: "", fields: [], actions: [] }))),
   } satisfies PluginUiPort;
 }
