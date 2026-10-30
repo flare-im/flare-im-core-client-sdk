@@ -5,7 +5,6 @@ import { test } from "node:test";
 
 const appRoot = join(import.meta.dirname, "..");
 const clientSdkRoot = join(appRoot, "../..");
-const monorepoRoot = join(clientSdkRoot, "..");
 
 function read(path) {
   return readFileSync(join(appRoot, path), "utf8");
@@ -13,10 +12,6 @@ function read(path) {
 
 function readClientSdk(path) {
   return readFileSync(join(clientSdkRoot, path), "utf8");
-}
-
-function readFromMonorepo(path) {
-  return readFileSync(join(monorepoRoot, path), "utf8");
 }
 
 test("uni-app mounts the shared Vue workbench once through the TypeScript uni adapter", () => {
@@ -90,12 +85,12 @@ test("uni-app declares the Flutter workbench SDK capability surface it exercises
 });
 
 test("shared Vue workbench consumed by uni-app exercises the same core SDK families as Flutter", () => {
-  const clientSource = readFromMonorepo("flare-im-design/vue-im-ui/src/composables/useFlareCoreClient.ts");
-  // The uni-app consumes these workbench views from the shared kit; assert the
-  // shared implementation exercises the same core SDK families as Flutter.
-  const workbenchDir = "flare-im-design/vue-im-ui/src/app/components";
-  const sdkLabSource = readFromMonorepo(`${workbenchDir}/FlareSdkLabPanel.vue`);
-  const chatSource = readFromMonorepo(`${workbenchDir}/FlareChatWorkspace.vue`);
+  const workbench = "examples/shared/vue-reference/workbench";
+  const clientSource = readClientSdk(`${workbench}/composables/useFlareCoreClient.ts`);
+  // The uni-app consumes these workbench views from the shared Vue reference
+  // workbench; assert it exercises the same core SDK families as Flutter.
+  const sdkLabSource = readClientSdk(`${workbench}/app/components/FlareSdkLabPanel.vue`);
+  const chatSource = readClientSdk(`${workbench}/app/components/FlareChatWorkspace.vue`);
 
   for (const sdkCall of [
     "client.init",
