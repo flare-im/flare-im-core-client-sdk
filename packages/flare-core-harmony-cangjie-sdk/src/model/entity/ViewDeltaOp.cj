@@ -2,7 +2,7 @@ package flare_core_harmony_cangjie_sdk.model.entity
 
 // GENERATED. Do not edit by hand.
 // Collection/map payloads are represented as raw JSON strings at the bridge boundary.
-// One operation in an observable view delta.
+// One operation in a conversation-list view delta.
 public class ViewDeltaOp {
     // wire: `op`. Delta operation: insert, update, remove, or move.
     public let op: String

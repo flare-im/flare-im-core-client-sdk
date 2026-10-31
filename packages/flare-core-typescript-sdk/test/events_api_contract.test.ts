@@ -330,8 +330,9 @@ describe("DefaultEventsApi direct event callbacks", () => {
       totalUnread: number | null;
       syncState: string | null;
       firstConversationId: string | null;
-      opCount: number;
-      firstDeltaKey: string | null;
+      revision: number;
+      appendCount: number;
+      firstAppendKey: string | null;
     }> = [];
 
     events.onViewUpdated((event) => {
@@ -349,8 +350,9 @@ describe("DefaultEventsApi direct event callbacks", () => {
           snapshotData?.conversations?.[0]?.conversationId ??
           event.delta?.conversation?.conversationId ??
           null,
-        opCount: event.delta?.ops.length ?? 0,
-        firstDeltaKey: event.delta?.ops[0]?.key ?? null,
+        revision: event.revision,
+        appendCount: event.delta?.append?.length ?? 0,
+        firstAppendKey: event.delta?.append?.[0]?.clientMsgId ?? null,
       });
     });
 
@@ -370,8 +372,9 @@ describe("DefaultEventsApi direct event callbacks", () => {
         totalUnread: 2,
         syncState: TimelineSyncState.Synced,
         firstConversationId: "group-100",
-        opCount: 0,
-        firstDeltaKey: null,
+        revision: 1,
+        appendCount: 0,
+        firstAppendKey: null,
       },
       {
         kind: "delta",
@@ -379,8 +382,9 @@ describe("DefaultEventsApi direct event callbacks", () => {
         totalUnread: null,
         syncState: null,
         firstConversationId: null,
-        opCount: 1,
-        firstDeltaKey: "client:cm1",
+        revision: 4,
+        appendCount: 1,
+        firstAppendKey: "cm1",
       },
     ]);
 
@@ -415,17 +419,17 @@ describe("DefaultEventsApi direct event callbacks", () => {
     expect(decodedDelta).toMatchObject({
       type: "view",
       event: "updated",
+      revision: 4,
       kind: "delta",
       delta: {
         viewType: "timeline",
-        hasMore: false,
-        ops: [
-          {
-            op: "insert",
-            key: "client:cm1",
-            index: 0,
-          },
-        ],
+        prepend: [],
+        append: [{ clientMsgId: "cm1", serverId: "server-msg-1" }],
+        upsert: [],
+        remove: [],
+        hasOlder: false,
+        hasNewer: false,
+        attachedToLatest: true,
       },
     });
   });

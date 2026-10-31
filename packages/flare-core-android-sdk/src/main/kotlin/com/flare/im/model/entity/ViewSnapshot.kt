@@ -5,6 +5,6 @@ package com.flare.im.model.entity
 data class ViewSnapshot(
     /** wire: `viewType`. Snapshot tag: timeline or conversationList. */
     val viewType: String = "",
-    /** wire: `data`. Snapshot payload selected by viewType. */
+    /** wire: `data`. Snapshot payload selected by viewType: TimelineViewSnapshot for timeline, HomeTimelineSnapshot for conversationList. */
     val data: Map<String, Any?> = emptyMap(),
 )

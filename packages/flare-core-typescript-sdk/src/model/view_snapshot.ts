@@ -1,6 +1,6 @@
 /** GENERATED. Do not edit by hand. */
-import type { ConversationTimelineSnapshot } from './conversation_timeline_snapshot';
 import type { HomeTimelineSnapshot } from './home_timeline_snapshot';
+import type { TimelineViewSnapshot } from './timeline_view_snapshot';
 
 /** ViewSnapshot */
 export type ViewSnapshot =
@@ -8,7 +8,7 @@ export type ViewSnapshot =
       /** wire: `viewType`. */
       viewType: 'timeline';
       /** wire: `data`. */
-      data: ConversationTimelineSnapshot;
+      data: TimelineViewSnapshot;
     }
   | {
       /** wire: `viewType`. */

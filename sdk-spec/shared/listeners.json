@@ -222,7 +222,7 @@
       "kind": "view",
       "eventName": "updated",
       "payload": "ViewUpdate",
-      "description": "A core observable view snapshot changed."
+      "description": "A core observable view changed: the next revision, as a delta or a snapshot."
     },
     {
       "name": "onNewConversation",

@@ -18,7 +18,34 @@
       "transport": "contract-invoke-json",
       "cApi": "flare_sdk_invoke_json",
       "request": "LoadOlderTimelineViewRequest",
-      "response": "ViewLoadOlderResponse",
+      "response": "TimelineViewPageResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "loadNewerTimeline",
+      "operation": "view.timeline.load_newer",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "LoadNewerTimelineViewRequest",
+      "response": "TimelineViewPageResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "jumpToLatestTimeline",
+      "operation": "view.timeline.jump_to_latest",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "TimelineViewRequest",
+      "response": "TimelineViewPageResponse",
+      "stability": "stable"
+    },
+    {
+      "name": "timelineSnapshot",
+      "operation": "view.timeline.snapshot",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "TimelineViewRequest",
+      "response": "ViewOpenResponse",
       "stability": "stable"
     },
     {

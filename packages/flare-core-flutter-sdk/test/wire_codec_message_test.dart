@@ -215,12 +215,52 @@ void main() {
           viewUpdateFromJson(_eventGoldenMap('view_update_delta.json'));
 
       expect(update.kind, 'delta');
+      expect(update.revision, 4);
       expect(update.snapshot, isNull);
       expect(update.delta?.viewType, 'timeline');
-      expect(update.delta?.ops, hasLength(1));
-      expect(update.delta?.ops.first.item?['timelineKey'], 'client:cm1');
-      final message = messageFromJson(update.delta?.ops.first.item);
+      expect(update.delta?.append, hasLength(1));
+      final message = update.delta!.append!.first;
+      expect(message.clientMsgId, 'cm1');
       expect(message.content?.contentType, MessageContentType.text);
+      expect(update.delta?.prepend, isEmpty);
+      expect(update.delta?.upsert, isEmpty);
+      expect(update.delta?.remove, isEmpty);
+      expect(update.delta?.reorder, isNull);
+      expect(update.delta?.hasOlder, isFalse);
+      expect(update.delta?.hasNewer, isFalse);
+      expect(update.delta?.attachedToLatest, isTrue);
+    });
+
+    test('reads timeline row keys strictly', () {
+      final update = viewUpdateFromJson({
+        'viewId': 'v1',
+        'revision': 2,
+        'kind': 'delta',
+        'delta': {
+          'viewType': 'timeline',
+          'remove': ['cm-1'],
+          'reorder': ['cm-2', 'cm-3'],
+          'hasOlder': false,
+          'hasNewer': true,
+          'attachedToLatest': false,
+        },
+      });
+      expect(update.delta?.remove, ['cm-1']);
+      expect(update.delta?.reorder, ['cm-2', 'cm-3']);
+      expect(update.delta?.append, isEmpty);
+      expect(update.delta?.hasNewer, isTrue);
+      expect(
+        () => viewUpdateFromJson({
+          'viewId': 'v1',
+          'revision': 2,
+          'kind': 'delta',
+          'delta': {
+            'viewType': 'timeline',
+            'remove': [1],
+          },
+        }),
+        throwsA(isA<FormatException>()),
+      );
     });
 
     test('requires explicit snapshot or delta kind', () {
@@ -240,6 +280,7 @@ void main() {
       expect(
         () => viewUpdateFromJson({
           'viewId': 'v1',
+          'revision': 2,
           'kind': 'replace',
           'snapshot': <String, Object?>{},
         }),
@@ -253,12 +294,13 @@ void main() {
       );
     });
 
-    test('requires delta ops as an object array', () {
+    test('requires conversation-list delta ops as an object array', () {
       expect(
         () => viewUpdateFromJson({
           'viewId': 'v1',
+          'revision': 2,
           'kind': 'delta',
-          'delta': {'viewType': 'timeline'},
+          'delta': {'viewType': 'conversationList'},
         }),
         throwsA(
           isA<FormatException>().having(
@@ -272,9 +314,10 @@ void main() {
       expect(
         () => viewUpdateFromJson({
           'viewId': 'v1',
+          'revision': 2,
           'kind': 'delta',
           'delta': {
-            'viewType': 'timeline',
+            'viewType': 'conversationList',
             'ops': [null],
           },
         }),
@@ -291,8 +334,9 @@ void main() {
     test('requires strict view identity, type, and delta op fields', () {
       expect(
         () => viewUpdateFromJson({
+          'revision': 2,
           'kind': 'delta',
-          'delta': {'viewType': 'timeline', 'ops': <Object?>[]},
+          'delta': {'viewType': 'conversationList', 'ops': <Object?>[]},
         }),
         throwsA(
           isA<ArgumentError>().having(
@@ -306,6 +350,7 @@ void main() {
       expect(
         () => viewUpdateFromJson({
           'viewId': 'v1',
+          'revision': 2,
           'kind': 'delta',
           'delta': {'viewType': 'feed', 'ops': <Object?>[]},
         }),
@@ -321,9 +366,10 @@ void main() {
       expect(
         () => viewUpdateFromJson({
           'viewId': 'v1',
+          'revision': 2,
           'kind': 'delta',
           'delta': {
-            'viewType': 'timeline',
+            'viewType': 'conversationList',
             'ops': [
               {'op': 'append', 'key': 'k1', 'index': 0},
             ],
@@ -341,9 +387,10 @@ void main() {
       expect(
         () => viewUpdateFromJson({
           'viewId': 'v1',
+          'revision': 2,
           'kind': 'delta',
           'delta': {
-            'viewType': 'timeline',
+            'viewType': 'conversationList',
             'ops': [
               {'op': 'insert', 'index': 0},
             ],
@@ -361,9 +408,10 @@ void main() {
       expect(
         () => viewUpdateFromJson({
           'viewId': 'v1',
+          'revision': 2,
           'kind': 'delta',
           'delta': {
-            'viewType': 'timeline',
+            'viewType': 'conversationList',
             'ops': [
               {'op': 'insert', 'key': 'k1', 'index': '0'},
             ],

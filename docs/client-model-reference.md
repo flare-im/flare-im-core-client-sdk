@@ -477,7 +477,17 @@ Request for opening an observable conversation timeline view.
 | Field | Wire name | Type | Required | Description |
 |-------|-----------|------|----------|-------------|
 | `conversationId` | `conversationId` | `String` | yes | Conversation id to observe. |
-| `messageLimit` | `messageLimit` | `UInt32` | yes | Maximum messages to include in the initial snapshot. |
+| `messageLimit` | `messageLimit` | `UInt32` | yes | Page size: rows in the initial window and in each older or newer page when a paging request does not give its own (core default 40, at most 100). |
+| `anchor` | `anchor` | `TimelineAnchor` | no | Open around this message instead of at the latest messages; the window holds half a page on each side of it. |
+
+### TimelineAnchor
+
+The message a timeline view opens around (a search result, a quote, a pinned message).
+
+| Field | Wire name | Type | Required | Description |
+|-------|-----------|------|----------|-------------|
+| `messageId` | `messageId` | `String` | no | Server id or client id of the target. Its local seq is used when the message is stored locally. |
+| `seq` | `seq` | `UInt64` | no | Conversation seq of the target, used when the message is not stored locally. With neither the open fails with sdk.view.anchor_not_found. |
 
 ### OpenConversationListViewRequest
 
@@ -496,6 +506,23 @@ Request for extending an open timeline view with older messages.
 | `viewId` | `viewId` | `String` | yes | Timeline view id returned from openTimeline. |
 | `messageLimit` | `messageLimit` | `UInt32` | yes | Maximum older messages to load in this page. |
 
+### LoadNewerTimelineViewRequest
+
+Request for extending a timeline view that is not attached to the latest with newer messages.
+
+| Field | Wire name | Type | Required | Description |
+|-------|-----------|------|----------|-------------|
+| `viewId` | `viewId` | `String` | yes | Timeline view id returned from openTimeline. |
+| `messageLimit` | `messageLimit` | `UInt32` | yes | Maximum newer messages to load in this page. |
+
+### TimelineViewRequest
+
+Request naming an open timeline view (jumpToLatestTimeline, timelineSnapshot).
+
+| Field | Wire name | Type | Required | Description |
+|-------|-----------|------|----------|-------------|
+| `viewId` | `viewId` | `String` | yes | Timeline view id returned from openTimeline. |
+
 ### CloseViewRequest
 
 Request for closing an observable view.
@@ -504,6 +531,19 @@ Request for closing an observable view.
 |-------|-----------|------|----------|-------------|
 | `viewId` | `viewId` | `String` | yes | View id returned from an open view call. |
 
+### TimelineViewSnapshot
+
+The window of a timeline view: rows in timeline order and where it stands.
+
+| Field | Wire name | Type | Required | Description |
+|-------|-----------|------|----------|-------------|
+| `conversation` | `conversation` | `Conversation` | no | Conversation header. |
+| `messages` | `messages` | `MessageList` | yes | Rows in timeline order (oldest first); pending rows trail when the window is attached to the latest. |
+| `hasOlder` | `hasOlder` | `Boolean` | yes | More visible messages exist below the oldest row; answered by the proven seq ranges only. |
+| `hasNewer` | `hasNewer` | `Boolean` | yes | More messages exist above the newest row; true exactly when attachedToLatest is false. |
+| `attachedToLatest` | `attachedToLatest` | `Boolean` | yes | The newest row is the latest local message and live messages are appended. |
+| `anchorKey` | `anchorKey` | `String` | no | Row key of the target when the view was opened around a message. |
+
 ### ViewSnapshot
 
 Tagged snapshot emitted by core observable views.
@@ -511,20 +551,21 @@ Tagged snapshot emitted by core observable views.
 | Field | Wire name | Type | Required | Description |
 |-------|-----------|------|----------|-------------|
 | `viewType` | `viewType` | `String` | yes | Snapshot tag: timeline or conversationList. |
-| `data` | `data` | `JsonObject` | yes | Snapshot payload selected by viewType. |
+| `data` | `data` | `JsonObject` | yes | Snapshot payload selected by viewType: TimelineViewSnapshot for timeline, HomeTimelineSnapshot for conversationList. |
 
 ### ViewOpenResponse
 
-Response returned when opening an observable view.
+Response returned when opening an observable view and by timelineSnapshot.
 
 | Field | Wire name | Type | Required | Description |
 |-------|-----------|------|----------|-------------|
-| `viewId` | `viewId` | `String` | yes | Opened view id. |
-| `snapshot` | `snapshot` | `ViewSnapshot` | yes | Initial snapshot for this view. |
+| `viewId` | `viewId` | `String` | yes | View id. |
+| `revision` | `revision` | `UInt64` | yes | Revision of this snapshot; every later view.updated event for the view carries the next revision. |
+| `snapshot` | `snapshot` | `ViewSnapshot` | yes | Snapshot of the view at that revision. |
 
 ### ViewDeltaOp
 
-One operation in an observable view delta.
+One operation in a conversation-list view delta.
 
 | Field | Wire name | Type | Required | Description |
 |-------|-----------|------|----------|-------------|
@@ -536,38 +577,45 @@ One operation in an observable view delta.
 
 ### ViewDelta
 
-Typed delta emitted by core observable views.
+Typed delta emitted by core observable views. A timeline delta works by row key (clientMsgId, else serverId, else seq:<conversationId>:<conversationSeq>): remove the keys in remove, replace the rows in upsert in place, put prepend first and append last, reorder by every key when reorder is present, then take the three state fields and conversation. A conversation-list delta is the indexed ops list.
 
 | Field | Wire name | Type | Required | Description |
 |-------|-----------|------|----------|-------------|
 | `viewType` | `viewType` | `String` | yes | Delta tag: timeline or conversationList. |
-| `ops` | `ops` | `ViewDeltaOpList` | yes | Ordered delta operations. |
-| `conversation` | `conversation` | `Conversation` | no | Latest timeline conversation header for timeline deltas. |
-| `hasMore` | `hasMore` | `Boolean` | no | Latest timeline pagination state for timeline deltas. |
-| `totalUnread` | `totalUnread` | `UInt64` | no | Latest total unread value for conversation list deltas. |
-| `syncState` | `syncState` | `String` | no | Latest sync state for conversation list deltas. |
+| `prepend` | `prepend` | `MessageList` | no | Timeline: older rows to put before the first row, in timeline order. |
+| `append` | `append` | `MessageList` | no | Timeline: newer rows to put after the last row, in timeline order. |
+| `upsert` | `upsert` | `MessageList` | no | Timeline: new content of rows already in the window, replaced in place by row key. |
+| `remove` | `remove` | `StringList` | no | Timeline: row keys leaving the window. |
+| `reorder` | `reorder` | `StringList` | no | Timeline: every row key in the new order; only when the order changed in a way the other steps cannot express. |
+| `hasOlder` | `hasOlder` | `Boolean` | no | Timeline: whether more visible messages exist below the window. |
+| `hasNewer` | `hasNewer` | `Boolean` | no | Timeline: whether more messages exist above the window. |
+| `attachedToLatest` | `attachedToLatest` | `Boolean` | no | Timeline: whether the window is attached to the latest. |
+| `conversation` | `conversation` | `Conversation` | no | Timeline: the conversation header, only when it changed. |
+| `ops` | `ops` | `ViewDeltaOpList` | no | Conversation list: ordered indexed operations. |
+| `totalUnread` | `totalUnread` | `UInt64` | no | Conversation list: latest total unread value. |
+| `syncState` | `syncState` | `String` | no | Conversation list: latest sync state. |
 
 ### ViewUpdate
 
-Observable view update event payload.
+Observable view update event payload (view.updated). Every update a view publishes carries the next revision; a host that sees a revision that is not its applied revision plus 1 drops it when it is not newer, otherwise replaces its window with timelineSnapshot.
 
 | Field | Wire name | Type | Required | Description |
 |-------|-----------|------|----------|-------------|
 | `viewId` | `viewId` | `String` | yes | Updated view id. |
+| `revision` | `revision` | `UInt64` | yes | Revision this update brings the view to. |
 | `kind` | `kind` | `String` | yes | Update kind: snapshot or delta. |
-| `snapshot` | `snapshot` | `ViewSnapshot` | no | Latest snapshot for this view when kind is snapshot. |
+| `snapshot` | `snapshot` | `ViewSnapshot` | no | Whole view when kind is snapshot. |
 | `delta` | `delta` | `ViewDelta` | no | View delta when kind is delta. |
 
-### ViewLoadOlderResponse
+### TimelineViewPageResponse
 
-Response returned after extending an observable timeline view.
+Response of loadOlderTimeline, loadNewerTimeline and jumpToLatestTimeline. The rows themselves arrive only through view.updated.
 
 | Field | Wire name | Type | Required | Description |
 |-------|-----------|------|----------|-------------|
-| `viewId` | `viewId` | `String` | yes | Updated timeline view id. |
-| `loadedCount` | `loadedCount` | `UInt32` | yes | Number of older messages inserted into the view window. |
-| `hasMore` | `hasMore` | `Boolean` | yes | Whether older messages may still be available. |
-| `update` | `update` | `ViewUpdate` | no | Delta or snapshot that applies this page to the view. |
+| `viewId` | `viewId` | `String` | yes | Timeline view id. |
+| `loadedCount` | `loadedCount` | `UInt32` | yes | Rows this call added to the window. |
+| `revision` | `revision` | `UInt64` | yes | Revision that contains this page (0 when the view was already closed). |
 
 ### CloseViewResponse
 

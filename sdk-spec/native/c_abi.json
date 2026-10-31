@@ -96,6 +96,18 @@
       "reason": "Extends an open core observable timeline view with older messages through flare_sdk_invoke_json."
     },
     {
+      "id": "view.timeline.load_newer",
+      "reason": "Extends an open core observable timeline view with newer messages through flare_sdk_invoke_json."
+    },
+    {
+      "id": "view.timeline.jump_to_latest",
+      "reason": "Replaces an open core observable timeline view with the latest window through flare_sdk_invoke_json."
+    },
+    {
+      "id": "view.timeline.snapshot",
+      "reason": "Returns the current snapshot and revision of an open core observable timeline view through flare_sdk_invoke_json."
+    },
+    {
       "id": "view.conversation_list.open",
       "reason": "Opens a core observable conversation-list view through flare_sdk_invoke_json."
     },

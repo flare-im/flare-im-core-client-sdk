@@ -20,7 +20,7 @@
 | `presence` | `client.presence` | `getUserPresence`, `batchGetUserPresence`, `subscribeUserPresence` |
 | `media` | `client.media` | `uploadFile`, `uploadImage`, `uploadVideo`, `uploadBytes`, `deleteFile`, `getMediaUrl`, `getTempDownloadUrl`, `resolveMediaAccess`, `cacheRemoteMedia`, `getMediaCacheStats`, `setMediaCacheMaxBytes`, `setMediaCacheRoot`, `clearMediaCache`, `getUserDownloadSubfolder`, `setUserDownloadSubfolder`, `getUserDownloadSavedPath`, `deleteUserDownloadRecord`, `getUserDownloadDirectory`, `setUserDownloadDirectory`, `downloadToUserDirectory`, `cancelUserFileDownload`, `downloadFileToDownloads` |
 | `capabilities` | `client.capabilities` | `preparePluginCommand`, `pendingPluginCommand`, `reconcilePluginCommand`, `submitPluginCommand`, `acknowledgePluginCommand`, `invokePluginAction`, `presentPluginMessage`, `pluginUiAction`, `resolvePluginMessage`, `pluginUiCatalog`, `pluginComposerActions`, `pluginDetail`, `pluginPage`, `pluginAccountEntries`, `invalidatePluginCatalog`, `listCapabilities`, `listUserCapabilities`, `dispatchCapability`, `grantCapability`, `revokeCapability` |
-| `views` | `client.views` | `openTimeline`, `loadOlderTimeline`, `openConversationList`, `close` |
+| `views` | `client.views` | `openTimeline`, `loadOlderTimeline`, `loadNewerTimeline`, `jumpToLatestTimeline`, `timelineSnapshot`, `openConversationList`, `close` |
 | `events` | `client.events` | `subscribeEvents`, `subscribeEventsBatch`, `unsubscribe`, `unsubscribeAll` |
 | `diagnostics` | `client.diagnostics` | `getSdkVersion`, `getFfiContractVersion`, `getDataRoot`, `getRuntimeHealth` |
 

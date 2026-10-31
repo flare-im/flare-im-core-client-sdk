@@ -1,7 +1,7 @@
 import Foundation
 
 /// GENERATED. Do not edit by hand.
-/// One operation in an observable view delta.
+/// One operation in a conversation-list view delta.
 public struct ViewDeltaOp: Sendable {
     /// wire: `op`. Delta operation: insert, update, remove, or move.
     public let op: String

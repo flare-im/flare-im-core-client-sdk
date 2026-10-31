@@ -67,7 +67,7 @@ public interface FlareImEventListener {
     func onMessageUnpinned(event: MessageMutationEvent): Unit
     // Plugin card state on a local message changed: the shared layer Core publishes for the card's entity (events, sync, the caller's own result) or the viewer's local layer. Re-present that message with its messageId; version is the local layer's when that changed, the shared layer's otherwise.
     func onMessagePluginStateChanged(event: MessageMutationEvent): Unit
-    // A core observable view snapshot changed.
+    // A core observable view changed: the next revision, as a delta or a snapshot.
     func onViewUpdated(event: ViewUpdate): Unit
     // A new conversation was created or discovered.
     func onNewConversation(event: ConversationEvent): Unit

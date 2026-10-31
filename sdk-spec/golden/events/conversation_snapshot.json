@@ -1,5 +1,6 @@
 {
   "viewId": "conversation-list-main",
+  "revision": 1,
   "kind": "snapshot",
   "snapshot": {
     "viewType": "conversationList",

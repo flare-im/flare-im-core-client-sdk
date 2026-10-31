@@ -83,7 +83,7 @@ export interface EventsApi {
   onMessageUnpinned(listener: EventCallback<MessageMutationEvent>): EventSubscription;
   /** Plugin card state on a local message changed: the shared layer Core publishes for the card's entity (events, sync, the caller's own result) or the viewer's local layer. Re-present that message with its messageId; version is the local layer's when that changed, the shared layer's otherwise. */
   onMessagePluginStateChanged(listener: EventCallback<MessageMutationEvent>): EventSubscription;
-  /** A core observable view snapshot changed. */
+  /** A core observable view changed: the next revision, as a delta or a snapshot. */
   onViewUpdated(listener: EventCallback<ViewUpdate>): EventSubscription;
   /** A new conversation was created or discovered. */
   onNewConversation(listener: EventCallback<ConversationEvent>): EventSubscription;

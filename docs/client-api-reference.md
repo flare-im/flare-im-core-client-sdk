@@ -237,7 +237,10 @@ Core observable message/conversation views.
 | Method | Request | Response | Transport | C API |
 |--------|---------|----------|-----------|-------|
 | `openTimeline` | `OpenTimelineViewRequest` | `ViewOpenResponse` | `contract-invoke-json` | `flare_sdk_invoke_json` |
-| `loadOlderTimeline` | `LoadOlderTimelineViewRequest` | `ViewLoadOlderResponse` | `contract-invoke-json` | `flare_sdk_invoke_json` |
+| `loadOlderTimeline` | `LoadOlderTimelineViewRequest` | `TimelineViewPageResponse` | `contract-invoke-json` | `flare_sdk_invoke_json` |
+| `loadNewerTimeline` | `LoadNewerTimelineViewRequest` | `TimelineViewPageResponse` | `contract-invoke-json` | `flare_sdk_invoke_json` |
+| `jumpToLatestTimeline` | `TimelineViewRequest` | `TimelineViewPageResponse` | `contract-invoke-json` | `flare_sdk_invoke_json` |
+| `timelineSnapshot` | `TimelineViewRequest` | `ViewOpenResponse` | `contract-invoke-json` | `flare_sdk_invoke_json` |
 | `openConversationList` | `OpenConversationListViewRequest` | `ViewOpenResponse` | `contract-invoke-json` | `flare_sdk_invoke_json` |
 | `close` | `CloseViewRequest` | `CloseViewResponse` | `contract-invoke-json` | `flare_sdk_invoke_json` |
 

@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "description": "Timeline view paging vectors. A case gives the conversation summary, the visible messages the server holds, the local rows and the proven ranges, then steps; each step lists what the view must show and the server requests it made during that step. Proven ranges are the per-conversation closed seq ranges [from, to] the server has shown to be complete: every seq in one has a local row or is proven to hold no visible message. hasOlder is decided only by those ranges, the visibility floor and the local rows below the window, never by whether a page came back full or the oldest row is seq 1. Seq lists are written as inclusive [from, to] ranges. core-sdk reads every case in src/client/api/view_paging_tests.rs.",
+  "description": "Timeline view paging vectors. A case gives the conversation summary, the visible messages the server holds, the local rows and the proven ranges, then steps; each step lists what the view must show and the server requests it made during that step. Proven ranges are the per-conversation closed seq ranges [from, to] the server has shown to be complete: every seq in one has a local row or is proven to hold no visible message. hasOlder is decided only by those ranges, the visibility floor and the local rows below the window, never by whether a page came back full or the oldest row is seq 1. hasNewer is true exactly when the window is not attachedToLatest; a window attaches when its newer end reaches the highest proven seq, and only an attached window takes live messages. A request is a backfill {before, limit} or a newer page {after, limit}; a newer page writes the range it proves and never moves the sync cursor. When a backfill or a newer page fails, the rows already read inside a proven range join the window first and the step then fails. Seq lists are written as inclusive [from, to] ranges; window lists the sent rows and pending the row keys of rows still waiting for their ack. updates lists the kinds of the view.updated events a step published. core-sdk reads every case in src/client/api/view_paging_tests.rs.",
   "olderPaging": {
-    "description": "Paging towards older messages (view.timeline.open with no anchor, then view.timeline.load_older). Step kinds: open, loadOlder, offline and online (the server fails or answers backfill requests), liveMessage (one realtime push stored locally, no range written), gapFilled (a sync proves [from, to] and the view reloads on sync finish), event (reaction, recall or syncFinished reload the window). A backfill request is {before, limit}: the server returns the newest limit visible messages below before and has_more; has_more true proves [oldest returned seq, before - 1], false proves [1, before - 1]. A failed backfill leaves the window as it was and returns an error; local rows across the gap are never read.",
+    "description": "Paging towards older messages (view.timeline.open with no anchor, then view.timeline.load_older). Step kinds: open, loadOlder, offline and online (the server fails or answers backfill requests), liveMessage (one realtime push stored locally, no range written), gapFilled (a sync proves [from, to] and the view reloads on sync finish), event (reaction, recall or syncFinished reload the window). A backfill request is {before, limit}: the server returns the newest limit visible messages below before and has_more; has_more true proves [oldest returned seq, before - 1], false proves [1, before - 1]. When a backfill fails, the rows already read inside the proven range join the window (the range proves them contiguous with it) and the step returns an error; local rows across the gap are never read.",
     "cases": [
       {
         "name": "the first message is seq 3",
@@ -98,10 +98,7 @@
             "to": 1000,
             "expect": { "window": [[971, 1001]], "hasOlder": true, "requests": [], "coverage": [[971, 1000]] }
           },
-          {
-            "do": "loadOlder",
-            "expect": { "window": [[931, 1001]], "hasOlder": true, "requests": [{ "before": 971, "limit": 40 }] }
-          }
+          { "do": "loadOlder", "expect": { "window": [[931, 1001]], "hasOlder": true, "requests": [{ "before": 971, "limit": 40 }] } }
         ]
       },
       {
@@ -127,7 +124,12 @@
           { "do": "online" },
           {
             "do": "loadOlder",
-            "expect": { "window": [[21, 100]], "hasOlder": true, "requests": [{ "before": 61, "limit": 40 }], "coverage": [[1, 10], [21, 100]] }
+            "expect": {
+              "window": [[21, 100]],
+              "hasOlder": true,
+              "requests": [{ "before": 61, "limit": 40 }],
+              "coverage": [[1, 10], [21, 100]]
+            }
           },
           {
             "do": "loadOlder",
@@ -169,6 +171,296 @@
         "steps": [
           { "do": "open", "expect": { "window": [], "hasOlder": false, "requests": [] } },
           { "do": "loadOlder", "expect": { "window": [], "hasOlder": false, "requests": [] } }
+        ]
+      },
+      {
+        "name": "a backfill fails after rows inside the range were read",
+        "boundaryCase": "Offline below a range that still has local rows: the rows inside the range are proven contiguous with the window, so they join it before the backfill at the range boundary fails and the step returns the error. Back online the next page backfills from the same boundary.",
+        "pageSize": 40,
+        "conversation": { "maxSeq": 100, "visibleAfterSeq": 0 },
+        "server": { "visibleMessages": [[1, 100]] },
+        "local": { "messages": [[50, 100]], "coverage": [[50, 100]] },
+        "steps": [
+          { "do": "open", "expect": { "window": [[61, 100]], "hasOlder": true, "requests": [] } },
+          { "do": "offline" },
+          {
+            "do": "loadOlder",
+            "expect": {
+              "error": true,
+              "window": [[50, 100]],
+              "hasOlder": true,
+              "requests": [{ "before": 50, "limit": 29 }],
+              "coverage": [[50, 100]],
+              "updates": ["delta"]
+            }
+          },
+          { "do": "online" },
+          {
+            "do": "loadOlder",
+            "expect": {
+              "window": [[10, 100]],
+              "hasOlder": true,
+              "requests": [{ "before": 50, "limit": 40 }],
+              "coverage": [[10, 100]],
+              "updates": ["delta"]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "newerPaging": {
+    "description": "Paging towards newer messages from a window that is not attached to the latest (view.timeline.load_newer). Symmetric to olderPaging: rows are read locally inside the range above the window's newest row; at a range boundary, or when the window sits right below a hole, a newer page {after, limit} is fetched, which writes [after + 1, the seq it is contiguous to] and never moves the sync cursor. The page that reaches the highest proven seq attaches the window (hasNewer false); from then on live messages are appended and loadNewer does nothing.",
+    "cases": [
+      {
+        "name": "newer pages inside a range join the latest",
+        "boundaryCase": "A window opened around seq 100 in a conversation proven from 1 to 200: newer pages read the local rows of the range without a request; the page that reaches the highest proven seq attaches the window, after which live messages are appended and loadNewer does nothing.",
+        "pageSize": 40,
+        "conversation": { "maxSeq": 200, "visibleAfterSeq": 0 },
+        "server": { "visibleMessages": [[1, 200]] },
+        "local": { "messages": [[1, 200]], "coverage": [[1, 200]] },
+        "steps": [
+          {
+            "do": "openAround",
+            "seq": 100,
+            "expect": {
+              "window": [[81, 120]],
+              "hasOlder": true,
+              "hasNewer": true,
+              "attachedToLatest": false,
+              "anchorKey": "m100",
+              "requests": []
+            }
+          },
+          {
+            "do": "loadNewer",
+            "expect": { "window": [[81, 160]], "hasNewer": true, "attachedToLatest": false, "requests": [], "updates": ["delta"] }
+          },
+          {
+            "do": "loadNewer",
+            "expect": { "window": [[81, 200]], "hasNewer": false, "attachedToLatest": true, "requests": [], "updates": ["delta"] }
+          },
+          { "do": "loadNewer", "expect": { "window": [[81, 200]], "attachedToLatest": true, "requests": [], "updates": [] } },
+          {
+            "do": "liveMessage",
+            "seq": 201,
+            "expect": { "window": [[81, 201]], "attachedToLatest": true, "requests": [], "updates": ["delta"] }
+          }
+        ]
+      },
+      {
+        "name": "a newer page crosses a hole without moving the cursor",
+        "boundaryCase": "Above the window is a hole up to an island that reaches the latest: each newer page is fetched after the window's newest seq or after the range boundary, writes the range it proves and leaves the sync cursor alone; once the ranges join, the window reads the island locally and attaches.",
+        "pageSize": 40,
+        "conversation": { "maxSeq": 200, "visibleAfterSeq": 0 },
+        "server": { "visibleMessages": [[1, 200]] },
+        "local": { "messages": [[1, 100], [181, 200]], "coverage": [[1, 100], [181, 200]] },
+        "steps": [
+          {
+            "do": "openAround",
+            "seq": 80,
+            "expect": { "window": [[61, 100]], "hasNewer": true, "attachedToLatest": false, "anchorKey": "m80", "requests": [] }
+          },
+          {
+            "do": "loadNewer",
+            "expect": {
+              "window": [[61, 140]],
+              "hasNewer": true,
+              "requests": [{ "after": 100, "limit": 40 }],
+              "coverage": [[1, 140], [181, 200]]
+            }
+          },
+          {
+            "do": "loadNewer",
+            "expect": { "window": [[61, 180]], "hasNewer": true, "requests": [{ "after": 140, "limit": 40 }], "coverage": [[1, 200]] }
+          },
+          { "do": "loadNewer", "expect": { "window": [[61, 200]], "hasNewer": false, "attachedToLatest": true, "requests": [] } }
+        ]
+      },
+      {
+        "name": "a newer page fails after rows inside the range were read",
+        "boundaryCase": "Offline above a range that still has local rows: they join the window before the newer page at the range boundary fails and the step returns the error; the window stays detached. Back online the page is fetched from the same boundary.",
+        "pageSize": 40,
+        "conversation": { "maxSeq": 200, "visibleAfterSeq": 0 },
+        "server": { "visibleMessages": [[1, 200]] },
+        "local": { "messages": [[1, 100], [151, 200]], "coverage": [[1, 100], [151, 200]] },
+        "steps": [
+          { "do": "openAround", "seq": 70, "expect": { "window": [[51, 90]], "hasNewer": true, "anchorKey": "m70", "requests": [] } },
+          { "do": "offline" },
+          {
+            "do": "loadNewer",
+            "expect": {
+              "error": true,
+              "window": [[51, 100]],
+              "hasNewer": true,
+              "attachedToLatest": false,
+              "requests": [{ "after": 100, "limit": 30 }],
+              "updates": ["delta"]
+            }
+          },
+          { "do": "online" },
+          {
+            "do": "loadNewer",
+            "expect": {
+              "window": [[51, 140]],
+              "hasNewer": true,
+              "requests": [{ "after": 100, "limit": 40 }],
+              "coverage": [[1, 140], [151, 200]]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "anchors": {
+    "description": "Opening around a message (view.timeline.open with anchor {messageId, seq}). The target seq is the local message's seq when messageId is found locally, else the given seq; with neither the open fails with sdk.view.anchor_not_found. Half a page is shown on each side of the target (the target counts on the older side). When the range holding the target covers half a page on each side, the window is read locally with no request; otherwise exactly two requests run together: a backfill {before: seq + 1} and a newer page {after: seq}, half a page each. anchorKey is the target row's key.",
+    "cases": [
+      {
+        "name": "a target outside the proven ranges takes exactly two requests",
+        "boundaryCase": "Jump to a search result at seq 500 in a conversation whose device only holds the latest rows: one backfill before 501 and one newer page after 500, each half a page, prove the target's surroundings; the window opens around it with anchorKey set and stays detached, live messages stay out, and jumpToLatest brings back the latest window as a snapshot.",
+        "pageSize": 40,
+        "conversation": { "maxSeq": 1000, "visibleAfterSeq": 0 },
+        "server": { "visibleMessages": [[1, 1000]] },
+        "local": { "messages": [[981, 1000]], "coverage": [[981, 1000]] },
+        "steps": [
+          {
+            "do": "openAround",
+            "messageId": "s500",
+            "seq": 500,
+            "expect": {
+              "window": [[481, 520]],
+              "hasOlder": true,
+              "hasNewer": true,
+              "attachedToLatest": false,
+              "anchorKey": "m500",
+              "requests": [{ "before": 501, "limit": 20 }, { "after": 500, "limit": 20 }],
+              "coverage": [[481, 520], [981, 1000]]
+            }
+          },
+          {
+            "do": "liveMessage",
+            "seq": 1001,
+            "expect": { "window": [[481, 520]], "hasNewer": true, "attachedToLatest": false, "requests": [], "updates": [] }
+          },
+          {
+            "do": "jumpToLatest",
+            "expect": {
+              "window": [[981, 1001]],
+              "hasOlder": true,
+              "hasNewer": false,
+              "attachedToLatest": true,
+              "anchorKey": null,
+              "requests": [],
+              "updates": ["snapshot"]
+            }
+          }
+        ]
+      },
+      {
+        "name": "a covered target opens without a request",
+        "boundaryCase": "The target and half a page on each side are inside a proven range: the window is read locally, half a page before the target and half after.",
+        "pageSize": 40,
+        "conversation": { "maxSeq": 100, "visibleAfterSeq": 0 },
+        "server": { "visibleMessages": [[1, 100]] },
+        "local": { "messages": [[1, 100]], "coverage": [[1, 100]] },
+        "steps": [
+          {
+            "do": "openAround",
+            "messageId": "m50",
+            "expect": {
+              "window": [[31, 70]],
+              "hasOlder": true,
+              "hasNewer": true,
+              "attachedToLatest": false,
+              "anchorKey": "m50",
+              "requests": []
+            }
+          }
+        ]
+      },
+      {
+        "name": "a target near the newest message opens attached",
+        "boundaryCase": "The rows after the target reach the highest proven seq before half a page fills: the window opens attached to the latest.",
+        "pageSize": 40,
+        "conversation": { "maxSeq": 100, "visibleAfterSeq": 0 },
+        "server": { "visibleMessages": [[1, 100]] },
+        "local": { "messages": [[1, 100]], "coverage": [[1, 100]] },
+        "steps": [
+          {
+            "do": "openAround",
+            "messageId": "s95",
+            "expect": {
+              "window": [[76, 100]],
+              "hasOlder": true,
+              "hasNewer": false,
+              "attachedToLatest": true,
+              "anchorKey": "m95",
+              "requests": []
+            }
+          },
+          { "do": "liveMessage", "seq": 101, "expect": { "window": [[76, 101]], "attachedToLatest": true } }
+        ]
+      },
+      {
+        "name": "an anchor nothing can place is an error",
+        "boundaryCase": "The message id is not in the local store and no seq was given: opening fails with sdk.view.anchor_not_found and no request is made.",
+        "pageSize": 40,
+        "conversation": { "maxSeq": 100, "visibleAfterSeq": 0 },
+        "server": { "visibleMessages": [[1, 100]] },
+        "local": { "messages": [[61, 100]], "coverage": [[61, 100]] },
+        "steps": [
+          {
+            "do": "openAround",
+            "messageId": "s7",
+            "expect": { "error": true, "errorReason": "sdk.view.anchor_not_found", "requests": [] }
+          }
+        ]
+      }
+    ]
+  },
+  "liveUpdates": {
+    "description": "Live updates. An attached window appends live messages in timeline order; a detached window takes none (hasNewer stays true) and only updates rows it already holds. Sending from a detached window first replaces the window with the latest one, as a snapshot that already carries the pending row; the ack keeps the row key, so it is an in-place update.",
+    "cases": [
+      {
+        "name": "sending from a detached window goes back to the latest",
+        "boundaryCase": "The user sends while reading an old part of the conversation: the core first replaces the window with the latest one, which carries the pending row, as a snapshot; the ack then updates that row in place under the same key.",
+        "pageSize": 40,
+        "conversation": { "maxSeq": 1000, "visibleAfterSeq": 0 },
+        "server": { "visibleMessages": [[1, 1000]] },
+        "local": { "messages": [[1, 1000]], "coverage": [[1, 1000]] },
+        "steps": [
+          { "do": "openAround", "seq": 100, "expect": { "window": [[81, 120]], "attachedToLatest": false, "requests": [] } },
+          {
+            "do": "send",
+            "clientMsgId": "cm-a",
+            "expect": {
+              "window": [[962, 1000]],
+              "pending": ["cm-a"],
+              "hasNewer": false,
+              "attachedToLatest": true,
+              "updates": ["snapshot"]
+            }
+          },
+          {
+            "do": "ack",
+            "clientMsgId": "cm-a",
+            "seq": 1001,
+            "expect": { "window": [[962, 1001]], "pending": [], "attachedToLatest": true, "updates": ["delta"] }
+          }
+        ]
+      },
+      {
+        "name": "an attached window appends live messages and acks in place",
+        "boundaryCase": "Live messages join the tail of an attached window in timeline order; a send appends its pending row and the ack keeps the row key, so the host replaces the row in place.",
+        "pageSize": 40,
+        "conversation": { "maxSeq": 50, "visibleAfterSeq": 0 },
+        "server": { "visibleMessages": [[1, 50]] },
+        "local": { "messages": [[1, 50]], "coverage": [[1, 50]] },
+        "steps": [
+          { "do": "open", "expect": { "window": [[11, 50]], "attachedToLatest": true } },
+          { "do": "liveMessage", "seq": 51, "expect": { "window": [[11, 51]], "updates": ["delta"] } },
+          { "do": "send", "clientMsgId": "cm-b", "expect": { "window": [[11, 51]], "pending": ["cm-b"], "updates": ["delta"] } },
+          { "do": "ack", "clientMsgId": "cm-b", "seq": 52, "expect": { "window": [[11, 52]], "pending": [], "updates": ["delta"] } }
         ]
       }
     ]

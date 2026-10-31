@@ -489,37 +489,97 @@ describe("wireCodec view delta contract", () => {
     const update = viewUpdateFromJson(readEventGolden("view_update_delta.json"));
 
     expect(update.kind).toBe("delta");
+    expect(update.revision).toBe(4);
     expect(update.snapshot).toBeUndefined();
     expect(update.delta?.viewType).toBe("timeline");
-    expect(update.delta?.ops).toHaveLength(1);
-    expect(update.delta?.ops[0]?.item?.timelineKey).toBe("client:cm1");
-    expect(update.delta?.ops[0]?.item?.content?.contentType).toBe(
+    expect(update.delta?.append).toHaveLength(1);
+    expect(update.delta?.append?.[0]?.clientMsgId).toBe("cm1");
+    expect(update.delta?.append?.[0]?.content?.contentType).toBe(
       MessageContentType.Text,
     );
+    expect(update.delta?.prepend).toEqual([]);
+    expect(update.delta?.upsert).toEqual([]);
+    expect(update.delta?.remove).toEqual([]);
+    expect(update.delta?.reorder).toBeUndefined();
+    expect(update.delta?.hasOlder).toBe(false);
+    expect(update.delta?.hasNewer).toBe(false);
+    expect(update.delta?.attachedToLatest).toBe(true);
   });
 
   it("requires explicit snapshot or delta kind", () => {
-    expect(() => viewUpdateFromJson({ viewId: "v1", snapshot: {} })).toThrow(
+    expect(() => viewUpdateFromJson({ viewId: "v1", revision: 1, snapshot: {} })).toThrow(
       "invalid view update kind: <empty>",
     );
-    expect(() => viewUpdateFromJson({ viewId: "v1", kind: "replace", snapshot: {} })).toThrow(
-      "invalid view update kind: replace",
-    );
+    expect(() =>
+      viewUpdateFromJson({ viewId: "v1", revision: 1, kind: "replace", snapshot: {} }),
+    ).toThrow("invalid view update kind: replace");
   });
 
-  it("requires delta ops as an object array", () => {
+  it("requires a revision", () => {
+    expect(() =>
+      viewUpdateFromJson({ viewId: "v1", kind: "delta", delta: { viewType: "timeline" } }),
+    ).toThrow("ViewUpdate.revision is required");
+  });
+
+  it("reads timeline rows and row keys strictly", () => {
     expect(() =>
       viewUpdateFromJson({
         viewId: "v1",
+        revision: 2,
+        kind: "delta",
+        delta: { viewType: "timeline", append: [null], hasOlder: true, hasNewer: false, attachedToLatest: true },
+      }),
+    ).toThrow("ViewDelta.append[0] must be an object");
+    expect(() =>
+      viewUpdateFromJson({
+        viewId: "v1",
+        revision: 2,
+        kind: "delta",
+        delta: { viewType: "timeline", remove: [1], hasOlder: true, hasNewer: false, attachedToLatest: true },
+      }),
+    ).toThrow("ViewDelta.remove must be a list of row keys");
+    const reordered = viewUpdateFromJson({
+      viewId: "v1",
+      revision: 2,
+      kind: "delta",
+      delta: {
+        viewType: "timeline",
+        remove: ["cm-1"],
+        reorder: ["cm-2", "cm-3"],
+        hasOlder: false,
+        hasNewer: true,
+        attachedToLatest: false,
+      },
+    });
+    expect(reordered.delta?.remove).toEqual(["cm-1"]);
+    expect(reordered.delta?.reorder).toEqual(["cm-2", "cm-3"]);
+    expect(reordered.delta?.append).toEqual([]);
+    expect(reordered.delta?.hasNewer).toBe(true);
+    expect(() =>
+      viewUpdateFromJson({
+        viewId: "v1",
+        revision: 2,
         kind: "delta",
         delta: { viewType: "timeline" },
+      }),
+    ).toThrow("wire field must be a boolean");
+  });
+
+  it("requires conversation-list delta ops as an object array", () => {
+    expect(() =>
+      viewUpdateFromJson({
+        viewId: "v1",
+        revision: 2,
+        kind: "delta",
+        delta: { viewType: "conversationList" },
       }),
     ).toThrow("ViewDelta.ops must be an array");
     expect(() =>
       viewUpdateFromJson({
         viewId: "v1",
+        revision: 2,
         kind: "delta",
-        delta: { viewType: "timeline", ops: [null] },
+        delta: { viewType: "conversationList", ops: [null] },
       }),
     ).toThrow("ViewDelta.ops[0] must be an object");
   });
@@ -527,14 +587,16 @@ describe("wireCodec view delta contract", () => {
   it("requires strict view identity, type, and delta op fields", () => {
     expect(() =>
       viewUpdateFromJson({
+        revision: 2,
         kind: "delta",
-        delta: { viewType: "timeline", ops: [] },
+        delta: { viewType: "conversationList", ops: [] },
       }),
     ).toThrow("ViewUpdate.viewId is required");
 
     expect(() =>
       viewUpdateFromJson({
         viewId: "v1",
+        revision: 2,
         kind: "delta",
         delta: { viewType: "feed", ops: [] },
       }),
@@ -543,24 +605,27 @@ describe("wireCodec view delta contract", () => {
     expect(() =>
       viewUpdateFromJson({
         viewId: "v1",
+        revision: 2,
         kind: "delta",
-        delta: { viewType: "timeline", ops: [{ op: "append", key: "k1", index: 0 }] },
+        delta: { viewType: "conversationList", ops: [{ op: "append", key: "k1", index: 0 }] },
       }),
     ).toThrow("invalid view delta op: append");
 
     expect(() =>
       viewUpdateFromJson({
         viewId: "v1",
+        revision: 2,
         kind: "delta",
-        delta: { viewType: "timeline", ops: [{ op: "insert", index: 0 }] },
+        delta: { viewType: "conversationList", ops: [{ op: "insert", index: 0 }] },
       }),
     ).toThrow("ViewDeltaOp.key is required");
 
     expect(() =>
       viewUpdateFromJson({
         viewId: "v1",
+        revision: 2,
         kind: "delta",
-        delta: { viewType: "timeline", ops: [{ op: "insert", key: "k1", index: "0" }] },
+        delta: { viewType: "conversationList", ops: [{ op: "insert", key: "k1", index: "0" }] },
       }),
     ).toThrow("ViewDeltaOp.index must be an unsigned integer");
   });

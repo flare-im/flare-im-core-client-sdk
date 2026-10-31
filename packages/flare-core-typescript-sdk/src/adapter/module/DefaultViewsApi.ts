@@ -1,9 +1,9 @@
 // GENERATED. Do not edit by hand.
 import { NativeBridge, NativeCallMap } from '../../contract/bridge_contract';
 import type { ViewsApi } from '../../api/modules/views';
-import { CloseViewRequest, CloseViewResponse, LoadOlderTimelineViewRequest, OpenConversationListViewRequest, OpenTimelineViewRequest, ViewLoadOlderResponse, ViewOpenResponse } from '../../model';
+import { CloseViewRequest, CloseViewResponse, LoadNewerTimelineViewRequest, LoadOlderTimelineViewRequest, OpenConversationListViewRequest, OpenTimelineViewRequest, TimelineViewPageResponse, TimelineViewRequest, ViewOpenResponse } from '../../model';
 import { invokeBool, invokeConnectionState, invokeConversation, invokeConversationTimelineSnapshot, invokeHomeTimelineSnapshot, invokeListConversations, invokeListMessages, invokeMap, invokeMessage, invokeSendAck, invokeVoid, sdkErrorPayloadFromError } from '../codec/nativeInvoke';
-import { closeViewRequestToMap, closeViewResponseFromJson, conversationFromJson, listConversationsResponseFromJson, listMessagesResponseFromJson, listOfMaps, loadOlderTimelineViewRequestToMap, messageFromJson, openConversationListViewRequestToMap, openTimelineViewRequestToMap, sendAckFromJson, sendMessageRequestToMap, viewLoadOlderResponseFromJson, viewOpenResponseFromJson } from '../codec/wireCodec';
+import { closeViewRequestToMap, closeViewResponseFromJson, conversationFromJson, listConversationsResponseFromJson, listMessagesResponseFromJson, listOfMaps, loadNewerTimelineViewRequestToMap, loadOlderTimelineViewRequestToMap, messageFromJson, openConversationListViewRequestToMap, openTimelineViewRequestToMap, sendAckFromJson, sendMessageRequestToMap, timelineViewPageResponseFromJson, timelineViewRequestToMap, viewOpenResponseFromJson } from '../codec/wireCodec';
 
 export class DefaultViewsApi implements ViewsApi {
   constructor(private readonly bridge: NativeBridge) {}
@@ -13,9 +13,24 @@ export class DefaultViewsApi implements ViewsApi {
     return viewOpenResponseFromJson(raw);
   }
 
-  async loadOlderTimeline(request: LoadOlderTimelineViewRequest): Promise<ViewLoadOlderResponse> {
+  async loadOlderTimeline(request: LoadOlderTimelineViewRequest): Promise<TimelineViewPageResponse> {
     const raw = await invokeMap(this.bridge, NativeCallMap.viewTimelineLoadOlder, loadOlderTimelineViewRequestToMap(request));
-    return viewLoadOlderResponseFromJson(raw);
+    return timelineViewPageResponseFromJson(raw);
+  }
+
+  async loadNewerTimeline(request: LoadNewerTimelineViewRequest): Promise<TimelineViewPageResponse> {
+    const raw = await invokeMap(this.bridge, NativeCallMap.viewTimelineLoadNewer, loadNewerTimelineViewRequestToMap(request));
+    return timelineViewPageResponseFromJson(raw);
+  }
+
+  async jumpToLatestTimeline(request: TimelineViewRequest): Promise<TimelineViewPageResponse> {
+    const raw = await invokeMap(this.bridge, NativeCallMap.viewTimelineJumpToLatest, timelineViewRequestToMap(request));
+    return timelineViewPageResponseFromJson(raw);
+  }
+
+  async timelineSnapshot(request: TimelineViewRequest): Promise<ViewOpenResponse> {
+    const raw = await invokeMap(this.bridge, NativeCallMap.viewTimelineSnapshot, timelineViewRequestToMap(request));
+    return viewOpenResponseFromJson(raw);
   }
 
   async openConversationList(request: OpenConversationListViewRequest): Promise<ViewOpenResponse> {

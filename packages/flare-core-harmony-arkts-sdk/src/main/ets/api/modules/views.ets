@@ -4,7 +4,10 @@ import { ConnectionEvent, ConversationEvent, LifecycleEvent, MessageMutationEven
 /** Core observable message/conversation views. */
 export interface ViewsApi {
   openTimeline(request: OpenTimelineViewRequest): Promise<ViewOpenResponse>;
-  loadOlderTimeline(request: LoadOlderTimelineViewRequest): Promise<ViewLoadOlderResponse>;
+  loadOlderTimeline(request: LoadOlderTimelineViewRequest): Promise<TimelineViewPageResponse>;
+  loadNewerTimeline(request: LoadNewerTimelineViewRequest): Promise<TimelineViewPageResponse>;
+  jumpToLatestTimeline(request: TimelineViewRequest): Promise<TimelineViewPageResponse>;
+  timelineSnapshot(request: TimelineViewRequest): Promise<ViewOpenResponse>;
   openConversationList(request: OpenConversationListViewRequest): Promise<ViewOpenResponse>;
   close(request: CloseViewRequest): Promise<CloseViewResponse>;
 }

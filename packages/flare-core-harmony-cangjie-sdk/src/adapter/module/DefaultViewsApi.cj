@@ -16,8 +16,20 @@ public class DefaultViewsApi <: ViewsApi {
         return bridge.invoke(descriptor: NativeCallMap.viewTimelineOpen, requestJson: wireEncodeRequest(openTimelineViewRequestToJson(request)))
     }
 
-    public func loadOlderTimeline(request: LoadOlderTimelineViewRequest): ViewLoadOlderResponse {
+    public func loadOlderTimeline(request: LoadOlderTimelineViewRequest): TimelineViewPageResponse {
         return bridge.invoke(descriptor: NativeCallMap.viewTimelineLoadOlder, requestJson: wireEncodeRequest(loadOlderTimelineViewRequestToJson(request)))
+    }
+
+    public func loadNewerTimeline(request: LoadNewerTimelineViewRequest): TimelineViewPageResponse {
+        return bridge.invoke(descriptor: NativeCallMap.viewTimelineLoadNewer, requestJson: wireEncodeRequest(loadNewerTimelineViewRequestToJson(request)))
+    }
+
+    public func jumpToLatestTimeline(request: TimelineViewRequest): TimelineViewPageResponse {
+        return bridge.invoke(descriptor: NativeCallMap.viewTimelineJumpToLatest, requestJson: wireEncodeRequest(timelineViewRequestToJson(request)))
+    }
+
+    public func timelineSnapshot(request: TimelineViewRequest): ViewOpenResponse {
+        return bridge.invoke(descriptor: NativeCallMap.viewTimelineSnapshot, requestJson: wireEncodeRequest(timelineViewRequestToJson(request)))
     }
 
     public func openConversationList(request: OpenConversationListViewRequest): ViewOpenResponse {

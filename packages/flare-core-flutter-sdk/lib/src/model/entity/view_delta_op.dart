@@ -1,6 +1,6 @@
 // GENERATED. Do not edit by hand.
 
-/// One operation in an observable view delta.
+/// One operation in a conversation-list view delta.
 final class ViewDeltaOp {
   /// wire: `op`. Delta operation: insert, update, remove, or move.
   final String op;

@@ -37,8 +37,20 @@ class DefaultViewsApi(
         return viewOpenResponseFromJson(invokeMap(bridge, NativeCallMap.VIEW_TIMELINE_OPEN, openTimelineViewRequestToMap(request)))
     }
 
-    override suspend fun loadOlderTimeline(request: LoadOlderTimelineViewRequest): ViewLoadOlderResponse {
-        return viewLoadOlderResponseFromJson(invokeMap(bridge, NativeCallMap.VIEW_TIMELINE_LOAD_OLDER, loadOlderTimelineViewRequestToMap(request)))
+    override suspend fun loadOlderTimeline(request: LoadOlderTimelineViewRequest): TimelineViewPageResponse {
+        return timelineViewPageResponseFromJson(invokeMap(bridge, NativeCallMap.VIEW_TIMELINE_LOAD_OLDER, loadOlderTimelineViewRequestToMap(request)))
+    }
+
+    override suspend fun loadNewerTimeline(request: LoadNewerTimelineViewRequest): TimelineViewPageResponse {
+        return timelineViewPageResponseFromJson(invokeMap(bridge, NativeCallMap.VIEW_TIMELINE_LOAD_NEWER, loadNewerTimelineViewRequestToMap(request)))
+    }
+
+    override suspend fun jumpToLatestTimeline(request: TimelineViewRequest): TimelineViewPageResponse {
+        return timelineViewPageResponseFromJson(invokeMap(bridge, NativeCallMap.VIEW_TIMELINE_JUMP_TO_LATEST, timelineViewRequestToMap(request)))
+    }
+
+    override suspend fun timelineSnapshot(request: TimelineViewRequest): ViewOpenResponse {
+        return viewOpenResponseFromJson(invokeMap(bridge, NativeCallMap.VIEW_TIMELINE_SNAPSHOT, timelineViewRequestToMap(request)))
     }
 
     override suspend fun openConversationList(request: OpenConversationListViewRequest): ViewOpenResponse {

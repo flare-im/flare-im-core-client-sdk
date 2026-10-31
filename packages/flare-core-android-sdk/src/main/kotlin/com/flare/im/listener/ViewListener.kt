@@ -24,6 +24,6 @@ import com.flare.im.model.response.*
 /** GENERATED. Do not edit by hand. */
 /** View listener callbacks. */
 interface ViewEventListener {
-    /** A core observable view snapshot changed. */
+    /** A core observable view changed: the next revision, as a delta or a snapshot. */
     fun onViewUpdated(event: ViewUpdate) {}
 }

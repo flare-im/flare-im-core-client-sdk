@@ -5,7 +5,7 @@ import Foundation
 public struct ViewSnapshot: Sendable {
     /// wire: `viewType`. Snapshot tag: timeline or conversationList.
     public let viewType: String
-    /// wire: `data`. Snapshot payload selected by viewType.
+    /// wire: `data`. Snapshot payload selected by viewType: TimelineViewSnapshot for timeline, HomeTimelineSnapshot for conversationList.
     public let data: [String: AnySendable]
 
     public init(viewType: String = "", data: [String: AnySendable] = [:]) {

@@ -545,7 +545,7 @@
       "payload": "MessageMutationEvent"
     },
     {
-      "description": "A core observable view snapshot changed.",
+      "description": "A core observable view changed: the next revision, as a delta or a snapshot.",
       "eventName": "updated",
       "kind": "view",
       "name": "onViewUpdated",
@@ -2632,14 +2632,41 @@
               "wireName": "conversationId"
             },
             {
-              "description": "Maximum messages to include in the initial snapshot.",
+              "description": "Page size: rows in the initial window and in each older or newer page when a paging request does not give its own (core default 40, at most 100).",
               "name": "messageLimit",
               "required": true,
               "type": "UInt32",
               "wireName": "messageLimit"
+            },
+            {
+              "description": "Open around this message instead of at the latest messages; the window holds half a page on each side of it.",
+              "name": "anchor",
+              "required": false,
+              "type": "TimelineAnchor",
+              "wireName": "anchor"
             }
           ],
           "name": "OpenTimelineViewRequest"
+        },
+        {
+          "description": "The message a timeline view opens around (a search result, a quote, a pinned message).",
+          "fields": [
+            {
+              "description": "Server id or client id of the target. Its local seq is used when the message is stored locally.",
+              "name": "messageId",
+              "required": false,
+              "type": "String",
+              "wireName": "messageId"
+            },
+            {
+              "description": "Conversation seq of the target, used when the message is not stored locally. With neither the open fails with sdk.view.anchor_not_found.",
+              "name": "seq",
+              "required": false,
+              "type": "UInt64",
+              "wireName": "seq"
+            }
+          ],
+          "name": "TimelineAnchor"
         },
         {
           "description": "Request for opening an observable conversation list view.",
@@ -2675,6 +2702,39 @@
           "name": "LoadOlderTimelineViewRequest"
         },
         {
+          "description": "Request for extending a timeline view that is not attached to the latest with newer messages.",
+          "fields": [
+            {
+              "description": "Timeline view id returned from openTimeline.",
+              "name": "viewId",
+              "required": true,
+              "type": "String",
+              "wireName": "viewId"
+            },
+            {
+              "description": "Maximum newer messages to load in this page.",
+              "name": "messageLimit",
+              "required": true,
+              "type": "UInt32",
+              "wireName": "messageLimit"
+            }
+          ],
+          "name": "LoadNewerTimelineViewRequest"
+        },
+        {
+          "description": "Request naming an open timeline view (jumpToLatestTimeline, timelineSnapshot).",
+          "fields": [
+            {
+              "description": "Timeline view id returned from openTimeline.",
+              "name": "viewId",
+              "required": true,
+              "type": "String",
+              "wireName": "viewId"
+            }
+          ],
+          "name": "TimelineViewRequest"
+        },
+        {
           "description": "Request for closing an observable view.",
           "fields": [
             {
@@ -2688,6 +2748,54 @@
           "name": "CloseViewRequest"
         },
         {
+          "description": "The window of a timeline view: rows in timeline order and where it stands.",
+          "fields": [
+            {
+              "description": "Conversation header.",
+              "name": "conversation",
+              "required": false,
+              "type": "Conversation",
+              "wireName": "conversation"
+            },
+            {
+              "description": "Rows in timeline order (oldest first); pending rows trail when the window is attached to the latest.",
+              "name": "messages",
+              "required": true,
+              "type": "MessageList",
+              "wireName": "messages"
+            },
+            {
+              "description": "More visible messages exist below the oldest row; answered by the proven seq ranges only.",
+              "name": "hasOlder",
+              "required": true,
+              "type": "Boolean",
+              "wireName": "hasOlder"
+            },
+            {
+              "description": "More messages exist above the newest row; true exactly when attachedToLatest is false.",
+              "name": "hasNewer",
+              "required": true,
+              "type": "Boolean",
+              "wireName": "hasNewer"
+            },
+            {
+              "description": "The newest row is the latest local message and live messages are appended.",
+              "name": "attachedToLatest",
+              "required": true,
+              "type": "Boolean",
+              "wireName": "attachedToLatest"
+            },
+            {
+              "description": "Row key of the target when the view was opened around a message.",
+              "name": "anchorKey",
+              "required": false,
+              "type": "String",
+              "wireName": "anchorKey"
+            }
+          ],
+          "name": "TimelineViewSnapshot"
+        },
+        {
           "description": "Tagged snapshot emitted by core observable views.",
           "fields": [
             {
@@ -2698,7 +2806,7 @@
               "wireName": "viewType"
             },
             {
-              "description": "Snapshot payload selected by viewType.",
+              "description": "Snapshot payload selected by viewType: TimelineViewSnapshot for timeline, HomeTimelineSnapshot for conversationList.",
               "name": "data",
               "required": true,
               "type": "JsonObject",
@@ -2708,17 +2816,24 @@
           "name": "ViewSnapshot"
         },
         {
-          "description": "Response returned when opening an observable view.",
+          "description": "Response returned when opening an observable view and by timelineSnapshot.",
           "fields": [
             {
-              "description": "Opened view id.",
+              "description": "View id.",
               "name": "viewId",
               "required": true,
               "type": "String",
               "wireName": "viewId"
             },
             {
-              "description": "Initial snapshot for this view.",
+              "description": "Revision of this snapshot; every later view.updated event for the view carries the next revision.",
+              "name": "revision",
+              "required": true,
+              "type": "UInt64",
+              "wireName": "revision"
+            },
+            {
+              "description": "Snapshot of the view at that revision.",
               "name": "snapshot",
               "required": true,
               "type": "ViewSnapshot",
@@ -2728,7 +2843,7 @@
           "name": "ViewOpenResponse"
         },
         {
-          "description": "One operation in an observable view delta.",
+          "description": "One operation in a conversation-list view delta.",
           "fields": [
             {
               "description": "Delta operation: insert, update, remove, or move.",
@@ -2769,7 +2884,7 @@
           "name": "ViewDeltaOp"
         },
         {
-          "description": "Typed delta emitted by core observable views.",
+          "description": "Typed delta emitted by core observable views. A timeline delta works by row key (clientMsgId, else serverId, else seq:<conversationId>:<conversationSeq>): remove the keys in remove, replace the rows in upsert in place, put prepend first and append last, reorder by every key when reorder is present, then take the three state fields and conversation. A conversation-list delta is the indexed ops list.",
           "fields": [
             {
               "description": "Delta tag: timeline or conversationList.",
@@ -2779,35 +2894,84 @@
               "wireName": "viewType"
             },
             {
-              "description": "Ordered delta operations.",
-              "name": "ops",
-              "required": true,
-              "type": "ViewDeltaOpList",
-              "wireName": "ops"
+              "description": "Timeline: older rows to put before the first row, in timeline order.",
+              "name": "prepend",
+              "required": false,
+              "type": "MessageList",
+              "wireName": "prepend"
             },
             {
-              "description": "Latest timeline conversation header for timeline deltas.",
+              "description": "Timeline: newer rows to put after the last row, in timeline order.",
+              "name": "append",
+              "required": false,
+              "type": "MessageList",
+              "wireName": "append"
+            },
+            {
+              "description": "Timeline: new content of rows already in the window, replaced in place by row key.",
+              "name": "upsert",
+              "required": false,
+              "type": "MessageList",
+              "wireName": "upsert"
+            },
+            {
+              "description": "Timeline: row keys leaving the window.",
+              "name": "remove",
+              "required": false,
+              "type": "StringList",
+              "wireName": "remove"
+            },
+            {
+              "description": "Timeline: every row key in the new order; only when the order changed in a way the other steps cannot express.",
+              "name": "reorder",
+              "required": false,
+              "type": "StringList",
+              "wireName": "reorder"
+            },
+            {
+              "description": "Timeline: whether more visible messages exist below the window.",
+              "name": "hasOlder",
+              "required": false,
+              "type": "Boolean",
+              "wireName": "hasOlder"
+            },
+            {
+              "description": "Timeline: whether more messages exist above the window.",
+              "name": "hasNewer",
+              "required": false,
+              "type": "Boolean",
+              "wireName": "hasNewer"
+            },
+            {
+              "description": "Timeline: whether the window is attached to the latest.",
+              "name": "attachedToLatest",
+              "required": false,
+              "type": "Boolean",
+              "wireName": "attachedToLatest"
+            },
+            {
+              "description": "Timeline: the conversation header, only when it changed.",
               "name": "conversation",
               "required": false,
               "type": "Conversation",
               "wireName": "conversation"
             },
             {
-              "description": "Latest timeline pagination state for timeline deltas.",
-              "name": "hasMore",
+              "description": "Conversation list: ordered indexed operations.",
+              "name": "ops",
               "required": false,
-              "type": "Boolean",
-              "wireName": "hasMore"
+              "type": "ViewDeltaOpList",
+              "wireName": "ops"
             },
             {
-              "description": "Latest total unread value for conversation list deltas.",
+              "description": "Conversation list: latest total unread value.",
               "name": "totalUnread",
               "required": false,
               "type": "UInt64",
               "wireName": "totalUnread"
             },
             {
-              "description": "Latest sync state for conversation list deltas.",
+              "description": "Conversation list: latest sync state.",
               "name": "syncState",
               "required": false,
               "type": "String",
@@ -2817,7 +2981,7 @@
           "name": "ViewDelta"
         },
         {
-          "description": "Observable view update event payload.",
+          "description": "Observable view update event payload (view.updated). Every update a view publishes carries the next revision; a host that sees a revision that is not its applied revision plus 1 drops it when it is not newer, otherwise replaces its window with timelineSnapshot.",
           "fields": [
             {
               "description": "Updated view id.",
@@ -2827,6 +2991,13 @@
               "wireName": "viewId"
             },
             {
+              "description": "Revision this update brings the view to.",
+              "name": "revision",
+              "required": true,
+              "type": "UInt64",
+              "wireName": "revision"
+            },
+            {
               "description": "Update kind: snapshot or delta.",
               "name": "kind",
               "required": true,
@@ -2834,7 +3005,7 @@
               "wireName": "kind"
             },
             {
-              "description": "Latest snapshot for this view when kind is snapshot.",
+              "description": "Whole view when kind is snapshot.",
               "name": "snapshot",
               "required": false,
               "type": "ViewSnapshot",
@@ -2851,38 +3022,31 @@
           "name": "ViewUpdate"
         },
         {
-          "description": "Response returned after extending an observable timeline view.",
+          "description": "Response of loadOlderTimeline, loadNewerTimeline and jumpToLatestTimeline. The rows themselves arrive only through view.updated.",
           "fields": [
             {
-              "description": "Updated timeline view id.",
+              "description": "Timeline view id.",
               "name": "viewId",
               "required": true,
               "type": "String",
               "wireName": "viewId"
             },
             {
-              "description": "Number of older messages inserted into the view window.",
+              "description": "Rows this call added to the window.",
               "name": "loadedCount",
               "required": true,
               "type": "UInt32",
               "wireName": "loadedCount"
             },
             {
-              "description": "Whether older messages may still be available.",
-              "name": "hasMore",
+              "description": "Revision that contains this page (0 when the view was already closed).",
+              "name": "revision",
               "required": true,
-              "type": "Boolean",
-              "wireName": "hasMore"
-            },
-            {
-              "description": "Delta or snapshot that applies this page to the view.",
-              "name": "update",
-              "required": false,
-              "type": "ViewUpdate",
-              "wireName": "update"
+              "type": "UInt64",
+              "wireName": "revision"
             }
           ],
-          "name": "ViewLoadOlderResponse"
+          "name": "TimelineViewPageResponse"
         },
         {
           "description": "Response returned when closing an observable view.",
@@ -8570,7 +8734,58 @@
           },
           "operation": "view.timeline.load_older",
           "request": "LoadOlderTimelineViewRequest",
-          "response": "ViewLoadOlderResponse",
+          "response": "TimelineViewPageResponse",
+          "stability": "stable",
+          "transport": "contract-invoke-json"
+        },
+        {
+          "cApi": "flare_sdk_invoke_json",
+          "name": "loadNewerTimeline",
+          "nativeBinding": {
+            "asyncReturn": "i32 immediate_submit_code",
+            "callback": "FlareResultCallback",
+            "handlePolicy": "client-handle",
+            "requestEncoding": "json",
+            "responseEncoding": "json-object",
+            "returnMode": "callback"
+          },
+          "operation": "view.timeline.load_newer",
+          "request": "LoadNewerTimelineViewRequest",
+          "response": "TimelineViewPageResponse",
+          "stability": "stable",
+          "transport": "contract-invoke-json"
+        },
+        {
+          "cApi": "flare_sdk_invoke_json",
+          "name": "jumpToLatestTimeline",
+          "nativeBinding": {
+            "asyncReturn": "i32 immediate_submit_code",
+            "callback": "FlareResultCallback",
+            "handlePolicy": "client-handle",
+            "requestEncoding": "json",
+            "responseEncoding": "json-object",
+            "returnMode": "callback"
+          },
+          "operation": "view.timeline.jump_to_latest",
+          "request": "TimelineViewRequest",
+          "response": "TimelineViewPageResponse",
+          "stability": "stable",
+          "transport": "contract-invoke-json"
+        },
+        {
+          "cApi": "flare_sdk_invoke_json",
+          "name": "timelineSnapshot",
+          "nativeBinding": {
+            "asyncReturn": "i32 immediate_submit_code",
+            "callback": "FlareResultCallback",
+            "handlePolicy": "client-handle",
+            "requestEncoding": "json",
+            "responseEncoding": "json-object",
+            "returnMode": "callback"
+          },
+          "operation": "view.timeline.snapshot",
+          "request": "TimelineViewRequest",
+          "response": "ViewOpenResponse",
           "stability": "stable",
           "transport": "contract-invoke-json"
         },
@@ -8831,6 +9046,18 @@
       {
         "id": "view.timeline.load_older",
         "reason": "Extends an open core observable timeline view with older messages through flare_sdk_invoke_json."
+      },
+      {
+        "id": "view.timeline.load_newer",
+        "reason": "Extends an open core observable timeline view with newer messages through flare_sdk_invoke_json."
+      },
+      {
+        "id": "view.timeline.jump_to_latest",
+        "reason": "Replaces an open core observable timeline view with the latest window through flare_sdk_invoke_json."
+      },
+      {
+        "id": "view.timeline.snapshot",
+        "reason": "Returns the current snapshot and revision of an open core observable timeline view through flare_sdk_invoke_json."
       },
       {
         "id": "view.conversation_list.open",

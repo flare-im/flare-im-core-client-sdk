@@ -6,7 +6,7 @@ package flare_core_harmony_cangjie_sdk.model.entity
 public class ViewSnapshot {
     // wire: `viewType`. Snapshot tag: timeline or conversationList.
     public let viewType: String
-    // wire: `data`. Snapshot payload selected by viewType.
+    // wire: `data`. Snapshot payload selected by viewType: TimelineViewSnapshot for timeline, HomeTimelineSnapshot for conversationList.
     public let data: String
 
     public init(viewType!: String, data!: String) {

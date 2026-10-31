@@ -30,7 +30,13 @@ interface ViewsApi {
     /** openTimeline maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `view.timeline.open`. */
     suspend fun openTimeline(request: OpenTimelineViewRequest): ViewOpenResponse
     /** loadOlderTimeline maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `view.timeline.load_older`. */
-    suspend fun loadOlderTimeline(request: LoadOlderTimelineViewRequest): ViewLoadOlderResponse
+    suspend fun loadOlderTimeline(request: LoadOlderTimelineViewRequest): TimelineViewPageResponse
+    /** loadNewerTimeline maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `view.timeline.load_newer`. */
+    suspend fun loadNewerTimeline(request: LoadNewerTimelineViewRequest): TimelineViewPageResponse
+    /** jumpToLatestTimeline maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `view.timeline.jump_to_latest`. */
+    suspend fun jumpToLatestTimeline(request: TimelineViewRequest): TimelineViewPageResponse
+    /** timelineSnapshot maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `view.timeline.snapshot`. */
+    suspend fun timelineSnapshot(request: TimelineViewRequest): ViewOpenResponse
     /** openConversationList maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `view.conversation_list.open`. */
     suspend fun openConversationList(request: OpenConversationListViewRequest): ViewOpenResponse
     /** close maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `view.close`. */

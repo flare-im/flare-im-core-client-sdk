@@ -2171,6 +2171,45 @@ abstract final class NativeCallMap {
       handlePolicy: "client-handle",
       callback: "FlareResultCallback");
 
+  /// loadNewerTimeline maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `view.timeline.load_newer`.
+  static const viewTimelineLoadNewer = NativeCallDescriptor(
+      module: "views",
+      method: "loadNewerTimeline",
+      operation: "view.timeline.load_newer",
+      transport: "contract-invoke-json",
+      cApi: "flare_sdk_invoke_json",
+      requestEncoding: "json",
+      responseEncoding: "json-object",
+      returnMode: "callback",
+      handlePolicy: "client-handle",
+      callback: "FlareResultCallback");
+
+  /// jumpToLatestTimeline maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `view.timeline.jump_to_latest`.
+  static const viewTimelineJumpToLatest = NativeCallDescriptor(
+      module: "views",
+      method: "jumpToLatestTimeline",
+      operation: "view.timeline.jump_to_latest",
+      transport: "contract-invoke-json",
+      cApi: "flare_sdk_invoke_json",
+      requestEncoding: "json",
+      responseEncoding: "json-object",
+      returnMode: "callback",
+      handlePolicy: "client-handle",
+      callback: "FlareResultCallback");
+
+  /// timelineSnapshot maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `view.timeline.snapshot`.
+  static const viewTimelineSnapshot = NativeCallDescriptor(
+      module: "views",
+      method: "timelineSnapshot",
+      operation: "view.timeline.snapshot",
+      transport: "contract-invoke-json",
+      cApi: "flare_sdk_invoke_json",
+      requestEncoding: "json",
+      responseEncoding: "json-object",
+      returnMode: "callback",
+      handlePolicy: "client-handle",
+      callback: "FlareResultCallback");
+
   /// openConversationList maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `view.conversation_list.open`.
   static const viewConversationListOpen = NativeCallDescriptor(
       module: "views",
