@@ -27,7 +27,6 @@ import {
   MessageContentType,
   NetworkInterfaceKind,
   conversationFromJson,
-  messageFromJson,
 } from "@flare-im/sdk/web";
 import {
   bindFlareSessionEvents,
@@ -145,7 +144,7 @@ type CoreDiagnosticsSnapshot = {
 };
 
 type ViewDeltaPayload = NonNullable<ViewUpdate["delta"]>;
-type ViewDeltaOperation = ViewDeltaPayload["ops"][number];
+type ViewDeltaOperation = NonNullable<ViewDeltaPayload["ops"]>[number];
 
 export interface ConversationFilterState {
   filter: ConversationFilter;
@@ -1032,7 +1031,8 @@ export function useFlareCoreClient(options: UseFlareCoreClientOptions) {
   let tokenRefreshTimer: ReturnType<typeof setTimeout> | undefined;
   let pendingConversationSummarySync: Promise<void> | undefined;
   let conversationListViewId = "";
-  let activeTimelineView: { conversationId: string; viewId: string } | null = null;
+  // revision：已应用到 messages 的视图版本号。view.updated 按版本号逐次加 1 推来，跳号时取快照整体替换。
+  let activeTimelineView: { conversationId: string; viewId: string; revision: number } | null = null;
   let markReadTimer: ReturnType<typeof setTimeout> | undefined;
   let markReadInFlight: Promise<void> | undefined;
   let realtimeSafetyPollTimer: number | undefined;
@@ -1675,10 +1675,11 @@ export function useFlareCoreClient(options: UseFlareCoreClientOptions) {
   function applyTimelineViewSnapshot(viewId: string, snapshot: {
     conversation?: Conversation;
     messages: readonly Message[];
-    hasMore?: boolean;
-  }): void {
+    hasOlder: boolean;
+  }, revision: number): void {
     const activeView = activeTimelineView;
     if (!activeView || viewId !== activeView.viewId) return;
+    activeView.revision = revision;
     const conversationId = (
       snapshot.conversation?.conversationId
       ?? snapshot.messages.find((message) => message.conversationId?.trim())?.conversationId
@@ -1689,12 +1690,12 @@ export function useFlareCoreClient(options: UseFlareCoreClientOptions) {
     if (targetId !== activeConversationId.value.trim()) return;
 
     messages.value = [...snapshot.messages];
-    messageHasMore.value = Boolean(snapshot.hasMore);
+    messageHasMore.value = snapshot.hasOlder;
     refreshDerivedState();
     scheduleVisibleMarkRead("timeline_snapshot");
   }
 
-  function applyViewSnapshot(viewId: string, snapshot: ViewUpdate["snapshot"]): void {
+  function applyViewSnapshot(viewId: string, snapshot: ViewUpdate["snapshot"], revision: number): void {
     if (!snapshot) return;
     if (snapshot.viewType === "conversationList") {
       if (viewId !== conversationListViewId) return;
@@ -1702,7 +1703,7 @@ export function useFlareCoreClient(options: UseFlareCoreClientOptions) {
       return;
     }
     if (snapshot.viewType === "timeline") {
-      applyTimelineViewSnapshot(viewId, snapshot.data);
+      applyTimelineViewSnapshot(viewId, snapshot.data, revision);
     }
   }
 
@@ -1716,38 +1717,19 @@ export function useFlareCoreClient(options: UseFlareCoreClientOptions) {
     ops: readonly ViewDeltaOperation[],
     keyOf: (item: T) => string,
     decodeItem: (op: ViewDeltaOperation) => T | undefined,
-    /**
-     * 行 key 在消息生命周期中会**变形**：核心的 `timeline_key()` 在
-     * server_id 为空时给 `client:<id>`，一旦有了 server_id 就变成 `server:<id>`
-     * （发送队列的乐观消息还会先把 server_id 置成 client_msg_id）。
-     *
-     * 于是同一条消息在不同阶段的 key 不同，按 key 找不到行时 update op 会被
-     * **整个丢弃**——线上表现就是媒体上传期间核心已置 uploading:true，
-     * 而界面上那一行始终停在旧状态、进度条永远不出现。
-     *
-     * 给一个稳定身份（消息用 clientMsgId）做兜底匹配。
-     */
-    identityOf?: (item: T) => string,
-    identityOfOp?: (op: ViewDeltaOperation) => string,
   ): T[] {
     const next = [...current];
-    const indexByKey = (key: string, op?: ViewDeltaOperation) => {
-      const byKey = next.findIndex((item) => keyOf(item) === key);
-      if (byKey >= 0 || !identityOf || !identityOfOp || !op) return byKey;
-      const identity = identityOfOp(op).trim();
-      if (!identity) return -1;
-      return next.findIndex((item) => identityOf(item).trim() === identity);
-    };
+    const indexByKey = (key: string) => next.findIndex((item) => keyOf(item) === key);
     for (const op of ops) {
       const key = op.key.trim();
       if (!key) continue;
       if (op.op === "remove") {
-        const existingIndex = indexByKey(key, op);
+        const existingIndex = indexByKey(key);
         if (existingIndex >= 0) next.splice(existingIndex, 1);
         continue;
       }
       if (op.op === "move") {
-        const existingIndex = indexByKey(key, op);
+        const existingIndex = indexByKey(key);
         if (existingIndex < 0) continue;
         const [item] = next.splice(existingIndex, 1);
         next.splice(boundedDeltaIndex(op.index, next.length), 0, item);
@@ -1755,7 +1737,7 @@ export function useFlareCoreClient(options: UseFlareCoreClientOptions) {
       }
       const item = decodeItem(op);
       if (!item) continue;
-      const existingIndex = indexByKey(key, op);
+      const existingIndex = indexByKey(key);
       if (op.op === "insert") {
         if (existingIndex >= 0) next.splice(existingIndex, 1);
         next.splice(boundedDeltaIndex(op.index, next.length), 0, item);
@@ -1774,20 +1756,12 @@ export function useFlareCoreClient(options: UseFlareCoreClientOptions) {
     return item.conversationId.trim() === op.key.trim() ? { ...item } : undefined;
   }
 
-  function decodeMessageDeltaItem(op: ViewDeltaOperation, conversationId: string): Message | undefined {
-    if (!op.item) return undefined;
-    const item = messageFromJson(op.item);
-    return item.timelineKey.trim() === op.key.trim() && item.conversationId.trim() === conversationId
-      ? { ...item }
-      : undefined;
-  }
-
   function applyConversationListViewDelta(viewId: string, delta: ViewDeltaPayload): void {
     if (viewId !== conversationListViewId || delta.viewType !== "conversationList") return;
     if (!canApplyConversationListView()) return;
     conversations.value = applyIndexedDeltaOps(
       conversations.value,
-      delta.ops,
+      delta.ops ?? [],
       (item) => item.conversationId.trim(),
       decodeConversationDeltaItem,
     );
@@ -1798,29 +1772,52 @@ export function useFlareCoreClient(options: UseFlareCoreClientOptions) {
     }
   }
 
+  /** 时间线视图的行键：clientMsgId，没有时 serverId，都没有时 seq:<会话>:<seq>（与核心 row_key 相同）。 */
+  function timelineRowKey(message: Message): string {
+    return message.clientMsgId || message.serverId || `seq:${message.conversationId}:${message.conversationSeq}`;
+  }
+
+  /**
+   * 按核心视图的增量规则应用：删 remove；原位替换 upsert；prepend 放最前、append 放最后；
+   * reorder 非空时按它重排；最后取三个状态字段与 conversation。
+   */
   function applyTimelineViewDelta(viewId: string, delta: ViewDeltaPayload): void {
     const activeView = activeTimelineView;
     if (!activeView || viewId !== activeView.viewId || delta.viewType !== "timeline") return;
     const targetId = activeView.conversationId;
     if (targetId !== activeConversationId.value.trim()) return;
-    const deltaConversationId = delta.conversation?.conversationId.trim() ?? "";
-    if (deltaConversationId && deltaConversationId !== targetId) return;
-    messages.value = applyIndexedDeltaOps(
-      messages.value,
-      delta.ops,
-      (item) => item.timelineKey.trim(),
-      (op) => decodeMessageDeltaItem(op, targetId),
-      (item) => item.clientMsgId,
-      (op) => {
-        const decoded = op.item ? messageFromJson(op.item) : undefined;
-        return decoded?.clientMsgId ?? "";
-      },
-    );
-    if (delta.hasMore !== undefined) {
-      messageHasMore.value = Boolean(delta.hasMore);
+    const removed = new Set(delta.remove ?? []);
+    const upserts = new Map((delta.upsert ?? []).map((message) => [timelineRowKey(message), message]));
+    let next = messages.value
+      .filter((message) => !removed.has(timelineRowKey(message)))
+      .map((message) => upserts.get(timelineRowKey(message)) ?? message);
+    next = [...(delta.prepend ?? []), ...next, ...(delta.append ?? [])];
+    if (delta.reorder) {
+      const byKey = new Map(next.map((message) => [timelineRowKey(message), message]));
+      next = delta.reorder.flatMap((key) => {
+        const message = byKey.get(key);
+        return message ? [message] : [];
+      });
+    }
+    messages.value = next;
+    if (delta.hasOlder !== undefined) {
+      messageHasMore.value = delta.hasOlder;
     }
     refreshDerivedState();
     scheduleVisibleMarkRead("timeline_delta");
+  }
+
+  /** 版本号跳了（或翻页的结果还没随事件到达）：取当前快照整体替换。 */
+  async function resyncTimelineView(viewId: string, reason: string): Promise<void> {
+    try {
+      const response = await client.views.timelineSnapshot({ viewId });
+      const activeView = activeTimelineView;
+      if (!activeView || activeView.viewId !== viewId || response.revision < activeView.revision) return;
+      applyViewSnapshot(viewId, response.snapshot, response.revision);
+      log("view_timeline_snapshot", `${reason}:${viewId}:${response.revision}`);
+    } catch (error) {
+      log("view_timeline_snapshot_failed", `${reason}:${viewId}: ${errorMessage(error)}`);
+    }
   }
 
   function applyViewDelta(viewId: string, delta: ViewUpdate["delta"]): void {
@@ -1835,11 +1832,20 @@ export function useFlareCoreClient(options: UseFlareCoreClientOptions) {
   }
 
   function handleViewUpdate(update: ViewUpdate): void {
+    const activeView = activeTimelineView;
+    if (activeView && update.viewId === activeView.viewId) {
+      if (update.revision <= activeView.revision) return;
+      if (update.revision !== activeView.revision + 1) {
+        void resyncTimelineView(update.viewId, "revision_gap");
+        return;
+      }
+      activeView.revision = update.revision;
+    }
     if (update.kind === "delta") {
       applyViewDelta(update.viewId, update.delta);
       return;
     }
-    applyViewSnapshot(update.viewId, update.snapshot);
+    applyViewSnapshot(update.viewId, update.snapshot, update.revision);
   }
 
   async function openConversationListView(reason: string): Promise<void> {
@@ -1851,7 +1857,7 @@ export function useFlareCoreClient(options: UseFlareCoreClientOptions) {
         () => sdkOperationTimeoutError("view.conversation_list.open", CONVERSATION_LIST_VIEW_OPEN_TIMEOUT_MS),
       );
       conversationListViewId = response.viewId;
-      applyViewSnapshot(response.viewId, response.snapshot);
+      applyViewSnapshot(response.viewId, response.snapshot, response.revision);
       log("view_conversations_open", `${reason}:${conversationListViewId}`);
     } catch (error) {
       log("view_conversations_open_failed", `${reason}: ${errorMessage(error)}`);
@@ -1881,8 +1887,8 @@ export function useFlareCoreClient(options: UseFlareCoreClientOptions) {
         TIMELINE_OPEN_TIMEOUT_MS,
         () => sdkOperationTimeoutError("view.timeline.open", TIMELINE_OPEN_TIMEOUT_MS),
       );
-      activeTimelineView = { conversationId: targetId, viewId: response.viewId };
-      applyViewSnapshot(response.viewId, response.snapshot);
+      activeTimelineView = { conversationId: targetId, viewId: response.viewId, revision: response.revision };
+      applyViewSnapshot(response.viewId, response.snapshot, response.revision);
       log("view_timeline_open", `${reason}:${targetId}:${response.viewId}`);
     } catch (error) {
       log("view_timeline_open_failed", `${reason}:${targetId}: ${errorMessage(error)}`);
@@ -2738,13 +2744,13 @@ export function useFlareCoreClient(options: UseFlareCoreClientOptions) {
       ) {
         return;
       }
-      messageHasMore.value = response.hasMore;
-      if (response.update) {
-        handleViewUpdate(response.update);
+      // 这一页只经 view.updated 推来；返回值说它在哪个版本里。事件还没到时取快照，保证返回前已应用。
+      if ((activeTimelineView?.revision ?? 0) < response.revision) {
+        await resyncTimelineView(response.viewId, "load_older");
       } else {
         refreshDerivedState();
       }
-      log("view_timeline_load_older", `${conversationId}:${response.loadedCount}:${response.hasMore}`);
+      log("view_timeline_load_older", `${conversationId}:${response.loadedCount}:${response.revision}`);
     } catch (error) {
       messageSyncError.value = errorMessage(error);
       log("message_sync_failed", messageSyncError.value);
