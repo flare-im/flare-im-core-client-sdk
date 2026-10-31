@@ -20,7 +20,7 @@ public class Conversation {
     public let createdAt: UInt64
     // wire: `description`. Optional. 
     public let description: ?String
-    // wire: `displayName`. 展示名（列表主标题）
+    // wire: `displayName`. 业务名（服务端或业务 SDK 给的会话名），可为空，永不为 id；列表标题读 `title`。
     public let displayName: String
     // wire: `draft`. Optional. 
     public let draft: ?String
@@ -42,6 +42,8 @@ public class Conversation {
     public let lastMessagePreview: ?String
     // wire: `lastReadSeq`. 已读序列号（与 read_seq 同义）
     public let lastReadSeq: UInt64
+    // wire: `lastSender`. Optional. 最后一条消息的发送者名（人名解析链，群会话含会话内昵称）；没有最后一条消息时缺省。 读取时由核心投影，不落库。
+    public let lastSender: ?DisplayName
     // wire: `lastSenderAvatarUrl`. 最后一条消息发送者头像 URL
     public let lastSenderAvatarUrl: String
     // wire: `lastSenderId`. Optional. 
@@ -68,6 +70,8 @@ public class Conversation {
     public let remark: ?String
     // wire: `role`. Optional. 
     public let role: ?String
+    // wire: `title`. Optional. 列表与聊天头显示的会话标题：备注、单聊对端人名、业务名、无名群的成员名拼接， 都没有时为结构化的「无名」。读取时由核心投影，不落库；SDK 交出的会话都带它。
+    public let title: ?DisplayName
     // wire: `unreadCount`. 
     public let unreadCount: UInt32
     // wire: `updatedAt`. 
@@ -79,7 +83,7 @@ public class Conversation {
     // wire: `visibleAfterSeq`. 当前用户的历史可见边界；seq <= visible_after_seq 的消息不可见，不参与冷启动回灌。
     public let visibleAfterSeq: UInt64
 
-    public init(avatarUrl!: String, badge!: ?String, businessType!: String, channelId!: String, conversationId!: String, conversationType!: ConversationType, createdAt!: UInt64, description!: ?String, displayName!: String, draft!: ?String, ext!: String, isArchived!: Bool, isMuted!: Bool, isPinned!: Bool, lastMessage!: ?MessagePreview, lastMessageAt!: ?UInt64, lastMessageId!: ?String, lastMessagePreview!: ?String, lastReadSeq!: UInt64, lastSenderAvatarUrl!: String, lastSenderId!: ?String, lastSenderNickname!: String, maxSeq!: UInt64, memberPreview!: String, membersCount!: UInt32, mentionCount!: UInt32, mentionMe!: Bool, participantVersion!: UInt64, participants!: String, peerReadSeq!: UInt64, remark!: ?String, role!: ?String, unreadCount!: UInt32, updatedAt!: UInt64, updatedAtTs!: ?UInt64, version!: UInt64, visibleAfterSeq!: UInt64) {
+    public init(avatarUrl!: String, badge!: ?String, businessType!: String, channelId!: String, conversationId!: String, conversationType!: ConversationType, createdAt!: UInt64, description!: ?String, displayName!: String, draft!: ?String, ext!: String, isArchived!: Bool, isMuted!: Bool, isPinned!: Bool, lastMessage!: ?MessagePreview, lastMessageAt!: ?UInt64, lastMessageId!: ?String, lastMessagePreview!: ?String, lastReadSeq!: UInt64, lastSender!: ?DisplayName, lastSenderAvatarUrl!: String, lastSenderId!: ?String, lastSenderNickname!: String, maxSeq!: UInt64, memberPreview!: String, membersCount!: UInt32, mentionCount!: UInt32, mentionMe!: Bool, participantVersion!: UInt64, participants!: String, peerReadSeq!: UInt64, remark!: ?String, role!: ?String, title!: ?DisplayName, unreadCount!: UInt32, updatedAt!: UInt64, updatedAtTs!: ?UInt64, version!: UInt64, visibleAfterSeq!: UInt64) {
         this.avatarUrl = avatarUrl
         this.badge = badge
         this.businessType = businessType
@@ -99,6 +103,7 @@ public class Conversation {
         this.lastMessageId = lastMessageId
         this.lastMessagePreview = lastMessagePreview
         this.lastReadSeq = lastReadSeq
+        this.lastSender = lastSender
         this.lastSenderAvatarUrl = lastSenderAvatarUrl
         this.lastSenderId = lastSenderId
         this.lastSenderNickname = lastSenderNickname
@@ -112,6 +117,7 @@ public class Conversation {
         this.peerReadSeq = peerReadSeq
         this.remark = remark
         this.role = role
+        this.title = title
         this.unreadCount = unreadCount
         this.updatedAt = updatedAt
         this.updatedAtTs = updatedAtTs

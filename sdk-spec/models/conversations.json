@@ -25,9 +25,99 @@
         "synced",
         "partial"
       ]
+    },
+    {
+      "name": "DisplayNameKind",
+      "description": "Shape of a projected DisplayName.",
+      "values": [
+        "named",
+        "members",
+        "unnamed"
+      ]
+    },
+    {
+      "name": "NameSource",
+      "description": "Where a named DisplayName came from; for tests and diagnostics, never rendered differently.",
+      "values": [
+        "alias",
+        "memberNickname",
+        "profile",
+        "snapshot",
+        "remark",
+        "name"
+      ]
+    },
+    {
+      "name": "NameEntity",
+      "description": "What an unnamed DisplayName names; follows ConversationType (single chats and unknown types are a person).",
+      "values": [
+        "person",
+        "group",
+        "system",
+        "ai",
+        "customer",
+        "channel",
+        "broadcast",
+        "temp"
+      ]
     }
   ],
   "models": [
+    {
+      "name": "DisplayName",
+      "description": "Final name of a person or conversation projected by core-sdk (title-and-name-projection). Tagged by kind: named {text, source}; members {names, total} for an unnamed group titled by up to three named members other than the current user (total counts every member, the current user included); unnamed {entity, idTail} where idTail is the last four characters of the id (empty when there is none). Hosts render it with the kit's flareDisplayNameText; an id is never a name.",
+      "fields": [
+        {
+          "name": "kind",
+          "wireName": "kind",
+          "type": "DisplayNameKind",
+          "required": true,
+          "description": "named, members or unnamed."
+        },
+        {
+          "name": "text",
+          "wireName": "text",
+          "type": "String",
+          "required": false,
+          "description": "The name; present when kind is named."
+        },
+        {
+          "name": "source",
+          "wireName": "source",
+          "type": "NameSource",
+          "required": false,
+          "description": "Where the name came from; present when kind is named."
+        },
+        {
+          "name": "names",
+          "wireName": "names",
+          "type": "StringList",
+          "required": false,
+          "description": "Up to three member names in server order; present when kind is members."
+        },
+        {
+          "name": "total",
+          "wireName": "total",
+          "type": "UInt32",
+          "required": false,
+          "description": "Member count including the current user; present when kind is members."
+        },
+        {
+          "name": "entity",
+          "wireName": "entity",
+          "type": "NameEntity",
+          "required": false,
+          "description": "What is unnamed; present when kind is unnamed."
+        },
+        {
+          "name": "idTail",
+          "wireName": "idTail",
+          "type": "String",
+          "required": false,
+          "description": "Last four characters of the id, empty without an id; present when kind is unnamed."
+        }
+      ]
+    },
     {
       "name": "ConversationParticipant",
       "description": "Local participant snapshot for group/channel/customer conversations.",
@@ -80,6 +170,13 @@
           "type": "String",
           "required": true,
           "description": "Conversation-local nickname."
+        },
+        {
+          "name": "name",
+          "wireName": "name",
+          "type": "DisplayName",
+          "required": false,
+          "description": "What the member is called in this conversation (alias, member nickname, profile name, else unnamed); projected when read; present on every value the SDK returns (optional on the wire while hosts move to it)."
         }
       ]
     },
@@ -168,7 +265,14 @@
           "wireName": "displayName",
           "type": "String",
           "required": true,
-          "description": "Primary list title."
+          "description": "Business name from the server or a business SDK; may be empty, never an id. Render title instead."
+        },
+        {
+          "name": "title",
+          "wireName": "title",
+          "type": "DisplayName",
+          "required": false,
+          "description": "Conversation title projected when read: remark, the single chat peer's name, the business name, an unnamed group's member names, else unnamed; present on every value the SDK returns (optional on the wire while hosts move to it)."
         },
         {
           "name": "avatarUrl",
@@ -232,6 +336,13 @@
           "type": "String",
           "required": true,
           "description": "Latest sender display name."
+        },
+        {
+          "name": "lastSender",
+          "wireName": "lastSender",
+          "type": "DisplayName",
+          "required": false,
+          "description": "Name of the latest message's sender (person name chain, member nickname in groups); absent without a latest message."
         },
         {
           "name": "lastSenderAvatarUrl",

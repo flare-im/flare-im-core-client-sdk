@@ -21,7 +21,7 @@ data class Conversation(
     val createdAt: Long = 0L,
     /** wire: `description`.  */
     val description: String? = null,
-    /** wire: `displayName`. 展示名（列表主标题） */
+    /** wire: `displayName`. 业务名（服务端或业务 SDK 给的会话名），可为空，永不为 id；列表标题读 `title`。 */
     val displayName: String = "",
     /** wire: `draft`.  */
     val draft: String? = null,
@@ -43,6 +43,8 @@ data class Conversation(
     val lastMessagePreview: String? = null,
     /** wire: `lastReadSeq`. 已读序列号（与 read_seq 同义） */
     val lastReadSeq: Long = 0L,
+    /** wire: `lastSender`. 最后一条消息的发送者名（人名解析链，群会话含会话内昵称）；没有最后一条消息时缺省。 读取时由核心投影，不落库。 */
+    val lastSender: DisplayName? = null,
     /** wire: `lastSenderAvatarUrl`. 最后一条消息发送者头像 URL */
     val lastSenderAvatarUrl: String = "",
     /** wire: `lastSenderId`.  */
@@ -69,6 +71,8 @@ data class Conversation(
     val remark: String? = null,
     /** wire: `role`.  */
     val role: String? = null,
+    /** wire: `title`. 列表与聊天头显示的会话标题：备注、单聊对端人名、业务名、无名群的成员名拼接， 都没有时为结构化的「无名」。读取时由核心投影，不落库；SDK 交出的会话都带它。 */
+    val title: DisplayName? = null,
     /** wire: `unreadCount`.  */
     val unreadCount: Int = 0,
     /** wire: `updatedAt`.  */

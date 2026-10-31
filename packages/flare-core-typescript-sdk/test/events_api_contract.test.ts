@@ -506,14 +506,13 @@ describe("DefaultEventsApi direct event callbacks", () => {
       };
     };
 
-    expect(failed.error).toEqual({
-      code: "timeout",
-      message: "message send timed out before durable acknowledgement",
+    expect(failed.error).toMatchObject({
+      code: "PERMISSION_DENIED",
+      message: "only friends can share this card",
       operation: "message.send",
-      retryable: true,
+      retryable: false,
       details: {
-        phase: "durable_ack",
-        conversationId: "group-100",
+        remoteCode: "21",
       },
     });
 

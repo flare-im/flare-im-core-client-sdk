@@ -310,6 +310,13 @@
           "description": "SDK-computed display name."
         },
         {
+          "name": "sender",
+          "wireName": "sender",
+          "type": "DisplayName",
+          "required": false,
+          "description": "Sender name projected when read: alias, member nickname in groups, profile name, the senderName snapshot, else unnamed; present on every value the SDK returns (optional on the wire while hosts move to it)."
+        },
+        {
           "name": "replyTo",
           "wireName": "replyTo",
           "type": "String",

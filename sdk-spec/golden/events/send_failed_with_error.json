@@ -1,14 +1,14 @@
 {
-  "clientMsgId": "cm-timeout-1",
-  "reason": "timeout",
+  "clientMsgId": "cm-card-1",
+  "reason": "only friends can share this card",
   "error": {
-    "code": "timeout",
-    "message": "message send timed out before durable acknowledgement",
+    "code": "PERMISSION_DENIED",
+    "machineReason": "SOCIAL_CARD_SCOPE_FRIENDS",
+    "message": "only friends can share this card",
     "operation": "message.send",
-    "retryable": true,
+    "retryable": false,
     "details": {
-      "phase": "durable_ack",
-      "conversationId": "group-100"
+      "remoteCode": "21"
     }
   }
 }

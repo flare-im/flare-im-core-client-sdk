@@ -46,6 +46,8 @@ import {
   ConversationType,
   ConversationVersion,
   CreateTextMessageRequest,
+  DisplayName,
+  DisplayNameKind,
   EmojiContentPayload,
   FileContentPayload,
   ForwardContentPayload,
@@ -83,6 +85,8 @@ import {
   MessageSearchQuery,
   MessageSendAckEvent,
   MessageSendFailedEvent,
+  NameEntity,
+  NameSource,
   NetworkChangeRequest,
   NetworkChangeResponse,
   NetworkInterfaceKind,
@@ -161,6 +165,7 @@ export function conversationParticipantToMap(request: ConversationParticipant): 
   attributes: request.attributes,
   joinedAt: request.joinedAt,
   muted: request.muted,
+  ...(request.name !== undefined ? { name: displayNameToMap(request.name) } : {}),
   nickname: request.nickname,
   pinned: request.pinned,
   roles: request.roles,
@@ -199,6 +204,7 @@ export function conversationToMap(request: Conversation): Record<string, unknown
   ...(request.lastMessageId !== undefined ? { lastMessageId: request.lastMessageId } : {}),
   ...(request.lastMessagePreview !== undefined ? { lastMessagePreview: request.lastMessagePreview } : {}),
   lastReadSeq: request.lastReadSeq,
+  ...(request.lastSender !== undefined ? { lastSender: displayNameToMap(request.lastSender) } : {}),
   lastSenderAvatarUrl: request.lastSenderAvatarUrl,
   ...(request.lastSenderId !== undefined ? { lastSenderId: request.lastSenderId } : {}),
   lastSenderNickname: request.lastSenderNickname,
@@ -212,6 +218,7 @@ export function conversationToMap(request: Conversation): Record<string, unknown
   peerReadSeq: request.peerReadSeq,
   ...(request.remark !== undefined ? { remark: request.remark } : {}),
   ...(request.role !== undefined ? { role: request.role } : {}),
+  ...(request.title !== undefined ? { title: displayNameToMap(request.title) } : {}),
   unreadCount: request.unreadCount,
   updatedAt: request.updatedAt,
   ...(request.updatedAtTs !== undefined ? { updatedAtTs: request.updatedAtTs } : {}),
@@ -418,6 +425,18 @@ export function runtimeHealthResponseToMap(request: RuntimeHealthResponse): Reco
   sessionGeneration: request.sessionGeneration,
   rawSubscriberDroppedTotal: request.rawSubscriberDroppedTotal,
   metricsJson: request.metricsJson,
+  };
+}
+
+export function displayNameToMap(request: DisplayName): Record<string, unknown> {
+  return {
+  kind: request.kind,
+  ...(request.text !== undefined ? { text: request.text } : {}),
+  ...(request.source !== undefined ? { source: request.source } : {}),
+  ...(request.names !== undefined ? { names: request.names } : {}),
+  ...(request.total !== undefined ? { total: request.total } : {}),
+  ...(request.entity !== undefined ? { entity: request.entity } : {}),
+  ...(request.idTail !== undefined ? { idTail: request.idTail } : {}),
   };
 }
 
@@ -1001,6 +1020,7 @@ export function buildWithContentMessageRequestToMap(request: BuildWithContentMes
 export function sdkErrorPayloadToMap(request: SdkErrorPayload): Record<string, unknown> {
   return {
   code: request.code,
+  ...(request.machineReason !== undefined ? { machineReason: request.machineReason } : {}),
   message: request.message,
   ...(request.operation !== undefined ? { operation: request.operation } : {}),
   retryable: request.retryable,

@@ -148,6 +148,13 @@
           "description": "Stable machine-readable error code."
         },
         {
+          "name": "machineReason",
+          "wireName": "machineReason",
+          "type": "String",
+          "required": false,
+          "description": "Server's typed reason (ErrorDetail.reason, e.g. a PreSend rejection code); empty or absent for local failures."
+        },
+        {
           "name": "message",
           "wireName": "message",
           "type": "String",
@@ -362,14 +369,14 @@
           "wireName": "reason",
           "type": "String",
           "required": true,
-          "description": "Failure reason."
+          "description": "Failure reason text for people; use error.code and error.machineReason to act on it."
         },
         {
           "name": "error",
           "wireName": "error",
           "type": "SdkErrorPayload",
           "required": false,
-          "description": "Structured failure details when available."
+          "description": "Structured failure: code, machineReason (ErrorDetail.reason when the server rejected), message, operation, retryable, details."
         }
       ]
     },

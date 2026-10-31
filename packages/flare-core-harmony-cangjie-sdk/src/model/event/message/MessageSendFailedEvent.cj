@@ -6,9 +6,9 @@ package flare_core_harmony_cangjie_sdk.model.event.message
 public class MessageSendFailedEvent {
     // wire: `clientMsgId`. Client message id that failed.
     public let clientMsgId: String
-    // wire: `reason`. Failure reason.
+    // wire: `reason`. Failure reason text for people; use error.code and error.machineReason to act on it.
     public let reason: String
-    // wire: `error`. Optional. Structured failure details when available.
+    // wire: `error`. Optional. Structured failure: code, machineReason (ErrorDetail.reason when the server rejected), message, operation, retryable, details.
     public let error: ?SdkErrorPayload
 
     public init(clientMsgId!: String, reason!: String, error!: ?SdkErrorPayload) {

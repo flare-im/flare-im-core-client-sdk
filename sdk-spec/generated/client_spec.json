@@ -958,6 +958,13 @@
               "wireName": "muted"
             },
             {
+              "description": "成员在这个会话里显示成什么（成员列表、@ 选择用）：别名、会话内昵称、资料名， 都没有时为结构化的「无名」。读取时由核心投影，不落库；SDK 交出的成员都带它。",
+              "name": "name",
+              "required": false,
+              "type": "DisplayName",
+              "wireName": "name"
+            },
+            {
               "description": "",
               "name": "nickname",
               "required": true,
@@ -1099,7 +1106,7 @@
               "wireName": "description"
             },
             {
-              "description": "展示名（列表主标题）",
+              "description": "业务名（服务端或业务 SDK 给的会话名），可为空，永不为 id；列表标题读 `title`。",
               "name": "displayName",
               "required": true,
               "type": "String",
@@ -1174,6 +1181,13 @@
               "required": true,
               "type": "UInt64",
               "wireName": "lastReadSeq"
+            },
+            {
+              "description": "最后一条消息的发送者名（人名解析链，群会话含会话内昵称）；没有最后一条消息时缺省。 读取时由核心投影，不落库。",
+              "name": "lastSender",
+              "required": false,
+              "type": "DisplayName",
+              "wireName": "lastSender"
             },
             {
               "description": "最后一条消息发送者头像 URL",
@@ -1265,6 +1279,13 @@
               "required": false,
               "type": "String",
               "wireName": "role"
+            },
+            {
+              "description": "列表与聊天头显示的会话标题：备注、单聊对端人名、业务名、无名群的成员名拼接， 都没有时为结构化的「无名」。读取时由核心投影，不落库；SDK 交出的会话都带它。",
+              "name": "title",
+              "required": false,
+              "type": "DisplayName",
+              "wireName": "title"
             },
             {
               "description": "",
@@ -1758,6 +1779,13 @@
               "required": false,
               "type": "String",
               "wireName": "replyTo"
+            },
+            {
+              "description": "发送者名：别名、群会话里的会话内昵称、资料名、发送时快照（`sender_name`），都没有时为 结构化的「无名」。读取时由核心投影，不落库；SDK 交出的消息都带它。",
+              "name": "sender",
+              "required": false,
+              "type": "DisplayName",
+              "wireName": "sender"
             },
             {
               "description": "",
@@ -2447,9 +2475,100 @@
     },
     {
       "description": "Conversation models mirrored from flare-im-core-sdk/src/model/conversation.rs.",
-      "enums": [],
+      "enums": [
+        {
+          "description": "Shape of a projected DisplayName.",
+          "name": "DisplayNameKind",
+          "values": [
+            "named",
+            "members",
+            "unnamed"
+          ]
+        },
+        {
+          "description": "Where a named DisplayName came from; for tests and diagnostics, never rendered differently.",
+          "name": "NameSource",
+          "values": [
+            "alias",
+            "memberNickname",
+            "profile",
+            "snapshot",
+            "remark",
+            "name"
+          ]
+        },
+        {
+          "description": "What an unnamed DisplayName names; follows ConversationType (single chats and unknown types are a person).",
+          "name": "NameEntity",
+          "values": [
+            "person",
+            "group",
+            "system",
+            "ai",
+            "customer",
+            "channel",
+            "broadcast",
+            "temp"
+          ]
+        }
+      ],
       "group": "conversations",
       "models": [
+        {
+          "description": "Final name of a person or conversation projected by core-sdk (title-and-name-projection). Tagged by kind: named {text, source}; members {names, total} for an unnamed group titled by up to three named members other than the current user (total counts every member, the current user included); unnamed {entity, idTail} where idTail is the last four characters of the id (empty when there is none). Hosts render it with the kit's flareDisplayNameText; an id is never a name.",
+          "fields": [
+            {
+              "description": "named, members or unnamed.",
+              "name": "kind",
+              "required": true,
+              "type": "DisplayNameKind",
+              "wireName": "kind"
+            },
+            {
+              "description": "The name; present when kind is named.",
+              "name": "text",
+              "required": false,
+              "type": "String",
+              "wireName": "text"
+            },
+            {
+              "description": "Where the name came from; present when kind is named.",
+              "name": "source",
+              "required": false,
+              "type": "NameSource",
+              "wireName": "source"
+            },
+            {
+              "description": "Up to three member names in server order; present when kind is members.",
+              "name": "names",
+              "required": false,
+              "type": "StringList",
+              "wireName": "names"
+            },
+            {
+              "description": "Member count including the current user; present when kind is members.",
+              "name": "total",
+              "required": false,
+              "type": "UInt32",
+              "wireName": "total"
+            },
+            {
+              "description": "What is unnamed; present when kind is unnamed.",
+              "name": "entity",
+              "required": false,
+              "type": "NameEntity",
+              "wireName": "entity"
+            },
+            {
+              "description": "Last four characters of the id, empty without an id; present when kind is unnamed.",
+              "name": "idTail",
+              "required": false,
+              "type": "String",
+              "wireName": "idTail"
+            }
+          ],
+          "name": "DisplayName"
+        },
         {
           "description": "Typed request for updating the current user's synced conversation draft.",
           "fields": [
@@ -4797,6 +4916,13 @@
               "wireName": "code"
             },
             {
+              "description": "Server's typed reason (ErrorDetail.reason, e.g. a PreSend rejection code); empty or absent for local failures.",
+              "name": "machineReason",
+              "required": false,
+              "type": "String",
+              "wireName": "machineReason"
+            },
+            {
               "description": "Human-readable error message.",
               "name": "message",
               "required": true,
@@ -5007,14 +5133,14 @@
               "wireName": "clientMsgId"
             },
             {
-              "description": "Failure reason.",
+              "description": "Failure reason text for people; use error.code and error.machineReason to act on it.",
               "name": "reason",
               "required": true,
               "type": "String",
               "wireName": "reason"
             },
             {
-              "description": "Structured failure details when available.",
+              "description": "Structured failure: code, machineReason (ErrorDetail.reason when the server rejected), message, operation, retryable, details.",
               "name": "error",
               "required": false,
               "type": "SdkErrorPayload",

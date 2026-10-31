@@ -1,4 +1,5 @@
 // GENERATED. Do not edit by hand.
+import 'display_name.dart';
 import 'message_content.dart';
 import 'message_local_state.dart';
 import 'message_receipt_view.dart';
@@ -46,6 +47,8 @@ final class Message {
   final List<ReactionEntry> reactions;
   /// wire: `replyTo`. 
   final String? replyTo;
+  /// wire: `sender`. 发送者名：别名、群会话里的会话内昵称、资料名、发送时快照（`sender_name`），都没有时为 结构化的「无名」。读取时由核心投影，不落库；SDK 交出的消息都带它。
+  final DisplayName? sender;
   /// wire: `senderAvatar`. 
   final String senderAvatar;
   /// wire: `senderDisplayName`. SDK计算展示名
@@ -96,6 +99,7 @@ final class Message {
     this.quotePreview,
     this.reactions = const [],
     this.replyTo,
+    this.sender,
     this.senderAvatar = '',
     this.senderDisplayName = '',
     this.senderId = '',

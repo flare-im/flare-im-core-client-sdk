@@ -1,6 +1,7 @@
 // GENERATED. Do not edit by hand.
 import { ConversationParticipant } from './conversation_participant';
 import { ConversationType } from '../common/enums/conversation_type';
+import { DisplayName } from './display_name';
 import { MessagePreview } from './message_preview';
 
 /** SDK 层会话类型：内部统一使用，从 proto ConversationSummary 获取后即转换为此类型。 与 message.rs 的 IMMessage 一致：扁平字段、serde camelCase。 */
@@ -21,7 +22,7 @@ export interface Conversation {
   createdAt: number;
   /** wire: `description`.  */
   description?: string;
-  /** wire: `displayName`. 展示名（列表主标题） */
+  /** wire: `displayName`. 业务名（服务端或业务 SDK 给的会话名），可为空，永不为 id；列表标题读 `title`。 */
   displayName: string;
   /** wire: `draft`.  */
   draft?: string;
@@ -43,6 +44,8 @@ export interface Conversation {
   lastMessagePreview?: string;
   /** wire: `lastReadSeq`. 已读序列号（与 read_seq 同义） */
   lastReadSeq: number;
+  /** wire: `lastSender`. 最后一条消息的发送者名（人名解析链，群会话含会话内昵称）；没有最后一条消息时缺省。 读取时由核心投影，不落库。 */
+  lastSender?: DisplayName;
   /** wire: `lastSenderAvatarUrl`. 最后一条消息发送者头像 URL */
   lastSenderAvatarUrl: string;
   /** wire: `lastSenderId`.  */
@@ -69,6 +72,8 @@ export interface Conversation {
   remark?: string;
   /** wire: `role`.  */
   role?: string;
+  /** wire: `title`. 列表与聊天头显示的会话标题：备注、单聊对端人名、业务名、无名群的成员名拼接， 都没有时为结构化的「无名」。读取时由核心投影，不落库；SDK 交出的会话都带它。 */
+  title?: DisplayName;
   /** wire: `unreadCount`.  */
   unreadCount: number;
   /** wire: `updatedAt`.  */

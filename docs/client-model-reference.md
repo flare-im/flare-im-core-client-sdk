@@ -24,6 +24,7 @@ SDK 本地会话参与者快照。单聊不依赖该结构；群聊/频道/客�
 | `attributes` | `attributes` | `StringMap` | yes |  |
 | `joinedAt` | `joinedAt` | `UInt64` | yes |  |
 | `muted` | `muted` | `Boolean` | yes |  |
+| `name` | `name` | `DisplayName` | no | 成员在这个会话里显示成什么（成员列表、@ 选择用）：别名、会话内昵称、资料名， 都没有时为结构化的「无名」。读取时由核心投影，不落库；SDK 交出的成员都带它。 |
 | `nickname` | `nickname` | `String` | yes |  |
 | `pinned` | `pinned` | `Boolean` | yes |  |
 | `roles` | `roles` | `StringList` | yes |  |
@@ -55,7 +56,7 @@ SDK 层会话类型：内部统一使用，从 proto ConversationSummary 获取�
 | `conversationType` | `conversationType` | `ConversationType` | yes |  |
 | `createdAt` | `createdAt` | `UInt64` | yes |  |
 | `description` | `description` | `String` | no |  |
-| `displayName` | `displayName` | `String` | yes | 展示名（列表主标题） |
+| `displayName` | `displayName` | `String` | yes | 业务名（服务端或业务 SDK 给的会话名），可为空，永不为 id；列表标题读 `title`。 |
 | `draft` | `draft` | `String` | no |  |
 | `ext` | `ext` | `StringMap` | yes | 扩展键值（与 proto ext 对应） |
 | `isArchived` | `isArchived` | `Boolean` | yes |  |
@@ -66,6 +67,7 @@ SDK 层会话类型：内部统一使用，从 proto ConversationSummary 获取�
 | `lastMessageId` | `lastMessageId` | `String` | no |  |
 | `lastMessagePreview` | `lastMessagePreview` | `String` | no |  |
 | `lastReadSeq` | `lastReadSeq` | `UInt64` | yes | 已读序列号（与 read_seq 同义） |
+| `lastSender` | `lastSender` | `DisplayName` | no | 最后一条消息的发送者名（人名解析链，群会话含会话内昵称）；没有最后一条消息时缺省。 读取时由核心投影，不落库。 |
 | `lastSenderAvatarUrl` | `lastSenderAvatarUrl` | `String` | yes | 最后一条消息发送者头像 URL |
 | `lastSenderId` | `lastSenderId` | `String` | no |  |
 | `lastSenderNickname` | `lastSenderNickname` | `String` | yes | 最后一条消息发送者展示名（列表用） |
@@ -79,6 +81,7 @@ SDK 层会话类型：内部统一使用，从 proto ConversationSummary 获取�
 | `peerReadSeq` | `peerReadSeq` | `UInt64` | yes | 对端（其他成员）最大已读序列号；用于发送方已读双勾在重连/重登后恢复。 由服务端同步摘要 `ext.peer_read_seq` 下发并持久化。 |
 | `remark` | `remark` | `String` | no |  |
 | `role` | `role` | `String` | no |  |
+| `title` | `title` | `DisplayName` | no | 列表与聊天头显示的会话标题：备注、单聊对端人名、业务名、无名群的成员名拼接， 都没有时为结构化的「无名」。读取时由核心投影，不落库；SDK 交出的会话都带它。 |
 | `unreadCount` | `unreadCount` | `UInt32` | yes |  |
 | `updatedAt` | `updatedAt` | `UInt64` | yes |  |
 | `updatedAtTs` | `updatedAtTs` | `UInt64` | no | 更新时间戳（毫秒，用于排序/筛选） |
@@ -197,6 +200,7 @@ SDK 层消息类型：与 message.proto 的 Message 属性一致，content 为�
 | `quotePreview` | `quotePreview` | `String` | no |  |
 | `reactions` | `reactions` | `ReactionEntryList` | yes | 表情反应快照（由 ReactionEvent 驱动更新并持久化） |
 | `replyTo` | `replyTo` | `String` | no |  |
+| `sender` | `sender` | `DisplayName` | no | 发送者名：别名、群会话里的会话内昵称、资料名、发送时快照（`sender_name`），都没有时为 结构化的「无名」。读取时由核心投影，不落库；SDK 交出的消息都带它。 |
 | `senderAvatar` | `senderAvatar` | `String` | yes |  |
 | `senderDisplayName` | `senderDisplayName` | `String` | yes | SDK计算展示名 |
 | `senderId` | `senderId` | `String` | yes | 发送者 |
@@ -414,6 +418,28 @@ Runtime health snapshot including metrics and event drop counters.
 ## Conversations
 
 Conversation models mirrored from flare-im-core-sdk/src/model/conversation.rs.
+
+### Enums
+
+- `DisplayNameKind`: Shape of a projected DisplayName. Values: `named`, `members`, `unnamed`
+
+- `NameSource`: Where a named DisplayName came from; for tests and diagnostics, never rendered differently. Values: `alias`, `memberNickname`, `profile`, `snapshot`, `remark`, `name`
+
+- `NameEntity`: What an unnamed DisplayName names; follows ConversationType (single chats and unknown types are a person). Values: `person`, `group`, `system`, `ai`, `customer`, `channel`, `broadcast`, `temp`
+
+### DisplayName
+
+Final name of a person or conversation projected by core-sdk (title-and-name-projection). Tagged by kind: named {text, source}; members {names, total} for an unnamed group titled by up to three named members other than the current user (total counts every member, the current user included); unnamed {entity, idTail} where idTail is the last four characters of the id (empty when there is none). Hosts render it with the kit's flareDisplayNameText; an id is never a name.
+
+| Field | Wire name | Type | Required | Description |
+|-------|-----------|------|----------|-------------|
+| `kind` | `kind` | `DisplayNameKind` | yes | named, members or unnamed. |
+| `text` | `text` | `String` | no | The name; present when kind is named. |
+| `source` | `source` | `NameSource` | no | Where the name came from; present when kind is named. |
+| `names` | `names` | `StringList` | no | Up to three member names in server order; present when kind is members. |
+| `total` | `total` | `UInt32` | no | Member count including the current user; present when kind is members. |
+| `entity` | `entity` | `NameEntity` | no | What is unnamed; present when kind is unnamed. |
+| `idTail` | `idTail` | `String` | no | Last four characters of the id, empty without an id; present when kind is unnamed. |
 
 ### UpdateConversationDraftRequest
 
@@ -1198,6 +1224,7 @@ Stable error payload used by lifecycle and async notification failures.
 | Field | Wire name | Type | Required | Description |
 |-------|-----------|------|----------|-------------|
 | `code` | `code` | `String` | yes | Stable machine-readable error code. |
+| `machineReason` | `machineReason` | `String` | no | Server's typed reason (ErrorDetail.reason, e.g. a PreSend rejection code); empty or absent for local failures. |
 | `message` | `message` | `String` | yes | Human-readable error message. |
 | `operation` | `operation` | `String` | no | Operation that failed. |
 | `retryable` | `retryable` | `Boolean` | no | Whether retrying may succeed. |
@@ -1271,8 +1298,8 @@ Message send failure notification.
 | Field | Wire name | Type | Required | Description |
 |-------|-----------|------|----------|-------------|
 | `clientMsgId` | `clientMsgId` | `String` | yes | Client message id that failed. |
-| `reason` | `reason` | `String` | yes | Failure reason. |
-| `error` | `error` | `SdkErrorPayload` | no | Structured failure details when available. |
+| `reason` | `reason` | `String` | yes | Failure reason text for people; use error.code and error.machineReason to act on it. |
+| `error` | `error` | `SdkErrorPayload` | no | Structured failure: code, machineReason (ErrorDetail.reason when the server rejected), message, operation, retryable, details. |
 
 ### MessageMutationEvent
 

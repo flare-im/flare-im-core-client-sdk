@@ -7,8 +7,8 @@ import com.flare.im.model.common.error.SdkErrorPayload
 data class MessageSendFailedEvent(
     /** wire: `clientMsgId`. Client message id that failed. */
     val clientMsgId: String = "",
-    /** wire: `reason`. Failure reason. */
+    /** wire: `reason`. Failure reason text for people; use error.code and error.machineReason to act on it. */
     val reason: String = "",
-    /** wire: `error`. Structured failure details when available. */
+    /** wire: `error`. Structured failure: code, machineReason (ErrorDetail.reason when the server rejected), message, operation, retryable, details. */
     val error: SdkErrorPayload? = null,
 )

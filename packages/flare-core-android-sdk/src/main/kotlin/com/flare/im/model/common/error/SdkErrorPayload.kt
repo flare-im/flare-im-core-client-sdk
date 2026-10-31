@@ -5,6 +5,8 @@ package com.flare.im.model.common.error
 data class SdkErrorPayload(
     /** wire: `code`. Stable machine-readable error code. */
     val code: String = "",
+    /** wire: `machineReason`. Server's typed reason (ErrorDetail.reason, e.g. a PreSend rejection code); empty or absent for local failures. */
+    val machineReason: String? = null,
     /** wire: `message`. Human-readable error message. */
     val message: String = "",
     /** wire: `operation`. Operation that failed. */

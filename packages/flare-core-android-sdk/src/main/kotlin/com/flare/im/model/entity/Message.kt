@@ -43,6 +43,8 @@ data class Message(
     val reactions: List<ReactionEntry> = emptyList(),
     /** wire: `replyTo`.  */
     val replyTo: String? = null,
+    /** wire: `sender`. 发送者名：别名、群会话里的会话内昵称、资料名、发送时快照（`sender_name`），都没有时为 结构化的「无名」。读取时由核心投影，不落库；SDK 交出的消息都带它。 */
+    val sender: DisplayName? = null,
     /** wire: `senderAvatar`.  */
     val senderAvatar: String = "",
     /** wire: `senderDisplayName`. SDK计算展示名 */

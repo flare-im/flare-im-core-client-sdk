@@ -1,6 +1,7 @@
 // GENERATED. Do not edit by hand.
 import 'conversation_participant.dart';
 import '../common/enums/conversation_type.dart';
+import 'display_name.dart';
 import 'message_preview.dart';
 
 /// SDK 层会话类型：内部统一使用，从 proto ConversationSummary 获取后即转换为此类型。 与 message.rs 的 IMMessage 一致：扁平字段、serde camelCase。
@@ -21,7 +22,7 @@ final class Conversation {
   final int createdAt;
   /// wire: `description`. 
   final String? description;
-  /// wire: `displayName`. 展示名（列表主标题）
+  /// wire: `displayName`. 业务名（服务端或业务 SDK 给的会话名），可为空，永不为 id；列表标题读 `title`。
   final String displayName;
   /// wire: `draft`. 
   final String? draft;
@@ -43,6 +44,8 @@ final class Conversation {
   final String? lastMessagePreview;
   /// wire: `lastReadSeq`. 已读序列号（与 read_seq 同义）
   final int lastReadSeq;
+  /// wire: `lastSender`. 最后一条消息的发送者名（人名解析链，群会话含会话内昵称）；没有最后一条消息时缺省。 读取时由核心投影，不落库。
+  final DisplayName? lastSender;
   /// wire: `lastSenderAvatarUrl`. 最后一条消息发送者头像 URL
   final String lastSenderAvatarUrl;
   /// wire: `lastSenderId`. 
@@ -69,6 +72,8 @@ final class Conversation {
   final String? remark;
   /// wire: `role`. 
   final String? role;
+  /// wire: `title`. 列表与聊天头显示的会话标题：备注、单聊对端人名、业务名、无名群的成员名拼接， 都没有时为结构化的「无名」。读取时由核心投影，不落库；SDK 交出的会话都带它。
+  final DisplayName? title;
   /// wire: `unreadCount`. 
   final int unreadCount;
   /// wire: `updatedAt`. 
@@ -100,6 +105,7 @@ final class Conversation {
     this.lastMessageId,
     this.lastMessagePreview,
     this.lastReadSeq = 0,
+    this.lastSender,
     this.lastSenderAvatarUrl = '',
     this.lastSenderId,
     this.lastSenderNickname = '',
@@ -113,6 +119,7 @@ final class Conversation {
     this.peerReadSeq = 0,
     this.remark,
     this.role,
+    this.title,
     this.unreadCount = 0,
     this.updatedAt = 0,
     this.updatedAtTs,

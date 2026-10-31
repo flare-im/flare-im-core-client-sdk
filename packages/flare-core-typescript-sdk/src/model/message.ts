@@ -1,4 +1,5 @@
 /** GENERATED. Do not edit by hand. */
+import type { DisplayName } from './display_name';
 import type { MessageContent } from './message_content';
 import type { MessageLocalState } from './message_local_state';
 import type { MessageReceiptView } from './message_receipt_view';
@@ -46,6 +47,8 @@ export interface Message {
   reactions: ReactionEntry[];
   /** wire: `replyTo`.  */
   replyTo?: string;
+  /** wire: `sender`. 发送者名：别名、群会话里的会话内昵称、资料名、发送时快照（`sender_name`），都没有时为 结构化的「无名」。读取时由核心投影，不落库；SDK 交出的消息都带它。 */
+  sender?: DisplayName;
   /** wire: `senderAvatar`.  */
   senderAvatar: string;
   /** wire: `senderDisplayName`. SDK计算展示名 */

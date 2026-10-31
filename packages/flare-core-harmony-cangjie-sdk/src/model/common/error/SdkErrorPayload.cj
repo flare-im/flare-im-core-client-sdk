@@ -6,6 +6,8 @@ package flare_core_harmony_cangjie_sdk.model.common.error
 public class SdkErrorPayload {
     // wire: `code`. Stable machine-readable error code.
     public let code: String
+    // wire: `machineReason`. Optional. Server's typed reason (ErrorDetail.reason, e.g. a PreSend rejection code); empty or absent for local failures.
+    public let machineReason: ?String
     // wire: `message`. Human-readable error message.
     public let message: String
     // wire: `operation`. Optional. Operation that failed.
@@ -15,8 +17,9 @@ public class SdkErrorPayload {
     // wire: `details`. Opaque diagnostic details.
     public let details: String
 
-    public init(code!: String, message!: String, operation!: ?String, retryable!: ?Bool, details!: String) {
+    public init(code!: String, machineReason!: ?String, message!: String, operation!: ?String, retryable!: ?Bool, details!: String) {
         this.code = code
+        this.machineReason = machineReason
         this.message = message
         this.operation = operation
         this.retryable = retryable
