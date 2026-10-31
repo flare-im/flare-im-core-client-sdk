@@ -22,6 +22,16 @@
       "stability": "stable"
     },
     {
+      "name": "getServerClock",
+      "operation": "connection.server_clock",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "Unit",
+      "response": "ServerClockResponse",
+      "stability": "stable",
+      "description": "The core's estimate of the server clock, from the server timestamps on the connection's frames. Hosts judge server-issued instants (plugin card deadlines and countdowns, cooldown ends) against device time + offsetMs. Until estimated (no session, or no server frame yet this session) offsetMs is 0; keep the last estimate, or the device clock without one."
+    },
+    {
       "name": "notifyNetworkChange",
       "operation": "connection.notify_network_change",
       "transport": "contract-invoke-json",

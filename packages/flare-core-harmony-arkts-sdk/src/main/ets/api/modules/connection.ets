@@ -5,5 +5,6 @@ import { ConnectionEvent, ConversationEvent, LifecycleEvent, MessageMutationEven
 export interface ConnectionApi {
   getConnectionState(): Promise<ConnectionState>;
   disconnect(): Promise<void>;
+  getServerClock(): Promise<ServerClockResponse>;
   notifyNetworkChange(request: NetworkChangeRequest): Promise<NetworkChangeResponse>;
 }

@@ -68,6 +68,26 @@
           "description": "Whether the SDK had an active session and attempted reconnect."
         }
       ]
+    },
+    {
+      "name": "ServerClockResponse",
+      "description": "The core's estimate of how far the server clock is from this device's.",
+      "fields": [
+        {
+          "name": "offsetMs",
+          "wireName": "offsetMs",
+          "type": "Int64",
+          "required": true,
+          "description": "Server clock minus device clock, in milliseconds; 0 until estimated."
+        },
+        {
+          "name": "estimated",
+          "wireName": "estimated",
+          "type": "Boolean",
+          "required": true,
+          "description": "Whether the offset rests on a server frame received this session."
+        }
+      ]
     }
   ]
 }

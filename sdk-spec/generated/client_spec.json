@@ -2367,6 +2367,26 @@
             }
           ],
           "name": "NetworkChangeResponse"
+        },
+        {
+          "description": "The core's estimate of how far the server clock is from this device's.",
+          "fields": [
+            {
+              "description": "Server clock minus device clock, in milliseconds; 0 until estimated.",
+              "name": "offsetMs",
+              "required": true,
+              "type": "Int64",
+              "wireName": "offsetMs"
+            },
+            {
+              "description": "Whether the offset rests on a server frame received this session.",
+              "name": "estimated",
+              "required": true,
+              "type": "Boolean",
+              "wireName": "estimated"
+            }
+          ],
+          "name": "ServerClockResponse"
         }
       ]
     },
@@ -5877,6 +5897,24 @@
           "response": "Unit",
           "stability": "stable",
           "transport": "ffi-symbol"
+        },
+        {
+          "cApi": "flare_sdk_invoke_json",
+          "description": "The core's estimate of the server clock, from the server timestamps on the connection's frames. Hosts judge server-issued instants (plugin card deadlines and countdowns, cooldown ends) against device time + offsetMs. Until estimated (no session, or no server frame yet this session) offsetMs is 0; keep the last estimate, or the device clock without one.",
+          "name": "getServerClock",
+          "nativeBinding": {
+            "asyncReturn": "i32 immediate_submit_code",
+            "callback": "FlareResultCallback",
+            "handlePolicy": "client-handle",
+            "requestEncoding": "json",
+            "responseEncoding": "json-object",
+            "returnMode": "callback"
+          },
+          "operation": "connection.server_clock",
+          "request": "Unit",
+          "response": "ServerClockResponse",
+          "stability": "stable",
+          "transport": "contract-invoke-json"
         },
         {
           "cApi": "flare_sdk_invoke_json",

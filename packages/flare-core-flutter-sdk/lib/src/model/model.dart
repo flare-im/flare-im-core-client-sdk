@@ -30,6 +30,7 @@ export 'response/heartbeat_effective_interval_response.dart';
 export 'entity/network_interface_kind.dart';
 export 'command/network_change_request.dart';
 export 'response/network_change_response.dart';
+export 'response/server_clock_response.dart';
 export 'response/runtime_health_response.dart';
 export 'command/update_conversation_draft_request.dart';
 export 'response/list_conversations_response.dart';

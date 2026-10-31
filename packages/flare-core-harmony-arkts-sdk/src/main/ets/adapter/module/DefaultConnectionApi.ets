@@ -2,9 +2,9 @@
 import { NativeBridge, NativeCallMap } from '../../contract/BridgeContract';
 import type { ConnectionApi } from '../../api/modules/connection';
 import type { ConnectionState } from '../../api/client';
-import type { NetworkChangeRequest, NetworkChangeResponse } from '../../model';
+import type { NetworkChangeRequest, NetworkChangeResponse, ServerClockResponse } from '../../model';
 import { invokeConnectionState, invokeMap, invokeVoid } from '../codec/NativeInvoke';
-import { networkChangeRequestToMap, networkChangeResponseFromJson } from '../codec/WireCodec';
+import { networkChangeRequestToMap, networkChangeResponseFromJson, serverClockResponseFromJson } from '../codec/WireCodec';
 
 export class DefaultConnectionApi implements ConnectionApi {
   constructor(private readonly bridge: NativeBridge) {}
@@ -15,6 +15,11 @@ export class DefaultConnectionApi implements ConnectionApi {
 
   async disconnect(): Promise<void> {
     await invokeVoid(this.bridge, NativeCallMap.connectionDisconnect);
+  }
+
+  async getServerClock(): Promise<ServerClockResponse> {
+    const raw = await invokeMap(this.bridge, NativeCallMap.connectionServerClock);
+    return serverClockResponseFromJson(raw);
   }
 
   async notifyNetworkChange(request: NetworkChangeRequest): Promise<NetworkChangeResponse> {

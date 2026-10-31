@@ -113,6 +113,7 @@ import {
   SdkEventKind,
   SendMessageRequest,
   SendMessageResponse,
+  ServerClockResponse,
   SetHeartbeatAppStateRequest,
   SetHeartbeatNatTimeoutRequest,
   SetPushPermissionRequest,
@@ -399,6 +400,13 @@ export function networkChangeRequestToMap(request: NetworkChangeRequest): Record
 export function networkChangeResponseToMap(request: NetworkChangeResponse): Record<string, unknown> {
   return {
   reconnected: request.reconnected,
+  };
+}
+
+export function serverClockResponseToMap(request: ServerClockResponse): Record<string, unknown> {
+  return {
+  offsetMs: request.offsetMs,
+  estimated: request.estimated,
   };
 }
 

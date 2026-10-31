@@ -4,7 +4,7 @@
  * Module API: `connection` — Connection state and manual network lifecycle.
  */
 import type { ConnectionState } from '../../contract';
-import type { NetworkChangeRequest, NetworkChangeResponse } from '../../model';
+import type { NetworkChangeRequest, NetworkChangeResponse, ServerClockResponse } from '../../model';
 
 /** Connection state and manual network lifecycle. */
 export interface ConnectionApi {
@@ -12,6 +12,8 @@ export interface ConnectionApi {
   getConnectionState(): Promise<ConnectionState>;
   /** disconnect maps to `flare_sdk_disconnect` via `ffi-symbol`. Operation: `connection.disconnect`. */
   disconnect(): Promise<void>;
+  /** getServerClock maps to `flare_sdk_invoke_json`. Operation: `connection.server_clock`. */
+  getServerClock(): Promise<ServerClockResponse>;
   /** notifyNetworkChange maps to `flare_sdk_invoke_json`. Operation: `connection.notify_network_change`. */
   notifyNetworkChange(request: NetworkChangeRequest): Promise<NetworkChangeResponse>;
 }

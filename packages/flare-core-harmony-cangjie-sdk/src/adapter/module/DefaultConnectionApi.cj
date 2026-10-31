@@ -21,6 +21,11 @@ public class DefaultConnectionApi <: ConnectionApi {
         let _ignored = bridge.invoke(descriptor: NativeCallMap.connectionDisconnect, requestJson: wireEncodeRequest("{}"))
     }
 
+    public func getServerClock(): ServerClockResponse {
+        let raw = bridge.invoke(descriptor: NativeCallMap.connectionServerClock, requestJson: wireEncodeRequest("{}"))
+        return serverClockResponseFromJson(raw)
+    }
+
     public func notifyNetworkChange(request: NetworkChangeRequest): NetworkChangeResponse {
         let raw = bridge.invoke(descriptor: NativeCallMap.connectionNotifyNetworkChange, requestJson: wireEncodeRequest(networkChangeRequestToJson(request)))
         return networkChangeResponseFromJson(raw)

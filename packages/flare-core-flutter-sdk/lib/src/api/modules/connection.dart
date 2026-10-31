@@ -9,6 +9,8 @@ abstract interface class ConnectionApi {
   Future<ConnectionState> getConnectionState();
   /// disconnect maps to `flare_sdk_disconnect` via `ffi-symbol`. Operation: `connection.disconnect`.
   Future<void> disconnect();
+  /// getServerClock maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `connection.server_clock`.
+  Future<ServerClockResponse> getServerClock();
   /// notifyNetworkChange maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `connection.notify_network_change`.
   Future<NetworkChangeResponse> notifyNetworkChange(NetworkChangeRequest request);
 }

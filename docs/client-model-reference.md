@@ -385,6 +385,15 @@ Result of handling a platform network-change notification.
 |-------|-----------|------|----------|-------------|
 | `reconnected` | `reconnected` | `Boolean` | yes | Whether the SDK had an active session and attempted reconnect. |
 
+### ServerClockResponse
+
+The core's estimate of how far the server clock is from this device's.
+
+| Field | Wire name | Type | Required | Description |
+|-------|-----------|------|----------|-------------|
+| `offsetMs` | `offsetMs` | `Int64` | yes | Server clock minus device clock, in milliseconds; 0 until estimated. |
+| `estimated` | `estimated` | `Boolean` | yes | Whether the offset rests on a server frame received this session. |
+
 ## Diagnostics
 
 Runtime diagnostics and observability models.

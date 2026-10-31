@@ -30,6 +30,7 @@ export * from './response/heartbeat_effective_interval_response';
 export * from './entity/network_interface_kind';
 export * from './command/network_change_request';
 export * from './response/network_change_response';
+export * from './response/server_clock_response';
 export * from './response/runtime_health_response';
 export * from './command/update_conversation_draft_request';
 export * from './response/list_conversations_response';

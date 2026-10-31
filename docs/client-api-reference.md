@@ -40,6 +40,7 @@ Connection state and manual network lifecycle.
 |--------|---------|----------|-----------|-------|
 | `getConnectionState` | `Unit` | `ConnectionStateResponse` | `ffi-symbol` | `flare_sdk_state` |
 | `disconnect` | `Unit` | `Unit` | `ffi-symbol` | `flare_sdk_disconnect` |
+| `getServerClock` | `Unit` | `ServerClockResponse` | `contract-invoke-json` | `flare_sdk_invoke_json` |
 | `notifyNetworkChange` | `NetworkChangeRequest` | `NetworkChangeResponse` | `contract-invoke-json` | `flare_sdk_invoke_json` |
 
 ## client.conversations

@@ -6,7 +6,7 @@ import com.flare.im.api.connection.ConnectionApi
 import com.flare.im.contract.NativeBridge
 import com.flare.im.contract.NativeCallMap
 import com.flare.im.model.command.NetworkChangeRequest
-import com.flare.im.model.response.NetworkChangeResponse
+import com.flare.im.model.response.*
 
 /** GENERATED. Do not edit by hand. */
 class DefaultConnectionApi(
@@ -19,6 +19,10 @@ class DefaultConnectionApi(
 
     override suspend fun disconnect(): Unit {
         invokeUnit(bridge, NativeCallMap.CONNECTION_DISCONNECT)
+    }
+
+    override suspend fun getServerClock(): ServerClockResponse {
+        return serverClockResponseFromJson(invokeMap(bridge, NativeCallMap.CONNECTION_SERVER_CLOCK))
     }
 
     override suspend fun notifyNetworkChange(request: NetworkChangeRequest): NetworkChangeResponse {

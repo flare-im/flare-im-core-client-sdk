@@ -31,6 +31,8 @@ interface ConnectionApi {
     suspend fun getConnectionState(): ConnectionState
     /** disconnect maps to `flare_sdk_disconnect` via `ffi-symbol`. Operation: `connection.disconnect`. */
     suspend fun disconnect(): Unit
+    /** getServerClock maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `connection.server_clock`. */
+    suspend fun getServerClock(): ServerClockResponse
     /** notifyNetworkChange maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `connection.notify_network_change`. */
     suspend fun notifyNetworkChange(request: NetworkChangeRequest): NetworkChangeResponse
 }

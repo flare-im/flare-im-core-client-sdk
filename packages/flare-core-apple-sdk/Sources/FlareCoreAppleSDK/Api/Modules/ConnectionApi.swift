@@ -5,5 +5,6 @@ import Foundation
 public protocol ConnectionApiProtocol: AnyObject {
     func getConnectionState() async throws -> ConnectionState
     func disconnect() async throws -> Void
+    func getServerClock() async throws -> ServerClockResponse
     func notifyNetworkChange(_ request: NetworkChangeRequest) async throws -> NetworkChangeResponse
 }
