@@ -59,6 +59,12 @@ public class DefaultConversationsApi <: ConversationsApi {
         return listConversationsResponseFromJson(raw)
     }
 
+    public func getTotalUnread(): ConversationTotalUnreadResponse {
+        let raw = bridge.invoke(descriptor: NativeCallMap.conversationTotalUnread, requestJson: wireEncodeRequest("{}"))
+        let object = wireDecodeResponseObject(jsonObjectFromRaw(raw))
+        return ConversationTotalUnreadResponse(totalUnread: UInt64(jsonIntField(object, "totalUnread", 0)))
+    }
+
     public func bootstrapHomeTimeline(request: BootstrapHomeTimelineRequest): HomeTimelineSnapshot {
         let raw = bridge.invoke(descriptor: NativeCallMap.conversationBootstrapHome, requestJson: wireEncodeRequest(bootstrapHomeTimelineRequestToJson(request)))
         return homeTimelineSnapshotFromJson(raw)

@@ -57,6 +57,7 @@ Conversation query and local conversation state.
 | `getMultipleConversations` | `GetMultipleConversationsRequest` | `ListConversationsResponse` | `contract-invoke-json` | `flare_sdk_invoke_json` |
 | `listConversationsPaginated` | `ListConversationsPaginatedRequest` | `ListConversationsResponse` | `contract-invoke-json` | `flare_sdk_invoke_json` |
 | `listRawConversations` | `Unit` | `ListConversationsResponse` | `contract-invoke-json` | `flare_sdk_invoke_json` |
+| `getTotalUnread` | `Unit` | `ConversationTotalUnreadResponse` | `contract-invoke-json` | `flare_sdk_invoke_json` |
 | `bootstrapHomeTimeline` | `BootstrapHomeTimelineRequest` | `HomeTimelineSnapshot` | `contract-invoke-json` | `flare_sdk_invoke_json` |
 | `openConversationTimeline` | `OpenConversationTimelineRequest` | `ConversationTimelineSnapshot` | `contract-invoke-json` | `flare_sdk_invoke_json` |
 | `markConversationRead` | `MarkConversationReadRequest` | `Unit` | `contract-invoke-json` | `flare_sdk_invoke_json` |

@@ -45,6 +45,7 @@ export * from './network_change_response';
 export * from './runtime_health_response';
 export * from './update_conversation_draft_request';
 export * from './list_conversations_response';
+export * from './conversation_total_unread_response';
 export * from './open_timeline_view_request';
 export * from './open_conversation_list_view_request';
 export * from './load_older_timeline_view_request';

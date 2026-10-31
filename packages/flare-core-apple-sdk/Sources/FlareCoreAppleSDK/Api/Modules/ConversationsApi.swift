@@ -12,6 +12,7 @@ public protocol ConversationsApiProtocol: AnyObject {
     func getMultipleConversations(_ request: [String: AnySendable]) async throws -> ListConversationsResponse
     func listConversationsPaginated(_ request: [String: AnySendable]) async throws -> ListConversationsResponse
     func listRawConversations() async throws -> ListConversationsResponse
+    func getTotalUnread() async throws -> ConversationTotalUnreadResponse
     func bootstrapHomeTimeline(_ request: BootstrapHomeTimelineRequest) async throws -> HomeTimelineSnapshot
     func openConversationTimeline(_ request: OpenConversationTimelineRequest) async throws -> ConversationTimelineSnapshot
     func markConversationRead(_ request: [String: AnySendable]) async throws -> Void

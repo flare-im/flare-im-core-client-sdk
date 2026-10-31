@@ -14,6 +14,7 @@ public interface ConversationsApi {
     func getMultipleConversations(requestJson: String): ListConversationsResponse
     func listConversationsPaginated(requestJson: String): ListConversationsResponse
     func listRawConversations(): ListConversationsResponse
+    func getTotalUnread(): ConversationTotalUnreadResponse
     func bootstrapHomeTimeline(request: BootstrapHomeTimelineRequest): HomeTimelineSnapshot
     func openConversationTimeline(request: OpenConversationTimelineRequest): ConversationTimelineSnapshot
     func markConversationRead(requestJson: String): Unit

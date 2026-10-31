@@ -45,6 +45,8 @@ interface ConversationsApi {
     suspend fun listConversationsPaginated(request: Map<String, Any?>): ListConversationsResponse
     /** listRawConversations maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `conversation.list_raw`. */
     suspend fun listRawConversations(): ListConversationsResponse
+    /** getTotalUnread maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `conversation.total_unread`. */
+    suspend fun getTotalUnread(): ConversationTotalUnreadResponse
     /** bootstrapHomeTimeline maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `conversation.bootstrap_home`. */
     suspend fun bootstrapHomeTimeline(request: BootstrapHomeTimelineRequest): HomeTimelineSnapshot
     /** openConversationTimeline maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `conversation.open_timeline`. */

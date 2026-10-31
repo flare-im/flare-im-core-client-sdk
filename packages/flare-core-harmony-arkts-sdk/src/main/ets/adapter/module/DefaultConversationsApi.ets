@@ -1,7 +1,7 @@
 // GENERATED. Do not edit by hand.
 import { NativeBridge, NativeCallMap } from '../contract/BridgeContract';
 import type { ConversationsApi } from '../api/modules/conversations';
-import { BootstrapHomeTimelineRequest, Conversation, ConversationListQuery, ConversationTimelineSnapshot, HomeTimelineSnapshot, ListConversationsResponse, OpenConversationTimelineRequest } from '../model';
+import { BootstrapHomeTimelineRequest, Conversation, ConversationListQuery, ConversationTimelineSnapshot, ConversationTotalUnreadResponse, HomeTimelineSnapshot, ListConversationsResponse, OpenConversationTimelineRequest } from '../model';
 import { invokeBool, invokeConnectionState, invokeConversation, invokeListConversations, invokeListMessages, invokeMap, invokeMessage, invokeSendAck, invokeVoid, sdkErrorPayloadFromError } from './NativeInvoke';
 import { bootstrapHomeTimelineRequestToMap, conversationFromJson, conversationListQueryToMap, listConversationsResponseFromJson, listMessagesResponseFromJson, listOfMaps, messageFromJson, openConversationTimelineRequestToMap, sendAckFromJson, sendMessageRequestToMap, updateConversationDraftRequestToMap } from './WireCodec';
 
@@ -42,6 +42,10 @@ export class DefaultConversationsApi implements ConversationsApi {
 
   async listRawConversations(): Promise<ListConversationsResponse> {
     return await invokeListConversations(this.bridge, NativeCallMap.conversationListRaw);
+  }
+
+  async getTotalUnread(): Promise<ConversationTotalUnreadResponse> {
+    return await this.bridge.invoke<ConversationTotalUnreadResponse>(NativeCallMap.conversationTotalUnread);
   }
 
   async bootstrapHomeTimeline(request: BootstrapHomeTimelineRequest): Promise<HomeTimelineSnapshot> {

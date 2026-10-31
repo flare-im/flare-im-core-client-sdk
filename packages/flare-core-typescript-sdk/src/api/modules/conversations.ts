@@ -3,7 +3,7 @@
  *
  * Module API: `conversations` — Conversation query and local conversation state.
  */
-import type { BootstrapHomeTimelineRequest, Conversation, ConversationListQuery, ConversationTimelineSnapshot, HomeTimelineSnapshot, ListConversationsResponse, OpenConversationTimelineRequest, UpdateConversationDraftRequest } from '../../model';
+import type { BootstrapHomeTimelineRequest, Conversation, ConversationListQuery, ConversationTimelineSnapshot, ConversationTotalUnreadResponse, HomeTimelineSnapshot, ListConversationsResponse, OpenConversationTimelineRequest, UpdateConversationDraftRequest } from '../../model';
 import type { ClearLocalChatHistoryRequest, DeleteConversationRequest, GetConversationRequest, GetGroupConversationByUserIdsRequest, GetMultipleConversationsRequest, GetOneConversationRequest, ListConversationsPaginatedRequest, MarkConversationReadRequest, MarkConversationUnreadRequest, SetConversationArchivedRequest, SetConversationMutedRequest, SetConversationPinnedRequest } from '../types';
 
 /** Conversation query and local conversation state. */
@@ -26,6 +26,8 @@ export interface ConversationsApi {
   listConversationsPaginated(request: ListConversationsPaginatedRequest): Promise<ListConversationsResponse>;
   /** listRawConversations maps to `flare_sdk_invoke_json`. Operation: `conversation.list_raw`. */
   listRawConversations(): Promise<ListConversationsResponse>;
+  /** getTotalUnread maps to `flare_sdk_invoke_json`. Operation: `conversation.total_unread`. */
+  getTotalUnread(): Promise<ConversationTotalUnreadResponse>;
   /** bootstrapHomeTimeline maps to `flare_sdk_invoke_json`. Operation: `conversation.bootstrap_home`. */
   bootstrapHomeTimeline(request: BootstrapHomeTimelineRequest): Promise<HomeTimelineSnapshot>;
   /** openConversationTimeline maps to `flare_sdk_invoke_json`. Operation: `conversation.open_timeline`. */

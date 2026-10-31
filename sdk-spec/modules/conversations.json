@@ -85,6 +85,15 @@
       "stability": "stable"
     },
     {
+      "name": "getTotalUnread",
+      "operation": "conversation.total_unread",
+      "transport": "contract-invoke-json",
+      "cApi": "flare_sdk_invoke_json",
+      "request": "Unit",
+      "response": "ConversationTotalUnreadResponse",
+      "stability": "stable"
+    },
+    {
       "name": "bootstrapHomeTimeline",
       "operation": "conversation.bootstrap_home",
       "transport": "contract-invoke-json",

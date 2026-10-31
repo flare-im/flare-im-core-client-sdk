@@ -33,6 +33,7 @@ export 'response/network_change_response.dart';
 export 'response/runtime_health_response.dart';
 export 'command/update_conversation_draft_request.dart';
 export 'response/list_conversations_response.dart';
+export 'response/conversation_total_unread_response.dart';
 export 'command/open_timeline_view_request.dart';
 export 'command/open_conversation_list_view_request.dart';
 export 'command/load_older_timeline_view_request.dart';

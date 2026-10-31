@@ -7,6 +7,6 @@ data class HomeTimelineSnapshot(
     val conversations: List<Conversation> = emptyList(),
     /** wire: `syncState`.  */
     val syncState: TimelineSyncState,
-    /** wire: `totalUnread`.  */
+    /** wire: `totalUnread`. Unread total across all conversations, not only the returned ones (the rule of `conversation.total_unread`). */
     val totalUnread: Long = 0L,
 )

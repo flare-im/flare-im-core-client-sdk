@@ -42,6 +42,7 @@ import {
   ConversationListQuery,
   ConversationParticipant,
   ConversationTimelineSnapshot,
+  ConversationTotalUnreadResponse,
   ConversationType,
   ConversationVersion,
   CreateTextMessageRequest,
@@ -422,6 +423,12 @@ export function updateConversationDraftRequestToMap(request: UpdateConversationD
 export function listConversationsResponseToMap(request: ListConversationsResponse): Record<string, unknown> {
   return {
   conversations: request.conversations.map((item) => conversationToMap(item)),
+  };
+}
+
+export function conversationTotalUnreadResponseToMap(request: ConversationTotalUnreadResponse): Record<string, unknown> {
+  return {
+  totalUnread: request.totalUnread,
   };
 }
 

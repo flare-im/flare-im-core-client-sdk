@@ -1,7 +1,7 @@
 import Foundation
 
 /// GENERATED. Do not edit by hand.
-// Models: BootstrapHomeTimelineRequest, Conversation, ConversationListQuery, ConversationTimelineSnapshot, HomeTimelineSnapshot, ListConversationsResponse, OpenConversationTimelineRequest
+// Models: BootstrapHomeTimelineRequest, Conversation, ConversationListQuery, ConversationTimelineSnapshot, ConversationTotalUnreadResponse, HomeTimelineSnapshot, ListConversationsResponse, OpenConversationTimelineRequest
 public final class DefaultConversationsApi: ConversationsApiProtocol {
     private let bridge: any NativeBridgeProtocol
 
@@ -61,6 +61,11 @@ public final class DefaultConversationsApi: ConversationsApiProtocol {
     public func listRawConversations() async throws -> ListConversationsResponse {
         let raw = try await invokeMap(bridge, descriptor: NativeCallMap.conversationListRaw, request: nil)
         return try listConversationsResponseFromJson(raw)
+    }
+
+    public func getTotalUnread() async throws -> ConversationTotalUnreadResponse {
+        let raw = try await invokeMap(bridge, descriptor: NativeCallMap.conversationTotalUnread, request: nil)
+        return ConversationTotalUnreadResponse(totalUnread: try intValue(plainMap(raw)["totalUnread"]))
     }
 
     public func bootstrapHomeTimeline(_ request: BootstrapHomeTimelineRequest) async throws -> HomeTimelineSnapshot {

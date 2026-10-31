@@ -8,6 +8,6 @@ export interface HomeTimelineSnapshot {
   conversations: Conversation[];
   /** wire: `syncState`.  */
   syncState: TimelineSyncState;
-  /** wire: `totalUnread`.  */
+  /** wire: `totalUnread`. Unread total across all conversations, not only the returned ones (the rule of `conversation.total_unread`). */
   totalUnread: number;
 }

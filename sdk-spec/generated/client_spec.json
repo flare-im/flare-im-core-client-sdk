@@ -1370,7 +1370,7 @@
               "wireName": "syncState"
             },
             {
-              "description": "",
+              "description": "Unread total across all conversations, not only the returned ones (the rule of `conversation.total_unread`).",
               "name": "totalUnread",
               "required": true,
               "type": "UInt64",
@@ -2462,6 +2462,19 @@
             }
           ],
           "name": "ListConversationsResponse"
+        },
+        {
+          "description": "Core-owned unread total for the conversations tab badge.",
+          "fields": [
+            {
+              "description": "Unread total across all conversations: archived ones count nothing, muted ones count only their mentions.",
+              "name": "totalUnread",
+              "required": true,
+              "type": "UInt64",
+              "wireName": "totalUnread"
+            }
+          ],
+          "name": "ConversationTotalUnreadResponse"
         }
       ]
     },
@@ -6039,6 +6052,23 @@
           "operation": "conversation.list_raw",
           "request": "Unit",
           "response": "ListConversationsResponse",
+          "stability": "stable",
+          "transport": "contract-invoke-json"
+        },
+        {
+          "cApi": "flare_sdk_invoke_json",
+          "name": "getTotalUnread",
+          "nativeBinding": {
+            "asyncReturn": "i32 immediate_submit_code",
+            "callback": "FlareResultCallback",
+            "handlePolicy": "client-handle",
+            "requestEncoding": "json",
+            "responseEncoding": "json-object",
+            "returnMode": "callback"
+          },
+          "operation": "conversation.total_unread",
+          "request": "Unit",
+          "response": "ConversationTotalUnreadResponse",
           "stability": "stable",
           "transport": "contract-invoke-json"
         },

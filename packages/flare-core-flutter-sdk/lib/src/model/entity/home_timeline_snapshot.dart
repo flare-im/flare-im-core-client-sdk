@@ -8,7 +8,7 @@ final class HomeTimelineSnapshot {
   final List<Conversation> conversations;
   /// wire: `syncState`. 
   final TimelineSyncState syncState;
-  /// wire: `totalUnread`. 
+  /// wire: `totalUnread`. Unread total across all conversations, not only the returned ones (the rule of `conversation.total_unread`).
   final int totalUnread;
 
   const HomeTimelineSnapshot({

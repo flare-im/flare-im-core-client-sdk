@@ -22,6 +22,8 @@ abstract interface class ConversationsApi {
   Future<ListConversationsResponse> listConversationsPaginated(Map<String, Object?> request);
   /// listRawConversations maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `conversation.list_raw`.
   Future<ListConversationsResponse> listRawConversations();
+  /// getTotalUnread maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `conversation.total_unread`.
+  Future<ConversationTotalUnreadResponse> getTotalUnread();
   /// bootstrapHomeTimeline maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `conversation.bootstrap_home`.
   Future<HomeTimelineSnapshot> bootstrapHomeTimeline(BootstrapHomeTimelineRequest request);
   /// openConversationTimeline maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `conversation.open_timeline`.

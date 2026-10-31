@@ -506,6 +506,19 @@
       ]
     },
     {
+      "name": "ConversationTotalUnreadResponse",
+      "description": "Core-owned unread total for the conversations tab badge.",
+      "fields": [
+        {
+          "name": "totalUnread",
+          "wireName": "totalUnread",
+          "type": "UInt64",
+          "required": true,
+          "description": "Unread total across all conversations: archived ones count nothing, muted ones count only their mentions."
+        }
+      ]
+    },
+    {
       "name": "BootstrapHomeTimelineRequest",
       "description": "Request for the core-owned home conversation snapshot used after login.",
       "fields": [
@@ -554,7 +567,7 @@
           "wireName": "totalUnread",
           "type": "UInt64",
           "required": true,
-          "description": "Total unread count across returned conversations."
+          "description": "Unread total across all conversations, not only the returned ones (same rule as conversation.total_unread)."
         },
         {
           "name": "syncState",

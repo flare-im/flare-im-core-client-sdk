@@ -461,6 +461,19 @@ abstract final class NativeCallMap {
       handlePolicy: "client-handle",
       callback: "FlareResultCallback");
 
+  /// getTotalUnread maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `conversation.total_unread`.
+  static const conversationTotalUnread = NativeCallDescriptor(
+      module: "conversations",
+      method: "getTotalUnread",
+      operation: "conversation.total_unread",
+      transport: "contract-invoke-json",
+      cApi: "flare_sdk_invoke_json",
+      requestEncoding: "json",
+      responseEncoding: "json-object",
+      returnMode: "callback",
+      handlePolicy: "client-handle",
+      callback: "FlareResultCallback");
+
   /// bootstrapHomeTimeline maps to `flare_sdk_invoke_json` via `contract-invoke-json`. Operation: `conversation.bootstrap_home`.
   static const conversationBootstrapHome = NativeCallDescriptor(
       module: "conversations",

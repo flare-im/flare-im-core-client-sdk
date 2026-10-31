@@ -12,6 +12,7 @@ export interface ConversationsApi {
   getMultipleConversations(request: Record<string, Object>): Promise<ListConversationsResponse>;
   listConversationsPaginated(request: Record<string, Object>): Promise<ListConversationsResponse>;
   listRawConversations(): Promise<ListConversationsResponse>;
+  getTotalUnread(): Promise<ConversationTotalUnreadResponse>;
   bootstrapHomeTimeline(request: BootstrapHomeTimelineRequest): Promise<HomeTimelineSnapshot>;
   openConversationTimeline(request: OpenConversationTimelineRequest): Promise<ConversationTimelineSnapshot>;
   markConversationRead(request: Record<string, Object>): Promise<void>;

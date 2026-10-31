@@ -69,6 +69,11 @@ class DefaultConversationsApi(
         return invokeListConversations(bridge, NativeCallMap.CONVERSATION_LIST_RAW)
     }
 
+    override suspend fun getTotalUnread(): ConversationTotalUnreadResponse {
+        val raw = invokeMap(bridge, NativeCallMap.CONVERSATION_TOTAL_UNREAD)
+        return ConversationTotalUnreadResponse(totalUnread = intValue(raw["totalUnread"]))
+    }
+
     override suspend fun bootstrapHomeTimeline(request: BootstrapHomeTimelineRequest): HomeTimelineSnapshot {
         return homeTimelineSnapshotFromJson(invokeMap(bridge, NativeCallMap.CONVERSATION_BOOTSTRAP_HOME, bootstrapHomeTimelineRequestToMap(request)))
     }

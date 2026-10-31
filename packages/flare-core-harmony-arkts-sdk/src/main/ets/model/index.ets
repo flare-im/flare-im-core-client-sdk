@@ -33,6 +33,7 @@ export * from './response/network_change_response';
 export * from './response/runtime_health_response';
 export * from './command/update_conversation_draft_request';
 export * from './response/list_conversations_response';
+export * from './response/conversation_total_unread_response';
 export * from './command/open_timeline_view_request';
 export * from './command/open_conversation_list_view_request';
 export * from './command/load_older_timeline_view_request';

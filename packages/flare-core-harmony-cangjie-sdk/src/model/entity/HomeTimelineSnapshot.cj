@@ -8,7 +8,7 @@ public class HomeTimelineSnapshot {
     public let conversations: String
     // wire: `syncState`. 
     public let syncState: TimelineSyncState
-    // wire: `totalUnread`. 
+    // wire: `totalUnread`. Unread total across all conversations, not only the returned ones (the rule of `conversation.total_unread`).
     public let totalUnread: UInt64
 
     public init(conversations!: String, syncState!: TimelineSyncState, totalUnread!: UInt64) {

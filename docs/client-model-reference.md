@@ -110,7 +110,7 @@ HomeTimelineSnapshot
 |-------|-----------|------|----------|-------------|
 | `conversations` | `conversations` | `ConversationList` | yes |  |
 | `syncState` | `syncState` | `TimelineSyncState` | yes |  |
-| `totalUnread` | `totalUnread` | `UInt64` | yes |  |
+| `totalUnread` | `totalUnread` | `UInt64` | yes | Unread total across all conversations, not only the returned ones (the rule of `conversation.total_unread`). |
 
 ### ConversationTimelineSnapshot
 
@@ -422,6 +422,14 @@ Conversation list response.
 | Field | Wire name | Type | Required | Description |
 |-------|-----------|------|----------|-------------|
 | `conversations` | `conversations` | `ConversationList` | yes | Returned conversations. |
+
+### ConversationTotalUnreadResponse
+
+Core-owned unread total for the conversations tab badge.
+
+| Field | Wire name | Type | Required | Description |
+|-------|-----------|------|----------|-------------|
+| `totalUnread` | `totalUnread` | `UInt64` | yes | Unread total across all conversations: archived ones count nothing, muted ones count only their mentions. |
 
 ## Views
 
