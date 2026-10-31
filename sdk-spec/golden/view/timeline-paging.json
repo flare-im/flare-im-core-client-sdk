@@ -1,0 +1,176 @@
+{
+  "schemaVersion": 1,
+  "description": "Timeline view paging vectors. A case gives the conversation summary, the visible messages the server holds, the local rows and the proven ranges, then steps; each step lists what the view must show and the server requests it made during that step. Proven ranges are the per-conversation closed seq ranges [from, to] the server has shown to be complete: every seq in one has a local row or is proven to hold no visible message. hasOlder is decided only by those ranges, the visibility floor and the local rows below the window, never by whether a page came back full or the oldest row is seq 1. Seq lists are written as inclusive [from, to] ranges. core-sdk reads every case in src/client/api/view_paging_tests.rs.",
+  "olderPaging": {
+    "description": "Paging towards older messages (view.timeline.open with no anchor, then view.timeline.load_older). Step kinds: open, loadOlder, offline and online (the server fails or answers backfill requests), liveMessage (one realtime push stored locally, no range written), gapFilled (a sync proves [from, to] and the view reloads on sync finish), event (reaction, recall or syncFinished reload the window). A backfill request is {before, limit}: the server returns the newest limit visible messages below before and has_more; has_more true proves [oldest returned seq, before - 1], false proves [1, before - 1]. A failed backfill leaves the window as it was and returns an error; local rows across the gap are never read.",
+    "cases": [
+      {
+        "name": "the first message is seq 3",
+        "boundaryCase": "The conversation's first message is seq 3 (seq 1 and 2 are read receipts): the backfill at the start answers has_more false, [1, before - 1] is written and hasOlder turns false; no load-more is left that loads nothing.",
+        "pageSize": 4,
+        "conversation": { "maxSeq": 12, "visibleAfterSeq": 0 },
+        "server": { "visibleMessages": [[3, 12]] },
+        "local": { "messages": [[9, 12]], "coverage": [[9, 12]] },
+        "steps": [
+          { "do": "open", "expect": { "window": [[9, 12]], "hasOlder": true, "requests": [] } },
+          {
+            "do": "loadOlder",
+            "expect": { "window": [[5, 12]], "hasOlder": true, "requests": [{ "before": 9, "limit": 4 }], "coverage": [[5, 12]] }
+          },
+          {
+            "do": "loadOlder",
+            "expect": { "window": [[3, 12]], "hasOlder": false, "requests": [{ "before": 5, "limit": 4 }], "coverage": [[1, 12]] }
+          },
+          { "do": "event", "kind": "reaction", "expect": { "window": [[3, 12]], "hasOlder": false, "requests": [] } },
+          { "do": "event", "kind": "recall", "expect": { "window": [[3, 12]], "hasOlder": false } },
+          { "do": "event", "kind": "syncFinished", "expect": { "window": [[3, 12]], "hasOlder": false } },
+          { "do": "loadOlder", "expect": { "window": [[3, 12]], "hasOlder": false, "requests": [] } }
+        ]
+      },
+      {
+        "name": "a new member sees history only from seq 13",
+        "boundaryCase": "A member who joined late sees history only after a floor the server enforces: the backfill that reaches the floor answers has_more false and hasOlder turns false; the client never learns the floor.",
+        "pageSize": 3,
+        "conversation": { "maxSeq": 20, "visibleAfterSeq": 0 },
+        "server": { "visibleMessages": [[13, 20]] },
+        "local": { "messages": [[17, 20]], "coverage": [[17, 20]] },
+        "steps": [
+          { "do": "open", "expect": { "window": [[18, 20]], "hasOlder": true, "requests": [] } },
+          {
+            "do": "loadOlder",
+            "expect": { "window": [[15, 20]], "hasOlder": true, "requests": [{ "before": 17, "limit": 2 }], "coverage": [[15, 20]] }
+          },
+          {
+            "do": "loadOlder",
+            "expect": { "window": [[13, 20]], "hasOlder": false, "requests": [{ "before": 15, "limit": 3 }], "coverage": [[1, 20]] }
+          }
+        ]
+      },
+      {
+        "name": "history cleared through seq 10",
+        "boundaryCase": "History was cleared (visible_after_seq = F): [1, F] counts as proven, so paging reaches the start at F + 1 without asking the server.",
+        "pageSize": 2,
+        "conversation": { "maxSeq": 14, "visibleAfterSeq": 10 },
+        "server": { "visibleMessages": [[1, 14]] },
+        "local": { "messages": [[11, 14]], "coverage": [[11, 14]] },
+        "steps": [
+          { "do": "open", "expect": { "window": [[13, 14]], "hasOlder": true, "requests": [] } },
+          { "do": "loadOlder", "expect": { "window": [[11, 14]], "hasOlder": false, "requests": [] } }
+        ]
+      },
+      {
+        "name": "a cold start tail next to an old island",
+        "boundaryCase": "The cold start only brought the tail [980, 1000] while the local store still holds [1, 36] from before: the window holds only 980 and newer, and paging backfills at 980 instead of joining 36 under 980.",
+        "pageSize": 40,
+        "conversation": { "maxSeq": 1000, "visibleAfterSeq": 0 },
+        "server": { "visibleMessages": [[1, 1000]] },
+        "local": { "messages": [[1, 36], [980, 1000]], "coverage": [[1, 36], [980, 1000]] },
+        "steps": [
+          { "do": "open", "expect": { "window": [[980, 1000]], "hasOlder": true, "requests": [] } },
+          {
+            "do": "loadOlder",
+            "expect": {
+              "window": [[940, 1000]],
+              "hasOlder": true,
+              "requests": [{ "before": 980, "limit": 40 }],
+              "coverage": [[1, 36], [940, 1000]]
+            }
+          }
+        ]
+      },
+      {
+        "name": "a live message arrives before the gap fill",
+        "boundaryCase": "Live message 1001 arrives while the cursor is still at 990: it is shown as an unproven head row, no range is written for it; once a gap fill proves 991-1000 the view reloads within its range on sync finish and the rows in between appear.",
+        "pageSize": 40,
+        "conversation": { "maxSeq": 1001, "visibleAfterSeq": 0 },
+        "server": { "visibleMessages": [[1, 1001]] },
+        "local": { "messages": [[971, 990]], "coverage": [[971, 990]] },
+        "steps": [
+          { "do": "open", "expect": { "window": [[971, 990]], "hasOlder": true, "requests": [] } },
+          {
+            "do": "liveMessage",
+            "seq": 1001,
+            "expect": { "window": [[971, 990], [1001, 1001]], "hasOlder": true, "requests": [], "coverage": [[971, 990]] }
+          },
+          {
+            "do": "gapFilled",
+            "from": 991,
+            "to": 1000,
+            "expect": { "window": [[971, 1001]], "hasOlder": true, "requests": [], "coverage": [[971, 1000]] }
+          },
+          {
+            "do": "loadOlder",
+            "expect": { "window": [[931, 1001]], "hasOlder": true, "requests": [{ "before": 971, "limit": 40 }] }
+          }
+        ]
+      },
+      {
+        "name": "a backfill fails while offline",
+        "boundaryCase": "Offline at a gap: the backfill fails, the window stays as it was and the call returns an error; the local rows below the gap are not shown. Back online the same request succeeds, and the old rows join only once a backfill proves the seqs between.",
+        "pageSize": 40,
+        "conversation": { "maxSeq": 100, "visibleAfterSeq": 0 },
+        "server": { "visibleMessages": [[1, 100]] },
+        "local": { "messages": [[1, 10], [61, 100]], "coverage": [[1, 10], [61, 100]] },
+        "steps": [
+          { "do": "open", "expect": { "window": [[61, 100]], "hasOlder": true, "requests": [] } },
+          { "do": "offline" },
+          {
+            "do": "loadOlder",
+            "expect": {
+              "error": true,
+              "window": [[61, 100]],
+              "hasOlder": true,
+              "requests": [{ "before": 61, "limit": 40 }],
+              "coverage": [[1, 10], [61, 100]]
+            }
+          },
+          { "do": "online" },
+          {
+            "do": "loadOlder",
+            "expect": { "window": [[21, 100]], "hasOlder": true, "requests": [{ "before": 61, "limit": 40 }], "coverage": [[1, 10], [21, 100]] }
+          },
+          {
+            "do": "loadOlder",
+            "expect": { "window": [[1, 100]], "hasOlder": false, "requests": [{ "before": 21, "limit": 40 }], "coverage": [[1, 100]] }
+          }
+        ]
+      },
+      {
+        "name": "a new device opens a conversation with a million messages",
+        "boundaryCase": "A new device opens a conversation with 1,000,000 messages: the first window is what is local (empty here); every older page is one backfill that extends the proven range, and hasOlder stays true until the real start.",
+        "pageSize": 40,
+        "conversation": { "maxSeq": 1000000, "visibleAfterSeq": 0 },
+        "server": { "visibleMessages": [[1, 1000000]] },
+        "local": { "messages": [], "coverage": [] },
+        "steps": [
+          { "do": "open", "expect": { "window": [], "hasOlder": true, "requests": [] } },
+          {
+            "do": "loadOlder",
+            "expect": { "window": [[999961, 1000000]], "hasOlder": true, "requests": [{ "before": 1000001, "limit": 40 }] }
+          },
+          {
+            "do": "loadOlder",
+            "expect": {
+              "window": [[999921, 1000000]],
+              "hasOlder": true,
+              "requests": [{ "before": 999961, "limit": 40 }],
+              "coverage": [[999921, 1000000]]
+            }
+          }
+        ]
+      },
+      {
+        "name": "an emptied conversation has nothing older",
+        "boundaryCase": "The window is empty and the conversation's max_seq is not above visible_after_seq: hasOlder is false and paging asks the server nothing.",
+        "pageSize": 40,
+        "conversation": { "maxSeq": 30, "visibleAfterSeq": 30 },
+        "server": { "visibleMessages": [[1, 30]] },
+        "local": { "messages": [], "coverage": [] },
+        "steps": [
+          { "do": "open", "expect": { "window": [], "hasOlder": false, "requests": [] } },
+          { "do": "loadOlder", "expect": { "window": [], "hasOlder": false, "requests": [] } }
+        ]
+      }
+    ]
+  }
+}
