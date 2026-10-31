@@ -492,29 +492,47 @@ describe("DefaultEventsApi direct event callbacks", () => {
     ).toThrow("invalid event payload field: payload");
   });
 
-  it("decodes SDK error payloads without filling missing code or message", () => {
-    const failed = nativeEventFromCode(
-      webEventType("im://send_failed"),
-      readEventGolden("send_failed_with_error.json"),
-    ) as {
-      error?: {
-        code: string;
-        message: string;
-        operation?: string;
-        retryable?: boolean;
-        details: Record<string, string>;
-      };
+  it("decodes a server rejection with its typed reason as the core emits it", () => {
+    const golden = readEventGolden("send_failed_with_error.json");
+    const failed = nativeEventFromCode(webEventType("im://send_failed"), golden) as {
+      clientMsgId: string;
+      reason: string;
+      error?: Record<string, unknown>;
     };
 
-    expect(failed.error).toMatchObject({
-      code: "PERMISSION_DENIED",
-      message: "only friends can share this card",
-      operation: "message.send",
-      retryable: false,
-      details: {
-        remoteCode: "21",
+    expect(failed.clientMsgId).toBe(golden.clientMsgId);
+    expect(failed.reason).toBe(golden.reason);
+    expect(failed.error).toEqual(golden.error);
+    expect(failed.error?.machineReason).toBe("SOCIAL_CARD_SCOPE_FRIENDS");
+  });
+
+  it("reads the empty typed reason of a local send failure as no reason", () => {
+    const failed = nativeEventFromCode(2004, {
+      clientMsgId: "cm1",
+      reason: "send timed out",
+      error: {
+        code: "OPERATION_TIMEOUT",
+        machineReason: "",
+        message: "send timed out",
+        operation: "message.send",
+        retryable: false,
+        details: {},
       },
-    });
+    }) as { error?: { code: string; machineReason?: string } };
+
+    expect(failed.error?.code).toBe("OPERATION_TIMEOUT");
+    expect(failed.error?.machineReason).toBeUndefined();
+
+    expect(() =>
+      nativeEventFromCode(2004, {
+        clientMsgId: "cm1",
+        reason: "send timed out",
+        error: { code: "OPERATION_TIMEOUT", machineReason: 21, message: "send timed out" },
+      }),
+    ).toThrow("invalid event payload field: error.machineReason");
+  });
+
+  it("decodes SDK error payloads without filling missing code or message", () => {
 
     const event = nativeEventFromCode(2004, {
       clientMsgId: "cm1",

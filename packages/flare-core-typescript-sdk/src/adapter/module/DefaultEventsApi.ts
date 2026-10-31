@@ -199,6 +199,13 @@ function stringRecord(value: unknown, field: string): Record<string, string> {
   return out;
 }
 
+/** The server's typed reason; empty for a local failure, which reads as no reason. */
+function machineReasonFromJson(value: unknown): string | undefined {
+  if (value === undefined || value === null || value === '') return undefined;
+  if (typeof value === 'string') return value;
+  return invalidEventField('error.machineReason', 'string');
+}
+
 function sdkErrorPayloadFromJson(value: unknown): SdkErrorPayload | undefined {
   if (value === undefined || value === null) return undefined;
   const decoded = wireDecodeResponse(value);
@@ -207,6 +214,7 @@ function sdkErrorPayloadFromJson(value: unknown): SdkErrorPayload | undefined {
   const record = decoded as Record<string, unknown>;
   return {
     code: requiredString(record.code, 'error.code'),
+    machineReason: machineReasonFromJson(record.machineReason),
     message: requiredString(record.message, 'error.message'),
     operation: optionalString(record.operation, 'error.operation'),
     retryable: optionalBoolean(record.retryable, 'error.retryable'),
