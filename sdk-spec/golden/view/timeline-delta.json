@@ -7638,6 +7638,410 @@
         },
         "viewId": "timeline:1"
       }
+    },
+    {
+      "after": {
+        "attachedToLatest": true,
+        "hasNewer": false,
+        "hasOlder": false,
+        "revision": 2,
+        "rows": [
+          {
+            "attributes": {},
+            "channelId": "",
+            "clientCreatedAt": 0,
+            "clientMsgId": "m1",
+            "conversationId": "c1",
+            "conversationSeq": 1,
+            "conversationType": 0,
+            "createdAt": 0,
+            "extensions": {},
+            "isEdited": false,
+            "isRead": false,
+            "isRecalled": false,
+            "localState": {
+              "failed": false,
+              "isLocal": false,
+              "sending": false,
+              "sortTs": 0,
+              "uploadProgress": 0,
+              "uploading": false
+            },
+            "mentionAll": false,
+            "mentionUsers": [],
+            "messageType": 0,
+            "reactions": [],
+            "receipt": {
+              "status": "sent"
+            },
+            "sender": {
+              "kind": "named",
+              "source": "profile",
+              "text": "Bob"
+            },
+            "senderAvatar": "",
+            "senderDisplayName": "Bob",
+            "senderId": "u2",
+            "senderName": "",
+            "serverId": "s1",
+            "source": 0,
+            "status": 0,
+            "textPreview": "{\"k\":\"im.preview.unknown\"}",
+            "timelineKey": "server:s1",
+            "timelineSortTs": 0,
+            "updatedAt": 0,
+            "version": 0
+          },
+          {
+            "attributes": {},
+            "channelId": "",
+            "clientCreatedAt": 0,
+            "clientMsgId": "m2",
+            "conversationId": "c1",
+            "conversationSeq": 2,
+            "conversationType": 0,
+            "createdAt": 0,
+            "extensions": {},
+            "isEdited": false,
+            "isRead": false,
+            "isRecalled": false,
+            "localState": {
+              "failed": false,
+              "isLocal": false,
+              "sending": false,
+              "sortTs": 0,
+              "uploadProgress": 0,
+              "uploading": false
+            },
+            "mentionAll": false,
+            "mentionUsers": [],
+            "messageType": 0,
+            "reactions": [],
+            "receipt": {
+              "status": "sent"
+            },
+            "sender": {
+              "entity": "person",
+              "idTail": "u3",
+              "kind": "unnamed"
+            },
+            "senderAvatar": "",
+            "senderDisplayName": "",
+            "senderId": "u3",
+            "senderName": "",
+            "serverId": "s2",
+            "source": 0,
+            "status": 0,
+            "textPreview": "{\"k\":\"im.preview.unknown\"}",
+            "timelineKey": "server:s2",
+            "timelineSortTs": 0,
+            "updatedAt": 0,
+            "version": 0
+          },
+          {
+            "attributes": {},
+            "channelId": "",
+            "clientCreatedAt": 0,
+            "clientMsgId": "m3",
+            "conversationId": "c1",
+            "conversationSeq": 3,
+            "conversationType": 0,
+            "createdAt": 0,
+            "extensions": {},
+            "isEdited": false,
+            "isRead": false,
+            "isRecalled": false,
+            "localState": {
+              "failed": false,
+              "isLocal": false,
+              "sending": false,
+              "sortTs": 0,
+              "uploadProgress": 0,
+              "uploading": false
+            },
+            "mentionAll": false,
+            "mentionUsers": [],
+            "messageType": 0,
+            "reactions": [],
+            "receipt": {
+              "status": "sent"
+            },
+            "sender": {
+              "kind": "named",
+              "source": "profile",
+              "text": "Bob"
+            },
+            "senderAvatar": "",
+            "senderDisplayName": "Bob",
+            "senderId": "u2",
+            "senderName": "",
+            "serverId": "s3",
+            "source": 0,
+            "status": 0,
+            "textPreview": "{\"k\":\"im.preview.unknown\"}",
+            "timelineKey": "server:s3",
+            "timelineSortTs": 0,
+            "updatedAt": 0,
+            "version": 0
+          }
+        ]
+      },
+      "before": {
+        "attachedToLatest": true,
+        "hasNewer": false,
+        "hasOlder": false,
+        "revision": 1,
+        "rows": [
+          {
+            "attributes": {},
+            "channelId": "",
+            "clientCreatedAt": 0,
+            "clientMsgId": "m1",
+            "conversationId": "c1",
+            "conversationSeq": 1,
+            "conversationType": 0,
+            "createdAt": 0,
+            "extensions": {},
+            "isEdited": false,
+            "isRead": false,
+            "isRecalled": false,
+            "localState": {
+              "failed": false,
+              "isLocal": false,
+              "sending": false,
+              "sortTs": 0,
+              "uploadProgress": 0,
+              "uploading": false
+            },
+            "mentionAll": false,
+            "mentionUsers": [],
+            "messageType": 0,
+            "reactions": [],
+            "receipt": {
+              "status": "sent"
+            },
+            "sender": {
+              "entity": "person",
+              "idTail": "u2",
+              "kind": "unnamed"
+            },
+            "senderAvatar": "",
+            "senderDisplayName": "",
+            "senderId": "u2",
+            "senderName": "",
+            "serverId": "s1",
+            "source": 0,
+            "status": 0,
+            "textPreview": "{\"k\":\"im.preview.unknown\"}",
+            "timelineKey": "server:s1",
+            "timelineSortTs": 0,
+            "updatedAt": 0,
+            "version": 0
+          },
+          {
+            "attributes": {},
+            "channelId": "",
+            "clientCreatedAt": 0,
+            "clientMsgId": "m2",
+            "conversationId": "c1",
+            "conversationSeq": 2,
+            "conversationType": 0,
+            "createdAt": 0,
+            "extensions": {},
+            "isEdited": false,
+            "isRead": false,
+            "isRecalled": false,
+            "localState": {
+              "failed": false,
+              "isLocal": false,
+              "sending": false,
+              "sortTs": 0,
+              "uploadProgress": 0,
+              "uploading": false
+            },
+            "mentionAll": false,
+            "mentionUsers": [],
+            "messageType": 0,
+            "reactions": [],
+            "receipt": {
+              "status": "sent"
+            },
+            "sender": {
+              "entity": "person",
+              "idTail": "u3",
+              "kind": "unnamed"
+            },
+            "senderAvatar": "",
+            "senderDisplayName": "",
+            "senderId": "u3",
+            "senderName": "",
+            "serverId": "s2",
+            "source": 0,
+            "status": 0,
+            "textPreview": "{\"k\":\"im.preview.unknown\"}",
+            "timelineKey": "server:s2",
+            "timelineSortTs": 0,
+            "updatedAt": 0,
+            "version": 0
+          },
+          {
+            "attributes": {},
+            "channelId": "",
+            "clientCreatedAt": 0,
+            "clientMsgId": "m3",
+            "conversationId": "c1",
+            "conversationSeq": 3,
+            "conversationType": 0,
+            "createdAt": 0,
+            "extensions": {},
+            "isEdited": false,
+            "isRead": false,
+            "isRecalled": false,
+            "localState": {
+              "failed": false,
+              "isLocal": false,
+              "sending": false,
+              "sortTs": 0,
+              "uploadProgress": 0,
+              "uploading": false
+            },
+            "mentionAll": false,
+            "mentionUsers": [],
+            "messageType": 0,
+            "reactions": [],
+            "receipt": {
+              "status": "sent"
+            },
+            "sender": {
+              "entity": "person",
+              "idTail": "u2",
+              "kind": "unnamed"
+            },
+            "senderAvatar": "",
+            "senderDisplayName": "",
+            "senderId": "u2",
+            "senderName": "",
+            "serverId": "s3",
+            "source": 0,
+            "status": 0,
+            "textPreview": "{\"k\":\"im.preview.unknown\"}",
+            "timelineKey": "server:s3",
+            "timelineSortTs": 0,
+            "updatedAt": 0,
+            "version": 0
+          }
+        ]
+      },
+      "expect": "applied",
+      "name": "a profile change upserts the rows its person sent",
+      "update": {
+        "delta": {
+          "append": [],
+          "attachedToLatest": true,
+          "hasNewer": false,
+          "hasOlder": false,
+          "prepend": [],
+          "remove": [],
+          "upsert": [
+            {
+              "attributes": {},
+              "channelId": "",
+              "clientCreatedAt": 0,
+              "clientMsgId": "m1",
+              "conversationId": "c1",
+              "conversationSeq": 1,
+              "conversationType": 0,
+              "createdAt": 0,
+              "extensions": {},
+              "isEdited": false,
+              "isRead": false,
+              "isRecalled": false,
+              "localState": {
+                "failed": false,
+                "isLocal": false,
+                "sending": false,
+                "sortTs": 0,
+                "uploadProgress": 0,
+                "uploading": false
+              },
+              "mentionAll": false,
+              "mentionUsers": [],
+              "messageType": 0,
+              "reactions": [],
+              "receipt": {
+                "status": "sent"
+              },
+              "sender": {
+                "kind": "named",
+                "source": "profile",
+                "text": "Bob"
+              },
+              "senderAvatar": "",
+              "senderDisplayName": "Bob",
+              "senderId": "u2",
+              "senderName": "",
+              "serverId": "s1",
+              "source": 0,
+              "status": 0,
+              "textPreview": "{\"k\":\"im.preview.unknown\"}",
+              "timelineKey": "server:s1",
+              "timelineSortTs": 0,
+              "updatedAt": 0,
+              "version": 0
+            },
+            {
+              "attributes": {},
+              "channelId": "",
+              "clientCreatedAt": 0,
+              "clientMsgId": "m3",
+              "conversationId": "c1",
+              "conversationSeq": 3,
+              "conversationType": 0,
+              "createdAt": 0,
+              "extensions": {},
+              "isEdited": false,
+              "isRead": false,
+              "isRecalled": false,
+              "localState": {
+                "failed": false,
+                "isLocal": false,
+                "sending": false,
+                "sortTs": 0,
+                "uploadProgress": 0,
+                "uploading": false
+              },
+              "mentionAll": false,
+              "mentionUsers": [],
+              "messageType": 0,
+              "reactions": [],
+              "receipt": {
+                "status": "sent"
+              },
+              "sender": {
+                "kind": "named",
+                "source": "profile",
+                "text": "Bob"
+              },
+              "senderAvatar": "",
+              "senderDisplayName": "Bob",
+              "senderId": "u2",
+              "senderName": "",
+              "serverId": "s3",
+              "source": 0,
+              "status": 0,
+              "textPreview": "{\"k\":\"im.preview.unknown\"}",
+              "timelineKey": "server:s3",
+              "timelineSortTs": 0,
+              "updatedAt": 0,
+              "version": 0
+            }
+          ],
+          "viewType": "timeline"
+        },
+        "kind": "delta",
+        "revision": 2,
+        "viewId": "timeline:1"
+      }
     }
   ],
   "description": "Timeline view update vectors (view.updated). Each case is the host's window before an update, one update exactly as the core published it, and the result: applied (with the window after), snapshotRequired (the revision skipped one: the host leaves its window as it is and calls view.timeline.snapshot) or stale (the host already has that revision: the update is dropped). before and after list the rows in timeline order with the three state fields and the revision; the conversation header is not part of them: a host replaces its header whenever an update carries one. core-sdk produces every case in src/client/api/view_window_tests.rs and checks this file against what it produces.",
